@@ -1,0 +1,185 @@
+type: mapping
+id: mdatp_device_process_events_1003_kernel_activity_1.1.0
+version: '1'
+name: Mdatp Device Process Events to OCSF class Kernel Activity
+data-types:
+- mdatp-device-process-events
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Read' WHEN 3 THEN 'Delete' WHEN 4 THEN 'Invoke' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.cmd_line: (PROCESS_COMMAND_LINE)::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (PROCESS_CREATION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (PROCESS_CREATION_TIME)::TIMESTAMP_LTZ
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'MD5', 'algorithm_id', 1, 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm','SHA-1',
+      'algorithm_id', 2, 'value', SHA1),OBJECT_CONSTRUCT_KEEP_NULL('algorithm','SHA-256',
+      'algorithm_id', 3, 'value', SHA256)))::ARRAY
+    actor.process.file.name: (FILE_NAME)::VARCHAR
+    actor.process.file.path: (FOLDER_PATH)::VARCHAR
+    actor.process.integrity: (CASE ((CASE PROCESS_INTEGRITY_LEVEL WHEN NULL THEN 0
+      WHEN 'Low' THEN 2 WHEN 'Medium'THEN 3 WHEN 'High' THEN 4 WHEN 'System' THEN
+      5 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted' WHEN 2
+      THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System' WHEN
+      6 THEN 'Protected' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.integrity_id: (CASE PROCESS_INTEGRITY_LEVEL WHEN NULL THEN 0 WHEN
+      'Low' THEN 2 WHEN 'Medium'THEN 3 WHEN 'High' THEN 4 WHEN 'System' THEN 5 ELSE
+      99 END)::NUMBER
+    actor.process.parent_process.cmd_line: (INITIATING_PROCESS_COMMAND_LINE)::VARCHAR
+    actor.process.parent_process.created_time: (date_part('epoch_milliseconds', (INITIATING_PROCESS_CREATION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.created_time_dt: (INITIATING_PROCESS_CREATION_TIME)::TIMESTAMP_LTZ
+    actor.process.parent_process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'MD5', 'algorithm_id', 1, 'value', INITIATING_PROCESS_MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm','SHA-1',
+      'algorithm_id', 2, 'value', INITIATING_PROCESS_SHA1),OBJECT_CONSTRUCT_KEEP_NULL('algorithm','SHA-256',
+      'algorithm_id', 3, 'value', INITIATING_PROCESS_SHA256)))::ARRAY
+    actor.process.parent_process.file.name: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    actor.process.parent_process.file.path: (INITIATING_PROCESS_FOLDER_PATH)::VARCHAR
+    actor.process.parent_process.file.uid: (INITIATING_PROCESS_ID)::VARCHAR
+    actor.process.parent_process.integrity: (CASE ((CASE INITIATING_PROCESS_INTEGRITY_LEVEL
+      WHEN NULL THEN 0 WHEN 'Low' THEN 2 WHEN 'Medium'THEN 3 WHEN 'High' THEN 4 WHEN
+      'System' THEN 5 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System'
+      WHEN 6 THEN 'Protected' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.parent_process.integrity_id: (CASE INITIATING_PROCESS_INTEGRITY_LEVEL
+      WHEN NULL THEN 0 WHEN 'Low' THEN 2 WHEN 'Medium'THEN 3 WHEN 'High' THEN 4 WHEN
+      'System' THEN 5 ELSE 99 END)::NUMBER
+    actor.process.parent_process.parent_process.created_time: (date_part('epoch_milliseconds',
+      (INITIATING_PROCESS_PARENT_CREATION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.parent_process.created_time_dt: (INITIATING_PROCESS_PARENT_CREATION_TIME)::TIMESTAMP_LTZ
+    actor.process.parent_process.parent_process.file.name: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    actor.process.parent_process.parent_process.uid: (INITIATING_PROCESS_PARENT_ID)::VARCHAR
+    actor.process.parent_process.user.account.name: (INITIATING_PROCESS_ACCOUNT_NAME)::VARCHAR
+    actor.process.parent_process.user.account.uid: (INITIATING_PROCESS_ACCOUNT_SID)::VARCHAR
+    actor.process.parent_process.user.domain: (INITIATING_PROCESS_ACCOUNT_DOMAIN)::VARCHAR
+    actor.process.uid: (PROCESS_ID)::VARCHAR
+    actor.process.user.account.name: (ACCOUNT_NAME)::VARCHAR
+    actor.process.user.account.uid: (ACCOUNT_SID)::VARCHAR
+    actor.process.user.domain: (ACCOUNT_DOMAIN)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('kernel_activity')::VARCHAR
+    class_uid: ('1003')::NUMBER
+    cloud.org.uid: (TENANT_ID)::VARCHAR
+    count: NULL::NUMBER
+    device.container.uid: (APP_GUARD_CONTAINER_ID)::VARCHAR
+    device.name: (DEVICE_NAME)::VARCHAR
+    device.uid: (DEVICE_ID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    kernel.name: (FILE_NAME)::VARCHAR
+    kernel.path: (FOLDER_PATH)::VARCHAR
+    kernel.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Shared Mutex'
+      WHEN 2 THEN 'System Call' WHEN 99 THEN 'Other' END)::VARCHAR
+    kernel.type_id: (0)::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('mdatp-device-process-events')::VARCHAR
+    metadata.product.vendor_name: ('mdatp')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.container'''
+      type: '''Container'''
+      type_id: 27
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (TIME)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100301)::NUMBER) WHEN 100300 THEN ''Kernel Activity: Unknown''
+      WHEN 100301 THEN ''Kernel Activity: Create'' WHEN 100302 THEN ''Kernel Activity:
+      Read'' WHEN 100303 THEN ''Kernel Activity: Delete'' WHEN 100304 THEN ''Kernel
+      Activity: Invoke'' WHEN 100399 THEN ''Kernel Activity: Other'' END)::VARCHAR'
+    type_uid: (100301)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: ACTION_TYPE = 'ProcessCreated'

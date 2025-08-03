@@ -1,0 +1,116 @@
+type: mapping
+id: alibaba_bastion_3002_authentication_1.1.0
+version: '10'
+name: Alibaba Bastion to OCSF class Authentication
+data-types:
+- alibaba-bastion
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE = 'login.CSLogin' THEN 1 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE = 'login.CSLogin' THEN 1 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN 2 THEN 'Logoff' WHEN 3 THEN 'Authentication
+      Ticket' WHEN 4 THEN 'Service Ticket Request' WHEN 5 THEN 'Service Ticket Renew'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.session.uid: (SESSION_ID)::VARCHAR
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud.provider: ('alibaba')::VARCHAR
+    cloud.region: (REGION)::VARCHAR
+    count: NULL::NUMBER
+    device.instance_uid: (INSTANCE_ID)::VARCHAR
+    dst_endpoint.ip: (RESOURCE_ADDRESS)::VARCHAR
+    dst_endpoint.name: (RESOURCE_NAME)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process.created_time: (date_part('epoch_milliseconds', (TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    logon_process.created_time_dt: (TIMESTAMP)::TIMESTAMP_LTZ
+    logon_type: (CASE ((3)::NUMBER) WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive'
+      WHEN 11 THEN 'Cached Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN
+      13 THEN 'Cached Unlock' WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN
+      4 THEN 'Batch' WHEN 5 THEN 'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network
+      Cleartext' WHEN 9 THEN 'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
+    logon_type_id: (3)::NUMBER
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('alibaba-bastion')::VARCHAR
+    metadata.product.vendor_name: ('alibaba')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RESOURCE_ADDRESS)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (USER_CLIENT_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER_NAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (USER_CLIENT_IP)::VARCHAR
+    src_endpoint.name: (SOURCE)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (TIMESTAMP)::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RESULT = 'null' THEN 0 WHEN RESULT = 'success' THEN
+      1 WHEN RESULT = 'fail' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RESULT = 'null' THEN 0 WHEN RESULT = 'success' THEN 1 WHEN
+      RESULT = 'fail' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE = ''login.CSLogin'' THEN 300201 ELSE
+      300299 END)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown'' WHEN 300201
+      THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication: Logoff'' WHEN
+      300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204 THEN ''Authentication:
+      Service Ticket Request'' WHEN 300205 THEN ''Authentication: Service Ticket Renew''
+      WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE = 'login.CSLogin' THEN 300201 ELSE 300299 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.uid: (OWNER_ID)::VARCHAR
+    user.name: (USER_NAME)::VARCHAR
+    user.uid: (USER_ID)::VARCHAR
+  predicate: EVENT_TYPE = 'login.CSLogin'

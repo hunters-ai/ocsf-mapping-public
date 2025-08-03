@@ -1,0 +1,262 @@
+type: mapping
+id: microsoft_365_defender_advanced_hunting_4001_network_activity_1.1.0
+version: '4'
+name: Microsoft 365 Defender Advanced Hunting to OCSF class Network Activity
+data-types:
+- microsoft-365-defender-advanced-hunting
+mapping:
+  fields:
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (CASE PROPERTIES:ActionType WHEN NULL THEN 0 WHEN 'ConnectionSuccess'
+      THEN 1 WHEN 'ConnectionFailed' THEN 4 WHEN 'InboundConnectionAccepted' THEN
+      1 WHEN 'ConnectionAcknowledged' THEN 1 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE PROPERTIES:ActionType WHEN NULL THEN 0 WHEN 'ConnectionSuccess'
+      THEN 1 WHEN 'ConnectionFailed' THEN 4 WHEN 'InboundConnectionAccepted' THEN
+      1 WHEN 'ConnectionAcknowledged' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Open' WHEN 2 THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail'
+      WHEN 5 THEN 'Refuse' WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (PROPERTIES:InitiatingProcessCommandLine)::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (PROPERTIES:InitiatingProcessCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (PROPERTIES:InitiatingProcessCreationTime)::TIMESTAMP_LTZ
+    actor.process.file.company_name: (PROPERTIES:InitiatingProcessVersionInfoCompanyName)::VARCHAR
+    actor.process.file.desc: (PROPERTIES:InitiatingProcessVersionInfoFileDescription)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm_id',
+      CASE WHEN PROPERTIES:InitiatingProcessSHA256 IS NOT NULL THEN 3 WHEN PROPERTIES:InitiatingProcessSHA1
+      IS NOT NULL THEN 2 WHEN PROPERTIES:InitiatingProcessMD5 IS NOT NULL THEN 1 END::NUMBER,
+      'algorithm', CASE WHEN PROPERTIES:InitiatingProcessSHA256 IS NOT NULL THEN 'SHA-256'
+      WHEN PROPERTIES:InitiatingProcessSHA1 IS NOT NULL THEN 'SHA-1' WHEN PROPERTIES:InitiatingProcessMD5
+      IS NOT NULL THEN 'MD5' END::VARCHAR, 'value', COALESCE( PROPERTIES:InitiatingProcessSHA256,
+      PROPERTIES:InitiatingProcessSHA1, PROPERTIES:InitiatingProcessMD5)::VARCHAR)))::ARRAY
+    actor.process.file.name: (PROPERTIES:InitiatingProcessFileName)::VARCHAR
+    actor.process.file.path: (PROPERTIES:InitiatingProcessFolderPath)::VARCHAR
+    actor.process.file.product.name: (PROPERTIES:InitiatingProcessVersionInfoProductName)::VARCHAR
+    actor.process.file.product.version: (PROPERTIES:InitiatingProcessVersionInfoProductVersion)::VARCHAR
+    actor.process.file.size: (PROPERTIES:InitiatingProcessFileSize)::NUMBER
+    actor.process.integrity: (CASE ((CASE WHEN PROPERTIES:InitiatingProcessIntegrityLevel
+      IS NULL THEN 0 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'Untrusted'
+      THEN 1 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'Low' THEN 2 WHEN PROPERTIES:InitiatingProcessIntegrityLevel
+      = 'Medium' THEN 3 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'High' THEN
+      4 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'System' THEN 5 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted' WHEN 2 THEN 'Low'
+      WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System' WHEN 6 THEN 'Protected'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.integrity_id: (CASE WHEN PROPERTIES:InitiatingProcessIntegrityLevel
+      IS NULL THEN 0 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'Untrusted'
+      THEN 1 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'Low' THEN 2 WHEN PROPERTIES:InitiatingProcessIntegrityLevel
+      = 'Medium' THEN 3 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'High' THEN
+      4 WHEN PROPERTIES:InitiatingProcessIntegrityLevel = 'System' THEN 5 ELSE 99
+      END)::NUMBER
+    actor.process.parent_process.created_time: (date_part('epoch_milliseconds', (PROPERTIES:InitiatingProcessParentCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.created_time_dt: (PROPERTIES:InitiatingProcessParentCreationTime)::TIMESTAMP_LTZ
+    actor.process.parent_process.file.name: (PROPERTIES:InitiatingProcessParentFileName)::VARCHAR
+    actor.process.parent_process.pid: (PROPERTIES:InitiatingProcessParentId)::NUMBER
+    actor.process.pid: (PROPERTIES:InitiatingProcessId)::NUMBER
+    actor.process.user.account.uid: (COALESCE(PROPERTIES:InitiatingProcessAccountObjectId,
+      PROPERTIES:InitiatingProcessAccountSid))::VARCHAR
+    actor.process.user.domain: (PROPERTIES:InitiatingProcessAccountDomain)::VARCHAR
+    actor.process.user.email_addr: (PROPERTIES:InitiatingProcessAccountUpn)::VARCHAR
+    actor.process.user.name: (PROPERTIES:InitiatingProcessAccountName)::VARCHAR
+    api.operation: (PROPERTIES:AdditionalFields:method)::VARCHAR
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud.org.uid: (TENANT_ID)::VARCHAR
+    cloud.provider: ('Microsoft Defender')::VARCHAR
+    connection_info.direction: (CASE ((CASE WHEN PROPERTIES:AdditionalFields:direction
+      IS NULL THEN 0 WHEN PROPERTIES:AdditionalFields:direction = 'In' THEN 1 WHEN
+      PROPERTIES:AdditionalFields:direction = 'Out' THEN 2 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.direction_id: (CASE WHEN PROPERTIES:AdditionalFields:direction
+      IS NULL THEN 0 WHEN PROPERTIES:AdditionalFields:direction = 'In' THEN 1 WHEN
+      PROPERTIES:AdditionalFields:direction = 'Out' THEN 2 ELSE 99 END)::NUMBER
+    connection_info.protocol_name: (LOWER(PROPERTIES:Protocol))::VARCHAR
+    connection_info.protocol_num: (CASE WHEN LOWER(PROPERTIES:Protocol) IS NULL THEN
+      0 WHEN LOWER(PROPERTIES:Protocol) = 'icmp' THEN 1 WHEN LOWER(PROPERTIES:Protocol)
+      ilike '%tcp%' THEN 6 WHEN LOWER(PROPERTIES:Protocol) = 'udp' THEN 17 ELSE -1
+      END)::NUMBER
+    connection_info.tcp_flags: (PROPERTIES:AdditionalFields:"Tcp Flags")::NUMBER
+    count: NULL::NUMBER
+    device.container.uid: (PROPERTIES:AppGuardContainerId)::VARCHAR
+    device.name: (PROPERTIES:DeviceName)::VARCHAR
+    device.uid: (PROPERTIES:DeviceId)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.domain: (PARSE_URL(PROPERTIES:RemoteUrl, 1):host)::VARCHAR
+    dst_endpoint.hostname: (PROPERTIES:AdditionalFields:hostname)::VARCHAR
+    dst_endpoint.ip: (PROPERTIES:RemoteIP)::VARCHAR
+    dst_endpoint.mac: (PROPERTIES:AdditionalFields:"Destination Mac")::VARCHAR
+    dst_endpoint.port: (PROPERTIES:RemotePort)::NUMBER
+    duration: ((PROPERTIES:AdditionalFields:duration::FLOAT) * 1000)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (PROPERTIES:ActionType)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-365-defender-advanced-hunting')::VARCHAR
+    metadata.product.vendor_name: ('microsoft-defender')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessFileName)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessParentFileName)::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessAccountUpn)::VARCHAR
+    - name: '''actor.process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessAccountName)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.container'''
+      type: '''Container'''
+      type_id: 27
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PROPERTIES:AdditionalFields:hostname)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (PROPERTIES:RemoteIP)::VARCHAR
+    - name: '''dst_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (PROPERTIES:AdditionalFields:"Destination Mac")::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (PROPERTIES:LocalIP)::VARCHAR
+    - name: '''src_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (PROPERTIES:AdditionalFields:"Source Mac")::VARCHAR
+    - name: '''url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PARSE_URL(PROPERTIES:RemoteUrl,1):host)::VARCHAR
+    - name: '''url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (PROPERTIES:RemoteUrl)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (PROPERTIES:LocalIP)::VARCHAR
+    src_endpoint.mac: (PROPERTIES:AdditionalFields:"Source Mac")::VARCHAR
+    src_endpoint.port: (PROPERTIES:LocalPort)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE PROPERTIES:AdditionalFields:success WHEN NULL THEN 0 WHEN
+      'true' THEN 1 WHEN 'false' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: (PROPERTIES:AdditionalFields:status_code)::VARCHAR
+    status_detail: (PROPERTIES:AdditionalFields:status_msg)::VARCHAR
+    status_id: (CASE PROPERTIES:AdditionalFields:success WHEN NULL THEN 0 WHEN 'true'
+      THEN 1 WHEN 'false' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls.cipher: (PROPERTIES:AdditionalFields:cipher)::VARCHAR
+    traffic.bytes: (PROPERTIES:AdditionalFields:orig_bytes + PROPERTIES:AdditionalFields:resp_bytes)::NUMBER
+    traffic.bytes_in: (PROPERTIES:AdditionalFields:resp_bytes)::NUMBER
+    traffic.bytes_out: (PROPERTIES:AdditionalFields:orig_bytes)::NUMBER
+    traffic.packets: (PROPERTIES:AdditionalFields:orig_pkts + PROPERTIES:AdditionalFields:resp_pkts)::NUMBER
+    traffic.packets_in: (PROPERTIES:AdditionalFields:resp_pkts)::NUMBER
+    traffic.packets_out: (PROPERTIES:AdditionalFields:orig_pkts)::NUMBER
+    type_name: '(CASE ((400100 + (CASE PROPERTIES:ActionType WHEN NULL THEN 0 WHEN
+      ''ConnectionSuccess'' THEN 1 WHEN ''ConnectionFailed'' THEN 4 WHEN ''InboundConnectionAccepted''
+      THEN 1 WHEN ''ConnectionAcknowledged'' THEN 1 ELSE 99 END))::NUMBER) WHEN 400100
+      THEN ''Network Activity: Unknown'' WHEN 400101 THEN ''Network Activity: Open''
+      WHEN 400102 THEN ''Network Activity: Close'' WHEN 400103 THEN ''Network Activity:
+      Reset'' WHEN 400104 THEN ''Network Activity: Fail'' WHEN 400105 THEN ''Network
+      Activity: Refuse'' WHEN 400106 THEN ''Network Activity: Traffic'' WHEN 400199
+      THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (400100 + (CASE PROPERTIES:ActionType WHEN NULL THEN 0 WHEN 'ConnectionSuccess'
+      THEN 1 WHEN 'ConnectionFailed' THEN 4 WHEN 'InboundConnectionAccepted' THEN
+      1 WHEN 'ConnectionAcknowledged' THEN 1 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    url.hostname: (PARSE_URL(PROPERTIES:RemoteUrl,1):host)::VARCHAR
+    url.path: (PARSE_URL(PROPERTIES:RemoteUrl,1):path)::VARCHAR
+    url.port: (PARSE_URL(PROPERTIES:RemoteUrl,1):port)::NUMBER
+    url.query_string: (PARSE_URL(PROPERTIES:RemoteUrl,1):query)::VARCHAR
+    url.scheme: (PARSE_URL(PROPERTIES:RemoteUrl,1):scheme)::VARCHAR
+    url.url_string: (PROPERTIES:RemoteUrl)::VARCHAR
+  predicate: CATEGORY = 'AdvancedHunting-DeviceNetworkEvents'

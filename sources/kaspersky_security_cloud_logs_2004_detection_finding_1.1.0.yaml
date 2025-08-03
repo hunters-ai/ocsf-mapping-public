@@ -1,0 +1,130 @@
+type: mapping
+id: kaspersky_security_cloud_logs_2004_detection_finding_1.1.0
+version: '1'
+name: Kaspersky Security Cloud Logs to OCSF class Detection Finding
+data-types:
+- kaspersky-security-cloud-logs
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN
+      2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.path: (APPLICATION_PATH)::VARCHAR
+    actor.process.name: (PROCESS_NAME)::VARCHAR
+    actor.process.pid: (PROCESS_ID)::NUMBER
+    actor.user.account.name: (USER_ACCOUNT)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (2::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud: NULL::VARIANT
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device.domain: (KSC_FQDN)::VARCHAR
+    device.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('name', GROUP_NAME)))::ARRAY
+    device.hostname: (HOST_NAME)::VARCHAR
+    device.ip: (HOST_IP)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: NULL::ARRAY
+    finding_info.desc: (EVENT_TASK_DISPLAY_NAME)::VARCHAR
+    finding_info.title: (COALESCE(TASK_DISPLAY_NAME, TASK_TYPE))::VARCHAR
+    finding_info.uid: (RUNTIME_TASK_ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: (EVENT_DESCRIPTION)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('kaspersky-security-cloud-logs')::VARCHAR
+    metadata.product.vendor_name: ('kaspersky')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (PROCESS_NAME)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST_NAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (HOST_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: NULL::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE = 'Starting'
+      THEN 1 WHEN TASK_STATE = 'Started' THEN 2 WHEN TASK_STATE = 'Stopping' THEN
+      3 WHEN TASK_STATE = 'Stopped' THEN 4 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'New' WHEN 2 THEN 'In Progress' WHEN 3 THEN 'Suppressed' WHEN 4
+      THEN 'Resolved' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (TASK_STATE)::VARCHAR
+    status_id: (CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE = 'Starting' THEN
+      1 WHEN TASK_STATE = 'Started' THEN 2 WHEN TASK_STATE = 'Stopping' THEN 3 WHEN
+      TASK_STATE = 'Stopped' THEN 4 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (200400::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200400)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY
+  predicate: TASK_DISPLAY_NAME IN ('Protection', 'File_Threat_Protection', 'Behavior_Detection')

@@ -1,0 +1,106 @@
+type: mapping
+id: sailpoint_identitynow_audit_reports_events_3005_user_access_1.1.0
+version: '8'
+name: Sailpoint Identitynow Audit Reports Events to OCSF class User Access
+data-types:
+- sailpoint-identitynow-audit-reports-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%grant%' OR ACTION
+      IN ('RoleAdd', 'AccessRequestProcessed') THEN 1 WHEN ACTION ILIKE '%revoke%'
+      OR ACTION IN ('RoleRemove', 'AccessRequestCancelled', 'AccessRequestRejected')
+      THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%grant%'
+      OR ACTION IN ('RoleAdd', 'AccessRequestProcessed') THEN 1 WHEN ACTION ILIKE
+      '%revoke%' OR ACTION IN ('RoleRemove', 'AccessRequestCancelled', 'AccessRequestRejected')
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Assign Privileges'
+      WHEN 2 THEN 'Revoke Privileges' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api.operation: (OPERATION)::VARCHAR
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('user_access')::VARCHAR
+    class_uid: ('3005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (RAW:ipAddress)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: (RAW:attributes:info)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('sailpoint-identitynow-audit-reports-events')::VARCHAR
+    metadata.product.vendor_name: ('sailpoint')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:ipAddress)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(TARGET_NAME RLIKE '[0-9]+', NULL, TARGET_NAME))::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(ACTOR_NAME RLIKE '[0-9]+', NULL, ACTOR_NAME))::VARCHAR
+    privileges: (RAW:objects)::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'PASSED' THEN 1
+      WHEN STATUS = 'FAILED' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (COALESCE(NAME, TECHNICAL_NAME))::VARCHAR
+    status_id: (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'PASSED' THEN 1 WHEN
+      STATUS = 'FAILED' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', created::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (created)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN ACTION IS NULL THEN 300500 WHEN ACTION ILIKE ''%grant%''
+      OR ACTION IN (''RoleAdd'', ''AccessRequestProcessed'') THEN 300501 WHEN ACTION
+      ILIKE ''%revoke%'' OR ACTION IN (''RoleRemove'', ''AccessRequestCancelled'',
+      ''AccessRequestRejected'') THEN 300502 ELSE 300599 END)::NUMBER) WHEN 300500
+      THEN ''User Access Management: Unknown'' WHEN 300501 THEN ''User Access Management:
+      Assign Privileges'' WHEN 300502 THEN ''User Access Management: Revoke Privileges''
+      WHEN 300599 THEN ''User Access Management: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN ACTION IS NULL THEN 300500 WHEN ACTION ILIKE '%grant%' OR
+      ACTION IN ('RoleAdd', 'AccessRequestProcessed') THEN 300501 WHEN ACTION ILIKE
+      '%revoke%' OR ACTION IN ('RoleRemove', 'AccessRequestCancelled', 'AccessRequestRejected')
+      THEN 300502 ELSE 300599 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.name: (ATTRIBUTE_ACCOUNT_NAME)::VARCHAR
+    user.account.uid: (ATTRIBUTE_ACCOUNT_UUID)::VARCHAR
+    user.email_addr: (IFF(TARGET_NAME RLIKE '[0-9]+', NULL, TARGET_NAME))::VARCHAR
+    user.name: (IFF(ACTOR_NAME RLIKE '[0-9]+', NULL, ACTOR_NAME))::VARCHAR
+    user.org.name: (ORG)::VARCHAR
+  predicate: EVENT_TYPE IN ('USER_MANAGEMENT', 'ACCESS_REQUEST', 'ACCESS_ITEM')

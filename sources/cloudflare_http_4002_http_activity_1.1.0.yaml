@@ -1,0 +1,150 @@
+type: mapping
+id: cloudflare_http_4002_http_activity_1.1.0
+version: '16'
+name: Cloudflare Http to OCSF class Http Activity
+data-types:
+- cloudflare-http
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN WAF_ACTION = 'unknown' THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    action_id: (CASE WHEN WAF_ACTION = 'unknown' THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (DECODE(CLIENT_REQUEST_METHOD, 'CONNECT', 1, 'DELETE', 2, 'GET',
+      3, 'HEAD', 4, 'OPTIONS', 5, 'POST', 6, 'PUT', 7, 'TRACE', 8,0))::NUMBER
+    activity_name: (CASE ((DECODE(CLIENT_REQUEST_METHOD, 'CONNECT', 1, 'DELETE', 2,
+      'GET', 3, 'HEAD', 4, 'OPTIONS', 5, 'POST', 6, 'PUT', 7, 'TRACE', 8,0))::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Connect' WHEN 2 THEN 'Delete' WHEN 3 THEN
+      'Get' WHEN 4 THEN 'Head' WHEN 5 THEN 'Options' WHEN 6 THEN 'Post' WHEN 7 THEN
+      'Put' WHEN 8 THEN 'Trace' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.boundary: (CASE ((5)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Localhost' WHEN 10 THEN 'Gateway VPC' WHEN 11 THEN 'Internet Gateway' WHEN
+      2 THEN 'Internal' WHEN 3 THEN 'External' WHEN 4 THEN 'Same VPC' WHEN 5 THEN
+      'Internet/VPC Gateway' WHEN 6 THEN 'Virtual Private Gateway' WHEN 7 THEN 'Intra-region
+      VPC' WHEN 8 THEN 'Inter-region VPC' WHEN 9 THEN 'Local Gateway' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    connection_info.boundary_id: (5)::NUMBER
+    connection_info.direction: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.direction_id: (1)::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(ORIGIN_IP, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(ORIGIN_IP, 'INET', 1):family)::NUMBER
+    connection_info.uid: (HASH)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.hostname: (CLIENT_REQUEST_HOST)::VARCHAR
+    dst_endpoint.ip: (COALESCE(ORIGIN_IP, EDGE_SERVER_IP))::VARCHAR
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (EDGE_END_TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (EDGE_END_TIMESTAMP)::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule.name: (parse_json(FIREWALL_MATCHES_RULE_I_DS)[0])::VARCHAR
+    http_cookies: NULL::VARIANT
+    http_request.http_method: (CLIENT_REQUEST_METHOD)::VARCHAR
+    http_request.referrer: (CLIENT_REQUEST_REFERER)::VARCHAR
+    http_request.url.hostname: (CLIENT_REQUEST_HOST)::VARCHAR
+    http_request.url.path: (CLIENT_REQUEST_PATH)::VARCHAR
+    http_request.url.port: (CLIENT_SRC_PORT)::NUMBER
+    http_request.user_agent: (CLIENT_REQUEST_USER_AGENT)::VARCHAR
+    http_response.length: (COALESCE(EDGE_RESPONSE_BYTES, ORIGIN_RESPONSE_BYTES))::NUMBER
+    http_response.status: (COALESCE(EDGE_RESPONSE_STATUS, ORIGIN_RESPONSE_STATUS))::VARCHAR
+    http_status: NULL::NUMBER
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cloudflare-http')::VARCHAR
+    metadata.product.vendor_name: ('cloudflare')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (CLIENT_REQUEST_HOST)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(ORIGIN_IP, EDGE_SERVER_IP))::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (CLIENT_REQUEST_HOST)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    src_endpoint.ip: (CLIENT_IP)::VARCHAR
+    src_endpoint.location.country: (CLIENT_COUNTRY)::VARCHAR
+    src_endpoint.port: (CLIENT_SRC_PORT)::NUMBER
+    src_endpoint.type: (CASE ((CASE WHEN CLIENT_DEVICE_TYPE = 'desktop' THEN 2 WHEN
+      CLIENT_DEVICE_TYPE = 'mobile' THEN 5 WHEN CLIENT_DEVICE_TYPE = 'tablet' THEN
+      4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN 10 THEN
+      'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop' WHEN
+      4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN 'IOT'
+      WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    src_endpoint.type_id: (CASE WHEN CLIENT_DEVICE_TYPE = 'desktop' THEN 2 WHEN CLIENT_DEVICE_TYPE
+      = 'mobile' THEN 5 WHEN CLIENT_DEVICE_TYPE = 'tablet' THEN 4 ELSE 99 END)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (EDGE_START_TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (EDGE_START_TIMESTAMP)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: (CACHE_RESPONSE_STATUS)::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', edge_start_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (edge_start_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((DECODE(CLIENT_REQUEST_METHOD, ''CONNECT'', 400201, ''DELETE'',
+      400202, ''GET'', 400203, ''HEAD'', 400204, ''OPTIONS'', 400205, ''POST'', 400206,
+      ''PUT'', 400207, ''TRACE'', 400208,400200))::NUMBER) WHEN 400200 THEN ''HTTP
+      Activity: Unknown'' WHEN 400201 THEN ''HTTP Activity: Connect'' WHEN 400202
+      THEN ''HTTP Activity: Delete'' WHEN 400203 THEN ''HTTP Activity: Get'' WHEN
+      400204 THEN ''HTTP Activity: Head'' WHEN 400205 THEN ''HTTP Activity: Options''
+      WHEN 400206 THEN ''HTTP Activity: Post'' WHEN 400207 THEN ''HTTP Activity: Put''
+      WHEN 400208 THEN ''HTTP Activity: Trace'' WHEN 400299 THEN ''HTTP Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (DECODE(CLIENT_REQUEST_METHOD, 'CONNECT', 400201, 'DELETE', 400202,
+      'GET', 400203, 'HEAD', 400204, 'OPTIONS', 400205, 'POST', 400206, 'PUT', 400207,
+      'TRACE', 400208,400200))::NUMBER
+    unmapped: NULL::VARIANT

@@ -1,0 +1,152 @@
+type: mapping
+id: akamai_security_events_4002_http_activity_1.1.0
+version: '1'
+name: Akamai Security Events to OCSF class Http Activity
+data-types:
+- akamai-security-events
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN HTTPMESSAGE_METHOD = 'CONNECT' THEN 1 WHEN HTTPMESSAGE_METHOD
+      = 'DELETE' THEN 2 WHEN HTTPMESSAGE_METHOD = 'GET' THEN 3 WHEN HTTPMESSAGE_METHOD
+      = 'HEAD' THEN 4 WHEN HTTPMESSAGE_METHOD = 'OPTIONS' THEN 5 WHEN HTTPMESSAGE_METHOD
+      = 'POST' THEN 6 WHEN HTTPMESSAGE_METHOD = 'PUT' THEN 7 WHEN HTTPMESSAGE_METHOD
+      = 'TRACE' THEN 8 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN HTTPMESSAGE_METHOD = 'CONNECT' THEN 1 WHEN HTTPMESSAGE_METHOD
+      = 'DELETE' THEN 2 WHEN HTTPMESSAGE_METHOD = 'GET' THEN 3 WHEN HTTPMESSAGE_METHOD
+      = 'HEAD' THEN 4 WHEN HTTPMESSAGE_METHOD = 'OPTIONS' THEN 5 WHEN HTTPMESSAGE_METHOD
+      = 'POST' THEN 6 WHEN HTTPMESSAGE_METHOD = 'PUT' THEN 7 WHEN HTTPMESSAGE_METHOD
+      = 'TRACE' THEN 8 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Connect'
+      WHEN 2 THEN 'Delete' WHEN 3 THEN 'Get' WHEN 4 THEN 'Head' WHEN 5 THEN 'Options'
+      WHEN 6 THEN 'Post' WHEN 7 THEN 'Put' WHEN 8 THEN 'Trace' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.authorizations: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('policy', OBJECT_CONSTRUCT_KEEP_NULL('uid',
+      ATTACKDATA_POLICYID))))::ARRAY
+    api.service.uid: (ATTACKDATA_APIID)::VARCHAR
+    api.version: (VERSION)::VARCHAR
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_ver: (CASE ((PARSE_IP(ATTACKDATA_CLIENTIP, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(ATTACKDATA_CLIENTIP, 'INET', 1):family)::NUMBER
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.hostname: (HTTPMESSAGE_HOST)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    http_cookies: NULL::ARRAY
+    http_request.http_method: (CASE WHEN HTTPMESSAGE_METHOD = 'CONNECT' THEN 'CONNECT'
+      WHEN HTTPMESSAGE_METHOD = 'DELETE' THEN 'DELETE' WHEN HTTPMESSAGE_METHOD = 'GET'
+      THEN 'GET' WHEN HTTPMESSAGE_METHOD = 'HEAD' THEN 'HEAD' WHEN HTTPMESSAGE_METHOD
+      = 'OPTIONS' THEN 'OPTIONS' WHEN HTTPMESSAGE_METHOD = 'POST' THEN 'POST' WHEN
+      HTTPMESSAGE_METHOD = 'PUT' THEN 'PUT' WHEN HTTPMESSAGE_METHOD = 'TRACE' THEN
+      'TRACE' ELSE NULL END)::VARCHAR
+    http_request.uid: (HTTPMESSAGE_REQUESTID)::VARCHAR
+    http_request.url.hostname: (HTTPMESSAGE_HOST)::VARCHAR
+    http_request.url.path: (HTTPMESSAGE_PATH)::VARCHAR
+    http_request.url.port: (HTTPMESSAGE_PORT)::NUMBER
+    http_request.url.query_string: (HTTPMESSAGE_QUERY)::VARCHAR
+    http_response.code: (HTTPMESSAGE_STATUS)::NUMBER
+    http_response.length: (HTTPMESSAGE_BYTES)::NUMBER
+    http_status: NULL::NUMBER
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (ATTACKDATA_RULEMESSAGES)::VARCHAR
+    metadata.event_code: (type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('akamai-security-events')::VARCHAR
+    metadata.product.vendor_name: ('betaintegrations')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HTTPMESSAGE_HOST)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HTTPMESSAGE_HOST)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (ATTACKDATA_CLIENTIP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (ATTACKDATA_CLIENTIP)::VARCHAR
+    src_endpoint.location.city: (GEO_CITY)::VARCHAR
+    src_endpoint.location.continent: (GEO_CONTINENT)::VARCHAR
+    src_endpoint.location.country: (GEO_COUNTRY)::VARCHAR
+    src_endpoint.location.region: (GEO_REGIONCODE)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN HTTPMESSAGE_STATUS ILIKE '2%' OR HTTPMESSAGE_STATUS
+      ILIKE '3%' THEN 1 WHEN HTTPMESSAGE_STATUS ILIKE '4%' OR HTTPMESSAGE_STATUS ILIKE
+      '5%' THEN 2 WHEN HTTPMESSAGE_STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN HTTPMESSAGE_STATUS ILIKE '2%' OR HTTPMESSAGE_STATUS ILIKE
+      '3%' THEN 1 WHEN HTTPMESSAGE_STATUS ILIKE '4%' OR HTTPMESSAGE_STATUS ILIKE '5%'
+      THEN 2 WHEN HTTPMESSAGE_STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', httpmessage_start::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (httpmessage_start)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls.version: (HTTPMESSAGE_TLS)::VARCHAR
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((CASE WHEN HTTPMESSAGE_METHOD = ''CONNECT'' THEN 400201 WHEN
+      HTTPMESSAGE_METHOD = ''DELETE'' THEN 400202 WHEN HTTPMESSAGE_METHOD = ''GET''
+      THEN 400203 WHEN HTTPMESSAGE_METHOD = ''HEAD'' THEN 400204 WHEN HTTPMESSAGE_METHOD
+      = ''OPTIONS'' THEN 400205 WHEN HTTPMESSAGE_METHOD = ''POST'' THEN 400206 WHEN
+      HTTPMESSAGE_METHOD = ''PUT'' THEN 400207 WHEN HTTPMESSAGE_METHOD = ''TRACE''
+      THEN 400208 ELSE 400299 END)::NUMBER) WHEN 400200 THEN ''HTTP Activity: Unknown''
+      WHEN 400201 THEN ''HTTP Activity: Connect'' WHEN 400202 THEN ''HTTP Activity:
+      Delete'' WHEN 400203 THEN ''HTTP Activity: Get'' WHEN 400204 THEN ''HTTP Activity:
+      Head'' WHEN 400205 THEN ''HTTP Activity: Options'' WHEN 400206 THEN ''HTTP Activity:
+      Post'' WHEN 400207 THEN ''HTTP Activity: Put'' WHEN 400208 THEN ''HTTP Activity:
+      Trace'' WHEN 400299 THEN ''HTTP Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN HTTPMESSAGE_METHOD = 'CONNECT' THEN 400201 WHEN HTTPMESSAGE_METHOD
+      = 'DELETE' THEN 400202 WHEN HTTPMESSAGE_METHOD = 'GET' THEN 400203 WHEN HTTPMESSAGE_METHOD
+      = 'HEAD' THEN 400204 WHEN HTTPMESSAGE_METHOD = 'OPTIONS' THEN 400205 WHEN HTTPMESSAGE_METHOD
+      = 'POST' THEN 400206 WHEN HTTPMESSAGE_METHOD = 'PUT' THEN 400207 WHEN HTTPMESSAGE_METHOD
+      = 'TRACE' THEN 400208 ELSE 400299 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: HTTPMESSAGE_METHOD IS NOT NULL

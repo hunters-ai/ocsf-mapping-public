@@ -1,0 +1,117 @@
+type: mapping
+id: ping_federate_audit_logs_3002_authentication_1.1.0
+version: '10'
+name: Ping Federate Audit Logs to OCSF class Authentication
+data-types:
+- ping-federate-audit-logs
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: (CASE ((CASE WHEN PROTOCOL='OIDC' THEN 4 WHEN PROTOCOL='SAML20'
+      THEN 5 WHEN PROTOCOL='OAuth20' THEN 6 WHEN PROTOCOL IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'NTLM' WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos'
+      WHEN 3 THEN 'Digest' WHEN 4 THEN 'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH
+      2.0' WHEN 7 THEN 'PAP' WHEN 8 THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    auth_protocol_id: (CASE WHEN PROTOCOL='OIDC' THEN 4 WHEN PROTOCOL='SAML20' THEN
+      5 WHEN PROTOCOL='OAuth20' THEN 6 WHEN PROTOCOL IS NULL THEN 0 ELSE 99 END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    dst_endpoint: NULL::VARIANT
+    duration: (RESPONSE_TIME)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.url.url_string: (APP)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (DESCRIPTION)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('ping-federate-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('ping-identity')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (APP)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (SUBJECT)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.name: (CASE WHEN ROLE='AS' THEN 'Authorization Server' WHEN ROLE='SP'
+      THEN 'Service Provider' WHEN ROLE='IdP' THEN 'Identity Provider' END)::VARCHAR
+    service.uid: (ADAPTER_ID)::VARCHAR
+    session: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.hostname: (HOST)::VARCHAR
+    src_endpoint.ip: (IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN STATUS='success' THEN 1 WHEN STATUS='failure' THEN 2
+      WHEN STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN STATUS='success' THEN 1 WHEN STATUS='failure' THEN 2 WHEN
+      STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', transaction_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (transaction_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.name: (SUBJECT)::VARCHAR

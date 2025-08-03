@@ -1,0 +1,179 @@
+type: mapping
+id: azure_signin_3002_authentication_1.1.0
+version: '15'
+name: Azure Signin to OCSF class Authentication
+data-types:
+- azure-signin
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api.version: (OPERATION_VERSION)::VARCHAR
+    auth_protocol: (CASE ((CASE WHEN PROPERTIES:authenticationProtocol='NTLM' THEN
+      1 WHEN PROPERTIES:authenticationProtocol='Kerberos' THEN 2 WHEN PROPERTIES:authenticationProtocol='Digest'
+      THEN 3 WHEN PROPERTIES:authenticationProtocol='OpenID' THEN 4 WHEN PROPERTIES:authenticationProtocol='SAML'
+      THEN 5 WHEN PROPERTIES:authenticationProtocol='OAUTH 2.0' THEN 6 WHEN PROPERTIES:authenticationProtocol='PAP'
+      THEN 7 WHEN PROPERTIES:authenticationProtocol='CHAP' THEN 8 WHEN PROPERTIES:authenticationProtocol='EAP'
+      THEN 9 WHEN PROPERTIES:authenticationProtocol='RADIUS' THEN 10 WHEN PROPERTIES:authenticationProtocol
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'NTLM'
+      WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos' WHEN 3 THEN 'Digest' WHEN 4 THEN
+      'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH 2.0' WHEN 7 THEN 'PAP' WHEN 8
+      THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other' END)::VARCHAR
+    auth_protocol_id: (CASE WHEN PROPERTIES:authenticationProtocol='NTLM' THEN 1 WHEN
+      PROPERTIES:authenticationProtocol='Kerberos' THEN 2 WHEN PROPERTIES:authenticationProtocol='Digest'
+      THEN 3 WHEN PROPERTIES:authenticationProtocol='OpenID' THEN 4 WHEN PROPERTIES:authenticationProtocol='SAML'
+      THEN 5 WHEN PROPERTIES:authenticationProtocol='OAUTH 2.0' THEN 6 WHEN PROPERTIES:authenticationProtocol='PAP'
+      THEN 7 WHEN PROPERTIES:authenticationProtocol='CHAP' THEN 8 WHEN PROPERTIES:authenticationProtocol='EAP'
+      THEN 9 WHEN PROPERTIES:authenticationProtocol='RADIUS' THEN 10 WHEN PROPERTIES:authenticationProtocol
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud.account.name: (PROPERTIES:homeTenantName)::VARCHAR
+    cloud.account.type: (CASE ((6)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'LDAP
+      Account' WHEN 10 THEN 'AWS Account' WHEN 2 THEN 'Windows Account' WHEN 3 THEN
+      'AWS IAM User' WHEN 4 THEN 'AWS IAM Role' WHEN 5 THEN 'GCP Account' WHEN 6 THEN
+      'Azure AD Account' WHEN 7 THEN 'Mac OS Account' WHEN 8 THEN 'Apple Account'
+      WHEN 9 THEN 'Linux Account' WHEN 99 THEN 'Other' END)::VARCHAR
+    cloud.account.type_id: (6)::NUMBER
+    cloud.account.uid: (TENANT_ID)::VARCHAR
+    cloud.provider: (PROPERTIES_TOKEN_ISSUER_TYPE)::VARCHAR
+    count: NULL::NUMBER
+    device.is_managed: (PROPERTIES_DEVICE_DETAIL:isManaged)::BOOLEAN
+    device.name: (PROPERTIES_DEVICE_DETAIL:displayName)::VARCHAR
+    device.os.name: (PROPERTIES_DEVICE_DETAIL:operatingSystem)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='WindowsPhone'
+      THEN 101 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem ilike '%Windows%' THEN
+      100 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='Linux' THEN 200 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='Android'
+      THEN 201 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='MacOs' THEN 300 WHEN
+      PROPERTIES_DEVICE_DETAIL:operatingSystem ilike 'iOS' THEN 301 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='iPadOS'
+      THEN 302 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='Solaris' THEN 400 WHEN
+      PROPERTIES_DEVICE_DETAIL:operatingSystem='AIX' THEN 401 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='HP-UX'
+      THEN 402 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem IS NULL THEN 0 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows
+      Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS'
+      WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401
+      THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='WindowsPhone'
+      THEN 101 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem ilike '%Windows%' THEN
+      100 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='Linux' THEN 200 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='Android'
+      THEN 201 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='MacOs' THEN 300 WHEN
+      PROPERTIES_DEVICE_DETAIL:operatingSystem ilike 'iOS' THEN 301 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='iPadOS'
+      THEN 302 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='Solaris' THEN 400 WHEN
+      PROPERTIES_DEVICE_DETAIL:operatingSystem='AIX' THEN 401 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem='HP-UX'
+      THEN 402 WHEN PROPERTIES_DEVICE_DETAIL:operatingSystem IS NULL THEN 0 ELSE 99
+      END)::NUMBER
+    device.uid: (PROPERTIES_DEVICE_DETAIL:deviceId)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    http_request.uid: (PROPERTIES:originalRequestId)::VARCHAR
+    http_request.user_agent: (PROPERTIES:userAgent)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: (IFF(PROPERTIES:authenticationRequirement='multiFactorAuthentication',
+      true, false))::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process.created_time: (date_part('epoch_milliseconds', (PROPERTIES_CREATED_DATE_TIME)::TIMESTAMP_LTZ))::NUMBER
+    logon_process.created_time_dt: (PROPERTIES_CREATED_DATE_TIME)::TIMESTAMP_LTZ
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: NULL::VARCHAR
+    metadata.event_code: (category)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('azure-signin')::VARCHAR
+    metadata.product.vendor_name: ('azure')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CALLER_IP_ADDRESS)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PROPERTIES_USER_PRINCIPAL_NAME)::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(PROPERTIES_USER_DISPLAY_NAME, PROPERTIES:servicePrincipalName))::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session: NULL::VARIANT
+    severity: (CASE ((CASE WHEN PROPERTIES_RISK_LEVEL_AGGREGATED='informational' THEN
+      1 WHEN COALESCE(PROPERTIES_RISK_LEVEL_AGGREGATED, PROPERTIES:riskLevel)='low'
+      THEN 2 WHEN COALESCE(PROPERTIES_RISK_LEVEL_AGGREGATED, PROPERTIES:riskLevel)='medium'
+      THEN 3 WHEN COALESCE(PROPERTIES_RISK_LEVEL_AGGREGATED, PROPERTIES:riskLevel)='high'
+      THEN 4 WHEN PROPERTIES_RISK_LEVEL_AGGREGATED='critical' THEN 5 WHEN PROPERTIES_RISK_LEVEL_AGGREGATED='fatal'
+      THEN 6 WHEN PROPERTIES_RISK_LEVEL_AGGREGATED IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN
+      'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN PROPERTIES_RISK_LEVEL_AGGREGATED='informational' THEN
+      1 WHEN COALESCE(PROPERTIES_RISK_LEVEL_AGGREGATED, PROPERTIES:riskLevel)='low'
+      THEN 2 WHEN COALESCE(PROPERTIES_RISK_LEVEL_AGGREGATED, PROPERTIES:riskLevel)='medium'
+      THEN 3 WHEN COALESCE(PROPERTIES_RISK_LEVEL_AGGREGATED, PROPERTIES:riskLevel)='high'
+      THEN 4 WHEN PROPERTIES_RISK_LEVEL_AGGREGATED='critical' THEN 5 WHEN PROPERTIES_RISK_LEVEL_AGGREGATED='fatal'
+      THEN 6 WHEN PROPERTIES_RISK_LEVEL_AGGREGATED IS NULL THEN 0 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (CALLER_IP_ADDRESS)::VARCHAR
+    src_endpoint.location.city: (PROPERTIES_LOCATION:city)::VARCHAR
+    src_endpoint.location.country: (PROPERTIES_LOCATION:countryOrRegion)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RESULT_TYPE = 0 THEN 1 WHEN RESULT_TYPE > 0 THEN 2 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: (RESULT_TYPE)::VARCHAR
+    status_detail: (COALESCE(RESULT_DESCRIPTION, PROPERTIES_STATUS:additionalDetails))::VARCHAR
+    status_id: (CASE WHEN RESULT_TYPE = 0 THEN 1 WHEN RESULT_TYPE > 0 THEN 2 ELSE
+      99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.credential_uid: (PROPERTIES:servicePrincipalCredentialKeyId)::VARCHAR
+    user.email_addr: (PROPERTIES_USER_PRINCIPAL_NAME)::VARCHAR
+    user.full_name: (PROPERTIES_USER_DISPLAY_NAME)::VARCHAR
+    user.name: (COALESCE(PROPERTIES_USER_DISPLAY_NAME, PROPERTIES:servicePrincipalName))::VARCHAR
+    user.type: (CASE ((CASE WHEN PROPERTIES:userType IN ('Member', 'User') THEN 1
+      WHEN PROPERTIES:userType='Admin' THEN 2 WHEN PROPERTIES:userType='System' THEN
+      3 WHEN PROPERTIES:userType IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN PROPERTIES:userType IN ('Member', 'User') THEN 1 WHEN
+      PROPERTIES:userType='Admin' THEN 2 WHEN PROPERTIES:userType='System' THEN 3
+      WHEN PROPERTIES:userType IS NULL THEN 0 ELSE 99 END)::NUMBER
+    user.uid: (COALESCE(PROPERTIES:userId, PROPERTIES:servicePrincipalId))::VARCHAR

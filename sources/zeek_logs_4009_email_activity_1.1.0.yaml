@@ -1,0 +1,125 @@
+type: mapping
+id: zeek_logs_4009_email_activity_1.1.0
+version: '1'
+name: Zeek Logs to OCSF class Email Activity
+data-types:
+- zeek-logs
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE (2::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN
+      2 THEN 'Outbound' WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (2)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (RESPONDER_HOST)::VARCHAR
+    dst_endpoint.port: (RESPONDER_PORT)::NUMBER
+    duration: NULL::NUMBER
+    email.from: (RAW:from)::VARCHAR
+    email.message_uid: (RAW:msg_id)::VARCHAR
+    email.smtp_from: (RAW:mailfrom)::VARCHAR
+    email.smtp_to: (RAW:rcptto)::ARRAY
+    email.subject: (RAW:subject)::VARCHAR
+    email.to: (RAW:to)::ARRAY
+    email.x_originating_ip: (RAW:path)::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (log_type)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zeek-logs')::VARCHAR
+    metadata.product.vendor_name: ('zeek')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RESPONDER_HOST)::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RAW:from)::VARCHAR
+    - name: '''email.smtp_from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RAW:mailfrom)::VARCHAR
+    - name: '''email.smtp_to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RAW:rcptto)::ARRAY
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RAW:to)::ARRAY
+    - name: '''email.x_originating_ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:path)::ARRAY
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (ORIGINATOR_HOST)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: (RAW:helo)::VARCHAR
+    src_endpoint.ip: (ORIGINATOR_HOST)::VARCHAR
+    src_endpoint.port: (ORIGINATOR_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (400900::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400900)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: LOG_TYPE = 'smtp.log'

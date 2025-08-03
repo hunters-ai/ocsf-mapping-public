@@ -1,0 +1,185 @@
+type: mapping
+id: universal_wel_3002_authentication_1.1.0
+version: '15'
+name: Universal Wel to OCSF class Authentication
+data-types:
+- universal-wel
+mapping:
+  fields:
+    activity_id: (decode(EVENT_ID,4624, 1, 4625, 1, 4634, 2, 4768, 3, 4769, 4, 4770,
+      5))::NUMBER
+    activity_name: (CASE ((decode(EVENT_ID,4624, 1, 4625, 1, 4634, 2, 4768, 3, 4769,
+      4, 4770, 5))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN 2 THEN
+      'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket Request'
+      WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.path: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.uid: (MESSAGE_DETAILS:process_information:process_id)::VARCHAR
+    actor.user.domain: (COALESCE(MESSAGE_DETAILS:new_logon:account_domain,MESSAGE_DETAILS:account_information:account_domain,MESSAGE_DETAILS:account_for_which_logon_failed:account_domain,MESSAGE_DETAILS:subject:account_domain,EVENT_DETAILS:subject_domain_name))::VARCHAR
+    actor.user.name: (COALESCE(MESSAGE_DETAILS:new_logon:account_name::VARCHAR,MESSAGE_DETAILS:account_information:account_name::VARCHAR,MESSAGE_DETAILS:account_for_which_logon_failed:account_name::VARCHAR,
+      MESSAGE_DETAILS:subject:account_name, EVENT_DETAILS:subject_user_name::VARCHAR))::VARCHAR
+    actor.user.uid: (COALESCE(MESSAGE_DETAILS:account_information:user_id::VARCHAR,MESSAGE_DETAILS:new_logon:security_id::VARCHAR,MESSAGE_DETAILS:subject:security_id::VARCHAR))::VARCHAR
+    api: NULL::VARIANT
+    auth_protocol: (CASE ((CASE WHEN EVENT_ID in (4768, 4769, 4770) THEN 2 WHEN MESSAGE_DETAILS:detailed_authentication_information:authentication_package
+      IS NULL THEN 0 WHEN MESSAGE_DETAILS:detailed_authentication_information:authentication_package
+      = 'NTLM' THEN 1 WHEN MESSAGE_DETAILS:detailed_authentication_information:authentication_package
+      = 'Kerberos' THEN 2 ELSE 0 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'NTLM'
+      WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos' WHEN 3 THEN 'Digest' WHEN 4 THEN
+      'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH 2.0' WHEN 7 THEN 'PAP' WHEN 8
+      THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other' END)::VARCHAR
+    auth_protocol_id: (CASE WHEN EVENT_ID in (4768, 4769, 4770) THEN 2 WHEN MESSAGE_DETAILS:detailed_authentication_information:authentication_package
+      IS NULL THEN 0 WHEN MESSAGE_DETAILS:detailed_authentication_information:authentication_package
+      = 'NTLM' THEN 1 WHEN MESSAGE_DETAILS:detailed_authentication_information:authentication_package
+      = 'Kerberos' THEN 2 ELSE 0 END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (MACHINE_NAME)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process.name: (EVENT_DETAILS:logon_process_name)::VARCHAR
+    logon_process.uid: (EVENT_DETAILS:target_logon_id)::VARCHAR
+    logon_process.user.account.name: (MESSAGE_DETAILS:new_logon:account_name)::VARCHAR
+    logon_process.user.domain: (EVENT_DETAILS:target_domain_name)::VARCHAR
+    logon_process.user.name: (EVENT_DETAILS:target_user_name)::VARCHAR
+    logon_type: (CASE ((CASE WHEN MESSAGE_DETAILS:logon_type = '3' THEN 4 WHEN MESSAGE_DETAILS:logon_type
+      = '5' THEN 7 WHEN MESSAGE_DETAILS:logon_type = '8' THEN 10 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive' WHEN 11 THEN 'Cached
+      Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN 13 THEN 'Cached Unlock'
+      WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN 4 THEN 'Batch' WHEN 5 THEN
+      'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network Cleartext' WHEN 9 THEN
+      'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
+    logon_type_id: (CASE WHEN MESSAGE_DETAILS:logon_type = '3' THEN 4 WHEN MESSAGE_DETAILS:logon_type
+      = '5' THEN 7 WHEN MESSAGE_DETAILS:logon_type = '8' THEN 10 ELSE 99 END)::NUMBER
+    message: (RAW:Message)::VARCHAR
+    metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('universal-wel')::VARCHAR
+    metadata.product.vendor_name: ('windows-event-log')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(MESSAGE_DETAILS:new_logon:account_name::VARCHAR,MESSAGE_DETAILS:account_information:account_name::VARCHAR,MESSAGE_DETAILS:account_for_which_logon_failed:account_name::VARCHAR,
+        MESSAGE_DETAILS:subject:account_name, EVENT_DETAILS:subject_user_name::VARCHAR))::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (MACHINE_NAME)::VARCHAR
+    - name: '''logon_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (EVENT_DETAILS:logon_process_name)::VARCHAR
+    - name: '''logon_process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (EVENT_DETAILS:target_user_name)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(MESSAGE_DETAILS:network_information:source_network_address::VARCHAR,
+        MESSAGE_DETAILS:network_information:client_address::VARCHAR))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(MESSAGE_DETAILS:new_logon:account_name::VARCHAR,MESSAGE_DETAILS:account_information:account_name::VARCHAR,MESSAGE_DETAILS:account_for_which_logon_failed:account_name::VARCHAR,
+        MESSAGE_DETAILS:subject:account_name, EVENT_DETAILS:subject_user_name::VARCHAR))::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.name: (MESSAGE_DETAILS:service_information:service_name)::VARCHAR
+    service.uid: (MESSAGE_DETAILS:service_information:service_id)::VARCHAR
+    session: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (COALESCE(MESSAGE_DETAILS:network_information:source_network_address::VARCHAR,
+      MESSAGE_DETAILS:network_information:client_address::VARCHAR))::VARCHAR
+    src_endpoint.port: (COALESCE(NULLIF(MESSAGE_DETAILS:network_information:source_port,
+      '-'), NULLIF(REPLACE(MESSAGE_DETAILS:network_information:client_port::VARCHAR,
+      '%', ''), '-')))::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EVENT_ID =  4624 THEN 1 WHEN EVENT_ID =  4634 THEN 1
+      WHEN EVENT_ID =  4625 THEN 2 WHEN EVENT_ID =  4770 THEN 1 WHEN EVENT_ID = 4768
+      AND MESSAGE_DETAILS:additional_information:result_code = '0x0' THEN 1 WHEN EVENT_ID
+      = 4768 AND MESSAGE_DETAILS:additional_information:result_code <> '0x0' THEN
+      2 WHEN EVENT_ID = 4769 AND MESSAGE_DETAILS:additional_information:failure_code
+      = '0x0' THEN 1 WHEN EVENT_ID = 4769 AND MESSAGE_DETAILS:additional_information:failure_code
+      <> '0x0' THEN 2 ELSE 0 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success'
+      WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: (MESSAGE_DETAILS:additional_information:failure_code)::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN EVENT_ID =  4624 THEN 1 WHEN EVENT_ID =  4634 THEN 1 WHEN
+      EVENT_ID =  4625 THEN 2 WHEN EVENT_ID =  4770 THEN 1 WHEN EVENT_ID = 4768 AND
+      MESSAGE_DETAILS:additional_information:result_code = '0x0' THEN 1 WHEN EVENT_ID
+      = 4768 AND MESSAGE_DETAILS:additional_information:result_code <> '0x0' THEN
+      2 WHEN EVENT_ID = 4769 AND MESSAGE_DETAILS:additional_information:failure_code
+      = '0x0' THEN 1 WHEN EVENT_ID = 4769 AND MESSAGE_DETAILS:additional_information:failure_code
+      <> '0x0' THEN 2 ELSE 0 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300200 + decode(EVENT_ID,4624, 1, 4625, 1, 4634, 2, 4768,
+      3, 4769, 4, 4770, 5))::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300200 + decode(EVENT_ID,4624, 1, 4625, 1, 4634, 2, 4768, 3, 4769,
+      4, 4770, 5))::NUMBER
+    unmapped: NULL::VARIANT
+    user.domain: (COALESCE(MESSAGE_DETAILS:new_logon:account_domain,MESSAGE_DETAILS:account_information:account_domain,MESSAGE_DETAILS:account_for_which_logon_failed:account_domain,MESSAGE_DETAILS:subject:account_domain,EVENT_DETAILS:subject_domain_name))::VARCHAR
+    user.name: (COALESCE(MESSAGE_DETAILS:new_logon:account_name::VARCHAR,MESSAGE_DETAILS:account_information:account_name::VARCHAR,MESSAGE_DETAILS:account_for_which_logon_failed:account_name::VARCHAR,
+      MESSAGE_DETAILS:subject:account_name, EVENT_DETAILS:subject_user_name::VARCHAR))::VARCHAR
+    user.uid: (COALESCE(MESSAGE_DETAILS:account_information:user_id::VARCHAR,MESSAGE_DETAILS:new_logon:security_id::VARCHAR,MESSAGE_DETAILS:subject:security_id::VARCHAR))::VARCHAR
+  predicate: EVENT_ID IN (4634, 4624, 4625, 4768, 4769, 4770)

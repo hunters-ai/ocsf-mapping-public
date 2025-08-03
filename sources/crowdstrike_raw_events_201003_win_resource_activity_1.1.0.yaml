@@ -1,0 +1,127 @@
+type: mapping
+id: crowdstrike_raw_events_201003_win_resource_activity_1.1.0
+version: '1'
+name: Crowdstrike Raw Events to OCSF class Win/resource Activity
+data-types:
+- crowdstrike-raw-events
+mapping:
+  fields:
+    action: CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END
+    action_id: 0::NUMBER
+    activity_id: 1::NUMBER
+    activity_name: CASE (1::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Access' WHEN
+      99 THEN 'Other' END
+    actor.process.cmd_line: COMMAND_LINE::VARCHAR
+    actor.process.file.name: TARGET_FILE_NAME::VARCHAR
+    actor.process.file.parent_folder: TARGET_DIRECTORY_NAME::VARCHAR
+    actor.process.parent_process.file.name: TARGET_FILE_NAME::VARCHAR
+    actor.process.pid: RAW_PROCESS_ID::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: CASE (1::NUMBER) WHEN 1 THEN 'System Activity' END
+    category_uid: 1::NUMBER
+    class_name: '''win/resource_activity'''
+    class_uid: ('201003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.domain: DOMAIN_NAME::VARCHAR
+    device.ip: AIP::VARCHAR
+    device.os.type: CASE (CASE WHEN EVENT_PLATFORM IS NULL THEN 0 WHEN EVENT_PLATFORM
+      = 'Win' THEN 100 WHEN EVENT_PLATFORM = 'Lin' THEN 200 WHEN EVENT_PLATFORM =
+      'Mac' THEN 300 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END
+    device.os.type_id: CASE WHEN EVENT_PLATFORM IS NULL THEN 0 WHEN EVENT_PLATFORM
+      = 'Win' THEN 100 WHEN EVENT_PLATFORM = 'Lin' THEN 200 WHEN EVENT_PLATFORM =
+      'Mac' THEN 300 ELSE 99 END::NUMBER
+    device.uid: AID::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: event_simple_name::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ)
+    metadata.processed_time_dt: metadata$insertion_time::TIMESTAMP_LTZ
+    metadata.product.name: '''crowdstrike-raw-events'''
+    metadata.product.vendor_name: '''crowdstrike'''
+    metadata.profiles: ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users')
+    metadata.uid: metadata$uuid
+    metadata.version: '''1.1.0'''
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN
+      2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END
+    severity_id: 0::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ)
+    time_dt: event_time::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: 'CASE (20100301::NUMBER) WHEN 20100300 THEN ''Windows Resource Activity:
+      Unknown'' WHEN 20100301 THEN ''Windows Resource Activity: Access'' WHEN 20100399
+      THEN ''Windows Resource Activity: Other'' END'
+    type_uid: 20100301::NUMBER
+    unmapped: NULL::VARIANT
+    win_resource.type: CASE (CASE WHEN EVENT_SIMPLE_NAME IN ('FileOpenInfo', 'FileRenameInfo',
+      'FileDeleteInfo', 'PeFileWritten', 'SevenZipFileWritten', 'CriticalFileModified',
+      'SuspiciousRegAsepUpdate') THEN 7 WHEN EVENT_SIMPLE_NAME IN ('RegKeySecurityDecreasedFromUnsignedModule',
+      'RegistryOperationDetectInfo', 'RegistryOperationBlocked', 'RegGenericValueUpdate',
+      'RegSystemConfigValueUpdate') THEN 25 WHEN EVENT_SIMPLE_NAME = 'InjectedThread'
+      THEN 9 WHEN EVENT_SIMPLE_NAME = 'TokenImpersonated' THEN 8 WHEN EVENT_SIMPLE_NAME
+      IN ('ProcessInjection', 'ProcessBlocked', 'SuspiciousPrivilegedProcessHandle',
+      'PrivilegedProcessHandleFromUnsignedModule') THEN 20 WHEN EVENT_SIMPLE_NAME
+      IN ('FsVolumeMounted', 'SnapshotVolumeMounted', 'DirectoryCreate') THEN 1 ELSE
+      99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Directory' WHEN 10 THEN 'Section'
+      WHEN 11 THEN 'WindowStation' WHEN 12 THEN 'DebugObject' WHEN 13 THEN 'FilterCommunicationPort'
+      WHEN 14 THEN 'EventPair' WHEN 15 THEN 'Driver' WHEN 16 THEN 'IoCompletion' WHEN
+      17 THEN 'Controller' WHEN 18 THEN 'SymbolicLink' WHEN 19 THEN 'WmiGuid' WHEN
+      2 THEN 'Event' WHEN 20 THEN 'Process' WHEN 21 THEN 'Profile' WHEN 22 THEN 'Desktop'
+      WHEN 23 THEN 'KeyedEvent' WHEN 24 THEN 'Adapter' WHEN 25 THEN 'Key' WHEN 26
+      THEN 'WaitablePort' WHEN 27 THEN 'Callback' WHEN 28 THEN 'Semaphore' WHEN 29
+      THEN 'Job' WHEN 3 THEN 'Timer' WHEN 30 THEN 'Port' WHEN 31 THEN 'FilterConnectionPort'
+      WHEN 32 THEN 'ALPC Port' WHEN 33 THEN 'SAM_ALIAS' WHEN 34 THEN 'SAM_GROUP' WHEN
+      35 THEN 'SAM_USER' WHEN 36 THEN 'SAM_DOMAIN' WHEN 37 THEN 'SAM_SERVER' WHEN
+      4 THEN 'Device' WHEN 5 THEN 'Mutant' WHEN 6 THEN 'Type' WHEN 7 THEN 'File' WHEN
+      8 THEN 'Token' WHEN 9 THEN 'Thread' WHEN 99 THEN 'Other' END
+    win_resource.type_id: CASE WHEN EVENT_SIMPLE_NAME IN ('FileOpenInfo', 'FileRenameInfo',
+      'FileDeleteInfo', 'PeFileWritten', 'SevenZipFileWritten', 'CriticalFileModified',
+      'SuspiciousRegAsepUpdate') THEN 7 WHEN EVENT_SIMPLE_NAME IN ('RegKeySecurityDecreasedFromUnsignedModule',
+      'RegistryOperationDetectInfo', 'RegistryOperationBlocked', 'RegGenericValueUpdate',
+      'RegSystemConfigValueUpdate') THEN 25 WHEN EVENT_SIMPLE_NAME = 'InjectedThread'
+      THEN 9 WHEN EVENT_SIMPLE_NAME = 'TokenImpersonated' THEN 8 WHEN EVENT_SIMPLE_NAME
+      IN ('ProcessInjection', 'ProcessBlocked', 'SuspiciousPrivilegedProcessHandle',
+      'PrivilegedProcessHandleFromUnsignedModule') THEN 20 WHEN EVENT_SIMPLE_NAME
+      IN ('FsVolumeMounted', 'SnapshotVolumeMounted', 'DirectoryCreate') THEN 1 ELSE
+      99 END::NUMBER
+  predicate: EVENT_SIMPLE_NAME in ('FileOpenInfo', 'FileRenameInfo', 'FileDeleteInfo',
+    'PeFileWritten', 'SevenZipFileWritten', 'CriticalFileModified', 'SuspiciousRegAsepUpdate',
+    'RegKeySecurityDecreasedFromUnsignedModule', 'RegistryOperationDetectInfo', 'RegistryOperationBlocked',
+    'RegGenericValueUpdate', 'RegSystemConfigValueUpdate', 'InjectedThread', 'SuspiciousPrivilegedProcessHandle',
+    'PrivilegedProcessHandleFromUnsignedModule', 'ProcessInjection', 'ProcessBlocked',
+    'FsVolumeMounted', 'SnapshotVolumeMounted', 'DirectoryCreate', 'TokenImpersonated')

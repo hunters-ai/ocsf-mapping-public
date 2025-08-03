@@ -1,0 +1,30 @@
+id: 6003_api_activity_1.1.0
+version: '25'
+description: OCSF View For Class - 6003 Api Activity
+source-table-ids:
+- aws_cloudtrail_6003_api_activity_1.1.0
+- o365_audit_logs_6003_api_activity_1.1.0
+- gsuite_activity_6003_api_activity_1.1.0
+- onepassword_item_usages_logs_6003_api_activity_1.1.0
+- kubernetes_audit_logs_6003_api_activity_1.1.0
+- bitbucket_audit_logs_6003_api_activity_1.1.0
+- alibaba_actiontrail_6003_api_activity_1.1.0
+- aws_eks_api_server_audit_logs_6003_api_activity_1.1.0
+- alibaba_kubernetes_audit_logs_6003_api_activity_1.1.0
+- azure_audit_6003_api_activity_1.1.0
+- oracle_audit_logs_6003_api_activity_1.1.0
+- gcp_audit_6003_api_activity_1.1.0
+- github_audit_logs_6003_api_activity_1.1.0
+- keeper_logs_6003_api_activity_1.1.0
+- salesforce_event_logs_6003_api_activity_1.1.0
+- thycotic_secret_server_6003_api_activity_1.1.0
+- tines_audit_logs_6003_api_activity_1.1.0
+- very_good_security_events_6003_api_activity_1.1.0
+- azure_activity_6003_api_activity_1.1.0
+- gitlab_audit_logs_6003_api_activity_1.1.0
+- microsoft_365_defender_identity_query_events_6003_api_activity_1.1.0
+- azure_aks_6003_api_activity_1.1.0
+- openstack_logs_6003_api_activity_1.1.0
+- crowdstrike_falcon_event_streams_6003_api_activity_1.1.0
+- microsoft_graph_activity_logs_6003_api_activity_1.1.0
+- breez_security_alerts_6003_api_activity_1.1.0

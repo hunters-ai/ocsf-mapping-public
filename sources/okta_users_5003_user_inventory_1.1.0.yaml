@@ -1,0 +1,108 @@
+type: mapping
+id: okta_users_5003_user_inventory_1.1.0
+version: '9'
+name: Okta Users to OCSF class User Inventory
+data-types:
+- okta-users
+mapping:
+  fields:
+    activity_id: (2)::NUMBER
+    activity_name: (CASE ((2)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Log' WHEN
+      2 THEN 'Collect' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.idp.name: (CREDENTIALS:provider:name)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((5)::NUMBER) WHEN 5 THEN 'Discovery' END)::VARCHAR
+    category_uid: (5)::NUMBER
+    class_name: ('user_inventory')::VARCHAR
+    class_uid: ('5003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (LAST_UPDATED)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (LAST_UPDATED)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('okta-users')::VARCHAR
+    metadata.product.vendor_name: ('okta')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(PROFILE_EMAIL, PROFILE_SECOND_EMAIL))::VARCHAR
+    - name: '''user.ldap_person.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.ldap_person.manager'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.ldap_person.manager.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PROFILE:managerId)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (CREATED)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (CREATED)::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (STATUS)::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', sample_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (sample_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((500302)::NUMBER) WHEN 500300 THEN ''User Inventory Info: Unknown''
+      WHEN 500301 THEN ''User Inventory Info: Log'' WHEN 500302 THEN ''User Inventory
+      Info: Collect'' WHEN 500399 THEN ''User Inventory Info: Other'' END)::VARCHAR'
+    type_uid: (500302)::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.uid: (PROFILE:AD_SAMAccountName)::VARCHAR
+    user.domain: (PROFILE:AD_UserDomain)::VARCHAR
+    user.email_addr: (COALESCE(PROFILE_EMAIL, PROFILE_SECOND_EMAIL))::VARCHAR
+    user.full_name: (COALESCE(PROFILE_FIRST_NAME||' '||PROFILE_LAST_NAME, PROFILE:displayName))::VARCHAR
+    user.ldap_person.cost_center: (PROFILE:costCenter)::VARCHAR
+    user.ldap_person.employee_uid: (PROFILE:employeeNumber)::VARCHAR
+    user.ldap_person.given_name: (PROFILE_FIRST_NAME)::VARCHAR
+    user.ldap_person.hire_time: (date_part('epoch_milliseconds', (PROFILE:hireDate)::TIMESTAMP_LTZ))::NUMBER
+    user.ldap_person.hire_time_dt: (PROFILE:hireDate)::TIMESTAMP_LTZ
+    user.ldap_person.job_title: (COALESCE(PROFILE:title, PROFILE:jobTier))::VARCHAR
+    user.ldap_person.last_login_time: (date_part('epoch_milliseconds', (LAST_LOGIN)::TIMESTAMP_LTZ))::NUMBER
+    user.ldap_person.last_login_time_dt: (LAST_LOGIN)::TIMESTAMP_LTZ
+    user.ldap_person.location.city: (PROFILE:city)::VARCHAR
+    user.ldap_person.location.country: (PROFILE:countryCode)::VARCHAR
+    user.ldap_person.location.postal_code: (PROFILE:zipCode)::VARCHAR
+    user.ldap_person.location.region: (PROFILE:state)::VARCHAR
+    user.ldap_person.manager.email_addr: (PROFILE:managerId)::VARCHAR
+    user.ldap_person.office_location: (RAW:profile:streetAddress)::VARCHAR
+    user.ldap_person.surname: (PROFILE_LAST_NAME)::VARCHAR
+    user.org.name: (PROFILE:organization)::VARCHAR
+    user.type: (CASE ((CASE WHEN PROFILE:userType IS NULL THEN 0 WHEN PROFILE:userType
+      = 'user' THEN 1 WHEN PROFILE:userType = 'Admin' THEN 2 WHEN PROFILE:userType
+      = 'Service' THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN PROFILE:userType IS NULL THEN 0 WHEN PROFILE:userType
+      = 'user' THEN 1 WHEN PROFILE:userType = 'Admin' THEN 2 WHEN PROFILE:userType
+      = 'Service' THEN 3 ELSE 99 END)::NUMBER
+    user.uid: (PROFILE:idx_Uid)::VARCHAR

@@ -1,0 +1,18 @@
+id: 5001_inventory_info_1.1.0
+version: '10'
+description: OCSF View For Class - 5001 Inventory Info
+source-table-ids:
+- mdatp_device_info_5001_inventory_info_1.1.0
+- crowdstrike_devices_5001_inventory_info_1.1.0
+- sentinelone_agents_5001_inventory_info_1.1.0
+- cybereason_sensors_5001_inventory_info_1.1.0
+- pan_cortex_xdr_endpoints_5001_inventory_info_1.1.0
+- jamf_computers_5001_inventory_info_1.1.0
+- cb_platform_devices_5001_inventory_info_1.1.0
+- island_browser_devices_5001_inventory_info_1.1.0
+- lansweeper_assets_5001_inventory_info_1.1.0
+- claroty_xdome_devices_5001_inventory_info_1.1.0
+- microsoft_365_defender_advanced_hunting_5001_inventory_info_1.1.0
+- cloudflare_device_posture_results_5001_inventory_info_1.1.0
+- meraki_networks_5001_inventory_info_1.1.0
+- cato_networks_security_events_5001_inventory_info_1.1.0

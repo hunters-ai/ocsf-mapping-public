@@ -1,0 +1,129 @@
+type: mapping
+id: jumpcloud_directory_insights_3006_group_management_1.1.0
+version: '8'
+name: Jumpcloud Directory Insights to OCSF class Group Management
+data-types:
+- jumpcloud-directory-insights
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE '%create%'
+      THEN 6 WHEN EVENT_TYPE ILIKE '%delete%' THEN 5 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE
+      '%create%' THEN 6 WHEN EVENT_TYPE ILIKE '%delete%' THEN 5 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Assign Privileges' WHEN 2 THEN 'Revoke Privileges'
+      WHEN 3 THEN 'Add User' WHEN 4 THEN 'Remove User' WHEN 5 THEN 'Delete' WHEN 6
+      THEN 'Create' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.invoked_by: (SERVICE)::VARCHAR
+    api.response.code: (NULLIF(RAW:message_chain:response_code, ''))::NUMBER
+    api.response.message: (RAW:message_chain:response_message)::VARCHAR
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('group_management')::VARCHAR
+    class_uid: ('3006')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (CLIENT_IP)::VARCHAR
+    device.name: (RAW:system:displayName)::VARCHAR
+    device.os.name: (RAW:useragent:os_full)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN RAW:useragent:os IS NULL THEN 0 WHEN RAW:useragent:os
+      ILIKE '%Windows%' THEN 100 WHEN RAW:useragent:os ILIKE '%Linux%' OR RAW:useragent:os
+      ILIKE '%Ubuntu%' THEN 200 WHEN RAW:useragent:os ILIKE '%Android%' THEN 201 WHEN
+      RAW:useragent:os ILIKE '%Mac%' THEN 300 WHEN RAW:useragent:os ILIKE '%iOS%'
+      THEN 301 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN RAW:useragent:os IS NULL THEN 0 WHEN RAW:useragent:os
+      ILIKE '%Windows%' THEN 100 WHEN RAW:useragent:os ILIKE '%Linux%' OR RAW:useragent:os
+      ILIKE '%Ubuntu%' THEN 200 WHEN RAW:useragent:os ILIKE '%Android%' THEN 201 WHEN
+      RAW:useragent:os ILIKE '%Mac%' THEN 300 WHEN RAW:useragent:os ILIKE '%iOS%'
+      THEN 301 ELSE 99 END)::NUMBER
+    device.os.version: (RAW:useragent:os_version)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    group.name: (RAW:resource:name)::VARCHAR
+    group.type: (RAW:resource:type)::VARCHAR
+    group.uid: (RAW:resource:id)::VARCHAR
+    message: (EVENT_TYPE)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('jumpcloud-directory-insights')::VARCHAR
+    metadata.product.vendor_name: ('jumpcloud')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (INITIATOR_EMAIL)::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    privileges: NULL::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN SUCCESS IS NULL THEN 0 WHEN SUCCESS = TRUE THEN 1 WHEN
+      SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN SUCCESS IS NULL THEN 0 WHEN SUCCESS = TRUE THEN 1 WHEN SUCCESS
+      = FALSE THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300600 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE
+      ILIKE ''%create%'' THEN 6 WHEN EVENT_TYPE ILIKE ''%delete%'' THEN 5 ELSE 99
+      END))::NUMBER) WHEN 300600 THEN ''Group Management: Unknown'' WHEN 300601 THEN
+      ''Group Management: Assign Privileges'' WHEN 300602 THEN ''Group Management:
+      Revoke Privileges'' WHEN 300603 THEN ''Group Management: Add User'' WHEN 300604
+      THEN ''Group Management: Remove User'' WHEN 300605 THEN ''Group Management:
+      Delete'' WHEN 300606 THEN ''Group Management: Create'' WHEN 300699 THEN ''Group
+      Management: Other'' END)::VARCHAR'
+    type_uid: (300600 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE
+      '%create%' THEN 6 WHEN EVENT_TYPE ILIKE '%delete%' THEN 5 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (INITIATOR_EMAIL)::VARCHAR
+    user.name: (USERNAME)::VARCHAR
+    user.org.uid: (ORGANIZATION)::VARCHAR
+    user.type: (CASE ((CASE WHEN INITIATOR_TYPE IS NULL THEN 0 WHEN INITIATOR_TYPE
+      = 'user' THEN 1 WHEN INITIATOR_TYPE = 'admin' THEN 2 WHEN INITIATOR_TYPE = 'system'
+      THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2
+      THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN INITIATOR_TYPE IS NULL THEN 0 WHEN INITIATOR_TYPE = 'user'
+      THEN 1 WHEN INITIATOR_TYPE = 'admin' THEN 2 WHEN INITIATOR_TYPE = 'system' THEN
+      3 ELSE 99 END)::NUMBER
+    user.uid: (COALESCE(RAW:user:id, INITIATED_BY:id))::VARCHAR
+  predicate: EVENT_TYPE ILIKE '%group%'

@@ -1,0 +1,171 @@
+type: mapping
+id: pan_edr_raw_logs_1003_kernel_activity_1.1.0
+version: '1'
+name: Pan Edr Raw Logs to OCSF class Kernel Activity
+data-types:
+- pan-edr-raw-logs
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN event_type IS NULL AND event_sub_type IS NULL THEN 0 WHEN
+      event_type = '1' AND event_sub_type = '1' THEN 1 WHEN event_type = '1' AND event_sub_type
+      = '2' THEN 3 WHEN event_type = '3' AND event_sub_type = '1' THEN 1 WHEN event_type
+      = '3' AND event_sub_type = '2' THEN 2 WHEN event_type = '3' AND event_sub_type
+      = '6' THEN 3 WHEN event_type = '4' THEN 4 WHEN event_type = '6' THEN 4 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE (CASE WHEN event_type IS NULL AND event_sub_type IS NULL
+      THEN 0 WHEN event_type = '1' AND event_sub_type = '1' THEN 1 WHEN event_type
+      = '1' AND event_sub_type = '2' THEN 3 WHEN event_type = '3' AND event_sub_type
+      = '1' THEN 1 WHEN event_type = '3' AND event_sub_type = '2' THEN 2 WHEN event_type
+      = '3' AND event_sub_type = '6' THEN 3 WHEN event_type = '4' THEN 4 WHEN event_type
+      = '6' THEN 4 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Read' WHEN 3 THEN 'Delete' WHEN 4 THEN 'Invoke' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.cmd_line: (OS_ACTOR_PROCESS_COMMAND_LINE)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      CASE (case when OS_ACTOR_PROCESS_IMAGE_SHA256 is null and OS_ACTOR_PROCESS_IMAGE_MD5
+      is null then 1 when OS_ACTOR_PROCESS_IMAGE_SHA256 is not null then 3 when OS_ACTOR_PROCESS_IMAGE_MD5
+      is not null then 1 else 0 end::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5'
+      WHEN 2 THEN 'SHA-1' WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN
+      'CTPH' WHEN 6 THEN 'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END,
+      'algorithm_id', case when OS_ACTOR_PROCESS_IMAGE_SHA256 is null and OS_ACTOR_PROCESS_IMAGE_MD5
+      is null then 1 when OS_ACTOR_PROCESS_IMAGE_SHA256 is not null then 3 when OS_ACTOR_PROCESS_IMAGE_MD5
+      is not null then 1 else 0 end::NUMBER, 'value', COALESCE(OS_ACTOR_PROCESS_IMAGE_SHA256,
+      OS_ACTOR_PROCESS_IMAGE_MD5)::VARCHAR)))::ARRAY
+    actor.process.file.name: (OS_ACTOR_PROCESS_IMAGE_NAME)::VARCHAR
+    actor.process.file.path: (OS_ACTOR_PROCESS_IMAGE_PATH)::VARCHAR
+    actor.process.pid: (OS_ACTOR_PROCESS_OS_PID)::NUMBER
+    actor.process.terminated_time: (date_part('epoch_milliseconds', ACTION_PROCESS_TERMINATION_DATE::TIMESTAMP_LTZ))::NUMBER
+    actor.process.terminated_time_dt: (ACTION_PROCESS_TERMINATION_DATE)::TIMESTAMP_LTZ
+    actor.process.tid: (OS_ACTOR_THREAD_THREAD_ID)::NUMBER
+    actor.process.user.name: (OS_ACTOR_PRIMARY_USERNAME)::VARCHAR
+    actor.process.user.uid: (OS_ACTOR_PRIMARY_USER_SID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (1::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('kernel_activity')::VARCHAR
+    class_uid: ('1003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (AGENT_HOSTNAME)::VARCHAR
+    device.ip: (COALESCE(AGENT_IP_ADDRESSES[0], AGENT_IP_ADDRESSES_V6[0]))::VARCHAR
+    device.mac: (AGENT_INTERFACE_MAP_MAC[0])::VARCHAR
+    device.os.type: (CASE (case when AGENT_OS_TYPE = 1 then 100 when AGENT_OS_TYPE
+      = 2 then 300 when AGENT_OS_TYPE = 4 then 200 else 0 end::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN
+      'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN
+      302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN
+      'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (case when AGENT_OS_TYPE = 1 then 100 when AGENT_OS_TYPE =
+      2 then 300 when AGENT_OS_TYPE = 4 then 200 else 0 end)::NUMBER
+    device.os.version: (AGENT_OS_SUB_TYPE)::VARCHAR
+    device.subnet: (COALESCE(raw:agent_interface_map[0]:ipv4_subnet_mask, raw:agent_interface_map[0]:ipv6_subnet_mask))::VARCHAR
+    device.uid: (AGENT_ID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    kernel.name: (ACTION_FILE_NAME)::VARCHAR
+    kernel.path: (ACTION_FILE_PATH)::VARCHAR
+    kernel.type: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Shared Mutex'
+      WHEN 2 THEN 'System Call' WHEN 99 THEN 'Other' END)::VARCHAR
+    kernel.type_id: (0)::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('pan-edr-raw-logs')::VARCHAR
+    metadata.product.vendor_name: ('paloalto')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (OS_ACTOR_PROCESS_IMAGE_NAME)::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (OS_ACTOR_PRIMARY_USERNAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (AGENT_HOSTNAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(AGENT_IP_ADDRESSES[0], AGENT_IP_ADDRESSES_V6[0]))::VARCHAR
+    - name: '''device.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (AGENT_INTERFACE_MAP_MAC[0])::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100300 + (CASE WHEN event_type IS NULL AND event_sub_type
+      IS NULL THEN 0 WHEN event_type = ''1'' AND event_sub_type = ''1'' THEN 1 WHEN
+      event_type = ''1'' AND event_sub_type = ''2'' THEN 3 WHEN event_type = ''3''
+      AND event_sub_type = ''1'' THEN 1 WHEN event_type = ''3'' AND event_sub_type
+      = ''2'' THEN 2 WHEN event_type = ''3'' AND event_sub_type = ''6'' THEN 3 WHEN
+      event_type = ''4'' THEN 4 WHEN event_type = ''6'' THEN 4 ELSE 99 END))::NUMBER)
+      WHEN 100300 THEN ''Kernel Activity: Unknown'' WHEN 100301 THEN ''Kernel Activity:
+      Create'' WHEN 100302 THEN ''Kernel Activity: Read'' WHEN 100303 THEN ''Kernel
+      Activity: Delete'' WHEN 100304 THEN ''Kernel Activity: Invoke'' WHEN 100399
+      THEN ''Kernel Activity: Other'' END)::VARCHAR'
+    type_uid: (100300 + (CASE WHEN event_type IS NULL AND event_sub_type IS NULL THEN
+      0 WHEN event_type = '1' AND event_sub_type = '1' THEN 1 WHEN event_type = '1'
+      AND event_sub_type = '2' THEN 3 WHEN event_type = '3' AND event_sub_type = '1'
+      THEN 1 WHEN event_type = '3' AND event_sub_type = '2' THEN 2 WHEN event_type
+      = '3' AND event_sub_type = '6' THEN 3 WHEN event_type = '4' THEN 4 WHEN event_type
+      = '6' THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: (event_type = '1' AND event_sub_type IN ('1', '2', '6')) OR (event_type
+    = '3' AND event_sub_type IN ('4', '5')) OR (event_type = '4') OR (event_type =
+    '6')

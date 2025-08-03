@@ -1,0 +1,141 @@
+type: mapping
+id: bind_dns_logs_4003_dns_activity_1.1.0
+version: '13'
+name: Bind Dns Logs to OCSF class Dns Activity
+data-types:
+- bind-dns-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN RAW:block IS NULL THEN 0 WHEN RAW:block = false THEN
+      1 WHEN RAW:block = true THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN RAW:block IS NULL THEN 0 WHEN RAW:block = false THEN 1 WHEN
+      RAW:block = true THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN RAW:event:action IS NULL THEN 0 WHEN RAW:event:action
+      = 'dns_query' THEN 1 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:event:action IS NULL THEN 0 WHEN RAW:event:action
+      = 'dns_query' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Query' WHEN 2 THEN 'Response' WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.pid: (RAW:pid)::NUMBER
+    answers: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT( 'flag_ids', ARRAY_CONSTRUCT(CASE WHEN
+      HEADER_FLAGS[0] IS NULL THEN 0 WHEN HEADER_FLAGS[0] = 'AA' THEN 1 WHEN HEADER_FLAGS[0]
+      = 'TC' THEN 2 WHEN HEADER_FLAGS[0] = 'RD' THEN 3 WHEN HEADER_FLAGS[0] = 'RA'
+      THEN 4 WHEN HEADER_FLAGS[0] = 'AD' THEN 5 WHEN HEADER_FLAGS[0] = 'CD' THEN 6
+      ELSE 99 END), 'flags', ARRAY_CONSTRUCT(CASE (CASE WHEN HEADER_FLAGS[0] IS NULL
+      THEN 0 WHEN HEADER_FLAGS[0] = 'AA' THEN 1 WHEN HEADER_FLAGS[0] = 'TC' THEN 2
+      WHEN HEADER_FLAGS[0] = 'RD' THEN 3 WHEN HEADER_FLAGS[0] = 'RA' THEN 4 WHEN HEADER_FLAGS[0]
+      = 'AD' THEN 5 WHEN HEADER_FLAGS[0] = 'CD' THEN 6 ELSE 99 END::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Authoritative Answer' WHEN 2 THEN 'Truncated Response'
+      WHEN 3 THEN 'Recursion Desired' WHEN 4 THEN 'Recursion Available' WHEN 5 THEN
+      'Authentic Data' WHEN 6 THEN 'Checking Disabled' WHEN 99 THEN 'Other' END),
+      'ttl', RAW:answers[0]:ttl )))::ARRAY
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('dns_activity')::VARCHAR
+    class_uid: ('4003')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_name: (LOWER(NETWORK_PROTOCOL))::VARCHAR
+    connection_info.protocol_num: (CASE WHEN NETWORK_PROTOCOL = 'TCP' THEN 6 WHEN
+      NETWORK_PROTOCOL = 'UDP' THEN 17 ELSE -1 END)::NUMBER
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.domain: (RAW:dns:tld:domain)::VARCHAR
+    dst_endpoint.hostname: (RAW:host)::VARCHAR
+    dst_endpoint.ip: (DESTINATION_IP)::VARCHAR
+    dst_endpoint.name: (RAW:data_proc_endpoint)::VARCHAR
+    dst_endpoint.port: (DESTINATION_PORT)::NUMBER
+    dst_endpoint.uid: (RAW:h_id)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('bind-dns-logs')::VARCHAR
+    metadata.product.vendor_name: ('bind')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:host)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DESTINATION_IP)::VARCHAR
+    - name: '''query.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (QUERIED_ADDRESS)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    query.hostname: (QUERIED_ADDRESS)::VARCHAR
+    query.type: (RECORD_TYPE)::VARCHAR
+    query_time: NULL::NUMBER
+    query_time_dt: NULL::TIMESTAMP_LTZ
+    raw_data: NULL::VARCHAR
+    rcode: NULL::VARCHAR
+    rcode_id: NULL::NUMBER
+    response_time: NULL::NUMBER
+    response_time_dt: NULL::TIMESTAMP_LTZ
+    severity: (CASE ((CASE WHEN RAW:severityName IS NULL THEN 0 WHEN RAW:severityName
+      = 'info' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN RAW:severityName IS NULL THEN 0 WHEN RAW:severityName
+      = 'info' THEN 1 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.name: (RAW:logsource)::VARCHAR
+    src_endpoint.port: (RAW:source:port)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((400300 + (CASE WHEN RAW:event:action IS NULL THEN 0 WHEN RAW:event:action
+      = ''dns_query'' THEN 1 ELSE 99 END))::NUMBER) WHEN 400300 THEN ''DNS Activity:
+      Unknown'' WHEN 400301 THEN ''DNS Activity: Query'' WHEN 400302 THEN ''DNS Activity:
+      Response'' WHEN 400306 THEN ''DNS Activity: Traffic'' WHEN 400399 THEN ''DNS
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400300 + (CASE WHEN RAW:event:action IS NULL THEN 0 WHEN RAW:event:action
+      = 'dns_query' THEN 1 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

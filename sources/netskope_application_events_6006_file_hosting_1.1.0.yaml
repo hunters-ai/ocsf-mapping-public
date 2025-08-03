@@ -1,0 +1,193 @@
+type: mapping
+id: netskope_application_events_6006_file_hosting_1.1.0
+version: '9'
+name: Netskope Application Events to OCSF class File Hosting
+data-types:
+- netskope-application-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTIVITY IN ('Upload', 'FileSyncUploadedFull') THEN 1
+      WHEN ACTIVITY IN ('Download', 'Download Installer', 'FileSyncDownloadedPartial',
+      'FileSyncDownloadedFull') THEN 2 WHEN ACTIVITY IN ('Update', 'Edit') THEN 3
+      WHEN ACTIVITY IN ('Delete', 'FileVersionsAllDeleted', 'FileDeletedFirstStageRecycleBin',
+      'FileVersionDeleted') THEN 4 WHEN ACTIVITY = 'Rename' THEN 5 WHEN ACTIVITY =
+      'Copy' THEN 6 WHEN ACTIVITY IN ('Move', 'Move to Trash', 'Remove from Folder',
+      'FileMoved') THEN 7 WHEN ACTIVITY IN ('Restore', 'Restore from Trash', 'FileRestored')
+      THEN 8 WHEN ACTIVITY IN ('Preview', 'FilePreviewed') THEN 9 WHEN ACTIVITY =
+      'Lock' THEN 10 WHEN ACTIVITY = 'Unlock' THEN 11 WHEN ACTIVITY IN ('Share', 'file_shared',
+      'Publish') THEN 12 WHEN ACTIVITY = 'Unshare' THEN 13 WHEN ACTIVITY IN ('View',
+      'View All') THEN 14 WHEN ACTIVITY IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTIVITY IN ('Upload', 'FileSyncUploadedFull')
+      THEN 1 WHEN ACTIVITY IN ('Download', 'Download Installer', 'FileSyncDownloadedPartial',
+      'FileSyncDownloadedFull') THEN 2 WHEN ACTIVITY IN ('Update', 'Edit') THEN 3
+      WHEN ACTIVITY IN ('Delete', 'FileVersionsAllDeleted', 'FileDeletedFirstStageRecycleBin',
+      'FileVersionDeleted') THEN 4 WHEN ACTIVITY = 'Rename' THEN 5 WHEN ACTIVITY =
+      'Copy' THEN 6 WHEN ACTIVITY IN ('Move', 'Move to Trash', 'Remove from Folder',
+      'FileMoved') THEN 7 WHEN ACTIVITY IN ('Restore', 'Restore from Trash', 'FileRestored')
+      THEN 8 WHEN ACTIVITY IN ('Preview', 'FilePreviewed') THEN 9 WHEN ACTIVITY =
+      'Lock' THEN 10 WHEN ACTIVITY = 'Unlock' THEN 11 WHEN ACTIVITY IN ('Share', 'file_shared',
+      'Publish') THEN 12 WHEN ACTIVITY = 'Unshare' THEN 13 WHEN ACTIVITY IN ('View',
+      'View All') THEN 14 WHEN ACTIVITY IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Upload' WHEN 10 THEN 'Lock' WHEN 11 THEN 'Unlock'
+      WHEN 12 THEN 'Share' WHEN 13 THEN 'Unshare' WHEN 14 THEN 'Open' WHEN 15 THEN
+      'Sync' WHEN 16 THEN 'Unsync' WHEN 2 THEN 'Download' WHEN 3 THEN 'Update' WHEN
+      4 THEN 'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move' WHEN
+      8 THEN 'Restore' WHEN 9 THEN 'Preview' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (IFF(USER ILIKE '%@%.%', USER, NULL))::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud.org.ou_uid: (IFF(ORGANIZATION_UNIT = '', NULL, ORGANIZATION_UNIT))::VARCHAR
+    cloud.org.uid: (ORGANIZATION_ID)::VARCHAR
+    connection_info.boundary: (CASE ((CASE WHEN COALESCE(USER_CATEGORY, FROM_USER_CATEGORY)
+      = 'Internal' THEN 2 WHEN COALESCE(USER_CATEGORY, FROM_USER_CATEGORY) = 'External'
+      THEN 3 WHEN COALESCE(USER_CATEGORY, FROM_USER_CATEGORY) IS NULL THEN 0 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Localhost' WHEN 10 THEN
+      'Gateway VPC' WHEN 11 THEN 'Internet Gateway' WHEN 2 THEN 'Internal' WHEN 3
+      THEN 'External' WHEN 4 THEN 'Same VPC' WHEN 5 THEN 'Internet/VPC Gateway' WHEN
+      6 THEN 'Virtual Private Gateway' WHEN 7 THEN 'Intra-region VPC' WHEN 8 THEN
+      'Inter-region VPC' WHEN 9 THEN 'Local Gateway' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.boundary_id: (CASE WHEN COALESCE(USER_CATEGORY, FROM_USER_CATEGORY)
+      = 'Internal' THEN 2 WHEN COALESCE(USER_CATEGORY, FROM_USER_CATEGORY) = 'External'
+      THEN 3 WHEN COALESCE(USER_CATEGORY, FROM_USER_CATEGORY) IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(COALESCE(SRC_IP, USER_IP), 'INET',
+      1):family)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version
+      4 (IPv4)' WHEN 6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(COALESCE(SRC_IP, USER_IP), 'INET',
+      1):family)::NUMBER
+    count: (RAW:count)::NUMBER
+    dst_endpoint.ip: (RAW:dstip)::VARCHAR
+    dst_endpoint.location.country: (RAW:dst_country)::VARCHAR
+    dst_endpoint.location.postal_code: (RAW:dst_zipcode)::VARCHAR
+    dst_endpoint.location.region: (RAW:dst_region)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.name: (OBJECT_NAME)::VARCHAR
+    file.uid: (OBJECT_ID)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('netskope-application-events')::VARCHAR
+    metadata.product.vendor_name: ('netskope')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(USER ILIKE '%@%.%', USER, NULL))::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:dstip)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (OBJECT_NAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(SRC_IP, USER_IP))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (COALESCE(SRC_IP, USER_IP))::VARCHAR
+    src_endpoint.location.city: (SRC_LOCATION)::VARCHAR
+    src_endpoint.location.country: (SRC_COUNTRY)::VARCHAR
+    src_endpoint.location.postal_code: (SRC_ZIPCODE)::VARCHAR
+    src_endpoint.location.region: (SRC_REGION)::VARCHAR
+    src_endpoint.os.name: (HOST_OS)::VARCHAR
+    src_endpoint.os.type: (CASE ((CASE WHEN HOST_OS ILIKE 'Windows%' THEN 100 WHEN
+      HOST_OS = 'Linux' THEN 200 WHEN HOST_OS ILIKE 'Android%' THEN 201 WHEN HOST_OS
+      = 'Mac OS' THEN 300 WHEN HOST_OS = 'iOS' THEN 301 WHEN HOST_OS IS NULL THEN
+      0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101
+      THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300
+      THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris'
+      WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    src_endpoint.os.type_id: (CASE WHEN HOST_OS ILIKE 'Windows%' THEN 100 WHEN HOST_OS
+      = 'Linux' THEN 200 WHEN HOST_OS ILIKE 'Android%' THEN 201 WHEN HOST_OS = 'Mac
+      OS' THEN 300 WHEN HOST_OS = 'iOS' THEN 301 WHEN HOST_OS IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RAW:action = 'allow' THEN 1 WHEN RAW:action = 'block'
+      THEN 2 WHEN RAW:action IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RAW:action = 'allow' THEN 1 WHEN RAW:action = 'block' THEN
+      2 WHEN RAW:action IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600600 + (CASE WHEN ACTIVITY IN (''Upload'', ''FileSyncUploadedFull'')
+      THEN 1 WHEN ACTIVITY IN (''Download'', ''Download Installer'', ''FileSyncDownloadedPartial'',
+      ''FileSyncDownloadedFull'') THEN 2 WHEN ACTIVITY IN (''Update'', ''Edit'') THEN
+      3 WHEN ACTIVITY IN (''Delete'', ''FileVersionsAllDeleted'', ''FileDeletedFirstStageRecycleBin'',
+      ''FileVersionDeleted'') THEN 4 WHEN ACTIVITY = ''Rename'' THEN 5 WHEN ACTIVITY
+      = ''Copy'' THEN 6 WHEN ACTIVITY IN (''Move'', ''Move to Trash'', ''Remove from
+      Folder'', ''FileMoved'') THEN 7 WHEN ACTIVITY IN (''Restore'', ''Restore from
+      Trash'', ''FileRestored'') THEN 8 WHEN ACTIVITY IN (''Preview'', ''FilePreviewed'')
+      THEN 9 WHEN ACTIVITY = ''Lock'' THEN 10 WHEN ACTIVITY = ''Unlock'' THEN 11 WHEN
+      ACTIVITY IN (''Share'', ''file_shared'', ''Publish'') THEN 12 WHEN ACTIVITY
+      = ''Unshare'' THEN 13 WHEN ACTIVITY IN (''View'', ''View All'') THEN 14 WHEN
+      ACTIVITY IS NULL THEN 0 ELSE 99 END))::NUMBER) WHEN 600600 THEN ''File Hosting
+      Activity: Unknown'' WHEN 600601 THEN ''File Hosting Activity: Upload'' WHEN
+      600602 THEN ''File Hosting Activity: Download'' WHEN 600603 THEN ''File Hosting
+      Activity: Update'' WHEN 600604 THEN ''File Hosting Activity: Delete'' WHEN 600605
+      THEN ''File Hosting Activity: Rename'' WHEN 600606 THEN ''File Hosting Activity:
+      Copy'' WHEN 600607 THEN ''File Hosting Activity: Move'' WHEN 600608 THEN ''File
+      Hosting Activity: Restore'' WHEN 600609 THEN ''File Hosting Activity: Preview''
+      WHEN 600610 THEN ''File Hosting Activity: Lock'' WHEN 600611 THEN ''File Hosting
+      Activity: Unlock'' WHEN 600612 THEN ''File Hosting Activity: Share'' WHEN 600613
+      THEN ''File Hosting Activity: Unshare'' WHEN 600614 THEN ''File Hosting Activity:
+      Open'' WHEN 600615 THEN ''File Hosting Activity: Sync'' WHEN 600616 THEN ''File
+      Hosting Activity: Unsync'' WHEN 600699 THEN ''File Hosting Activity: Other''
+      END)::VARCHAR'
+    type_uid: (600600 + (CASE WHEN ACTIVITY IN ('Upload', 'FileSyncUploadedFull')
+      THEN 1 WHEN ACTIVITY IN ('Download', 'Download Installer', 'FileSyncDownloadedPartial',
+      'FileSyncDownloadedFull') THEN 2 WHEN ACTIVITY IN ('Update', 'Edit') THEN 3
+      WHEN ACTIVITY IN ('Delete', 'FileVersionsAllDeleted', 'FileDeletedFirstStageRecycleBin',
+      'FileVersionDeleted') THEN 4 WHEN ACTIVITY = 'Rename' THEN 5 WHEN ACTIVITY =
+      'Copy' THEN 6 WHEN ACTIVITY IN ('Move', 'Move to Trash', 'Remove from Folder',
+      'FileMoved') THEN 7 WHEN ACTIVITY IN ('Restore', 'Restore from Trash', 'FileRestored')
+      THEN 8 WHEN ACTIVITY IN ('Preview', 'FilePreviewed') THEN 9 WHEN ACTIVITY =
+      'Lock' THEN 10 WHEN ACTIVITY = 'Unlock' THEN 11 WHEN ACTIVITY IN ('Share', 'file_shared',
+      'Publish') THEN 12 WHEN ACTIVITY = 'Unshare' THEN 13 WHEN ACTIVITY IN ('View',
+      'View All') THEN 14 WHEN ACTIVITY IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: OBJECT_TYPE IN ('Deleted Files', 'File', 'file', 'Files', 'File Requests',
+    'ImportFileUpload', 'Public File', 'Design File', 'Employee File', 'InitializeTemporaryFileBlocksUpload',
+    'Project_File__c', 'CommitFileBlocksUpload', 'FileVersionsAllDeleted', 'FileModifiedExtended',
+    'FileRestored', 'FileRecycled', 'FileSyncUploadedFull', 'FileCheckOutDiscarded',
+    'FileAccessedExtended', 'FileSyncDownloadedPartial', 'FileDeletedFirstStageRecycleBin',
+    'FilePreviewed', 'FileSyncDownloadedFull', 'FileVersionDeleted', 'file-versions',
+    'FileMoved', 'FileTranscriptContentAccessed', 'FileVersionRecycled')

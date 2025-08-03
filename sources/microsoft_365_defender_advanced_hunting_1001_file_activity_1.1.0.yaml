@@ -1,0 +1,230 @@
+type: mapping
+id: microsoft_365_defender_advanced_hunting_1001_file_activity_1.1.0
+version: '6'
+name: Microsoft 365 Defender Advanced Hunting to OCSF class File Activity
+data-types:
+- microsoft-365-defender-advanced-hunting
+mapping:
+  fields:
+    access_mask: NULL::NUMBER
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN PROPERTIES:ActionType = 'FileCreated' THEN 1 WHEN PROPERTIES:ActionType
+      = 'FileRenamed' THEN 5 WHEN PROPERTIES:ActionType = 'FileDeleted' THEN 4 WHEN
+      PROPERTIES:ActionType = 'FileModified' THEN 3 WHEN PROPERTIES:ActionType IS
+      NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN PROPERTIES:ActionType = 'FileCreated' THEN 1
+      WHEN PROPERTIES:ActionType = 'FileRenamed' THEN 5 WHEN PROPERTIES:ActionType
+      = 'FileDeleted' THEN 4 WHEN PROPERTIES:ActionType = 'FileModified' THEN 3 WHEN
+      PROPERTIES:ActionType IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Create' WHEN 10 THEN 'Encrypt' WHEN 11 THEN 'Decrypt' WHEN 12 THEN
+      'Mount' WHEN 13 THEN 'Unmount' WHEN 14 THEN 'Open' WHEN 2 THEN 'Read' WHEN 3
+      THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Set Attributes'
+      WHEN 7 THEN 'Set Security' WHEN 8 THEN 'Get Attributes' WHEN 9 THEN 'Get Security'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (PROPERTIES:InitiatingProcessCommandLine)::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (PROPERTIES:InitiatingProcessCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (PROPERTIES:InitiatingProcessCreationTime)::TIMESTAMP_LTZ
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256',
+      'algorithm_id',3, 'value', PROPERTIES:InitiatingProcessSHA256),OBJECT_CONSTRUCT('algorithm',
+      'MD5', 'algorithm_id',1, 'value', PROPERTIES:InitiatingProcessMD5),OBJECT_CONSTRUCT('algorithm',
+      'SHA1', 'algorithm_id',2, 'value', PROPERTIES:InitiatingProcessSHA1)))::ARRAY
+    actor.process.file.name: (PROPERTIES:InitiatingProcessFileName)::VARCHAR
+    actor.process.file.path: (PROPERTIES:InitiatingProcessFolderPath)::VARCHAR
+    actor.process.file.product.name: (PROPERTIES:InitiatingProcessVersionInfoProductName)::VARCHAR
+    actor.process.file.product.vendor_name: (PROPERTIES:InitiatingProcessVersionInfoCompanyName)::VARCHAR
+    actor.process.file.product.version: (PROPERTIES:InitiatingProcessVersionInfoProductVersion)::VARCHAR
+    actor.process.file.size: (PROPERTIES:InitiatingProcessFileSize)::NUMBER
+    actor.process.integrity: (CASE ((CASE WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Untrusted'
+      THEN 1 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Low' THEN 2 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Medium'
+      THEN 3 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='High' THEN 4 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='System'
+      THEN 5 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Protected' THEN 6 WHEN
+      PROPERTIES:InitiatingProcessIntegrityLevel IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted' WHEN 2 THEN 'Low' WHEN 3 THEN
+      'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System' WHEN 6 THEN 'Protected' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    actor.process.integrity_id: (CASE WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Untrusted'
+      THEN 1 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Low' THEN 2 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Medium'
+      THEN 3 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='High' THEN 4 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='System'
+      THEN 5 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Protected' THEN 6 WHEN
+      PROPERTIES:InitiatingProcessIntegrityLevel IS NULL THEN 0 ELSE 99 END)::NUMBER
+    actor.process.parent_process.created_time: (date_part('epoch_milliseconds', (PROPERTIES:InitiatingProcessParentCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.created_time_dt: (PROPERTIES:InitiatingProcessParentCreationTime)::TIMESTAMP_LTZ
+    actor.process.parent_process.file.name: (PROPERTIES:InitiatingProcessParentFileName)::VARCHAR
+    actor.process.parent_process.pid: (PROPERTIES:InitiatingProcessParentId)::NUMBER
+    actor.process.pid: (PROPERTIES:InitiatingProcessId)::NUMBER
+    actor.process.user.account.uid: (COALESCE(PROPERTIES:InitiatingProcessAccountObjectId,PROPERTIES:InitiatingProcessAccountSid))::VARCHAR
+    actor.process.user.domain: (PROPERTIES:InitiatingProcessAccountDomain)::VARCHAR
+    actor.user.email_addr: (PROPERTIES:InitiatingProcessAccountUpn)::VARCHAR
+    actor.user.name: (PROPERTIES:InitiatingProcessAccountName)::VARCHAR
+    actor.user.org.uid: (TENANT_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('file_activity')::VARCHAR
+    class_uid: ('1001')::NUMBER
+    cloud.provider: ('Microsoft Defender')::VARCHAR
+    component: NULL::VARCHAR
+    connection_uid: NULL::VARCHAR
+    count: NULL::NUMBER
+    create_mask: NULL::VARCHAR
+    device.hostname: (PROPERTIES:DeviceName)::VARCHAR
+    device.uid: (PROPERTIES:DeviceId)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    file.confidentiality: (CASE ((CASE WHEN PROPERTIES:SensitivityLabel='Public' THEN
+      1 WHEN PROPERTIES:SensitivityLabel='Confidential' THEN 2 WHEN PROPERTIES:SensitivityLabel='Internal
+      Use Only' THEN 3 WHEN PROPERTIES:SensitivityLabel='Restricted' THEN 4 WHEN PROPERTIES:SensitivityLabel
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Not
+      Confidential' WHEN 2 THEN 'Confidential' WHEN 3 THEN 'Secret' WHEN 4 THEN 'Top
+      Secret' WHEN 99 THEN 'Other' END)::VARCHAR
+    file.confidentiality_id: (CASE WHEN PROPERTIES:SensitivityLabel='Public' THEN
+      1 WHEN PROPERTIES:SensitivityLabel='Confidential' THEN 2 WHEN PROPERTIES:SensitivityLabel='Internal
+      Use Only' THEN 3 WHEN PROPERTIES:SensitivityLabel='Restricted' THEN 4 WHEN PROPERTIES:SensitivityLabel
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256', 'algorithm_id',3,
+      'value', PROPERTIES:SHA256),OBJECT_CONSTRUCT('algorithm', 'MD5', 'algorithm_id',1,
+      'value', PROPERTIES:MD5),OBJECT_CONSTRUCT('algorithm', 'SHA1', 'algorithm_id',2,
+      'value', PROPERTIES:SHA1)))::ARRAY
+    file.name: (PROPERTIES:FileName)::VARCHAR
+    file.path: (PROPERTIES:FolderPath)::VARCHAR
+    file.signature.certificate.created_time: (date_part('epoch_milliseconds', (PROPERTIES:CertificateCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    file.signature.certificate.created_time_dt: (PROPERTIES:CertificateCreationTime)::TIMESTAMP_LTZ
+    file.signature.certificate.expiration_time: (date_part('epoch_milliseconds', (PROPERTIES:CertificateExpirationTime)::TIMESTAMP_LTZ))::NUMBER
+    file.signature.certificate.expiration_time_dt: (PROPERTIES:CertificateExpirationTime)::TIMESTAMP_LTZ
+    file.signature.certificate.serial_number: (PROPERTIES:CertificateSerialNumber)::VARCHAR
+    file.size: (PROPERTIES:FileSize)::NUMBER
+    file.type: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File'
+      WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device'
+      WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    file.type_id: (1)::NUMBER
+    file_diff: NULL::VARCHAR
+    file_result: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-365-defender-advanced-hunting')::VARCHAR
+    metadata.product.vendor_name: ('microsoft-defender')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessFileName)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessParentFileName)::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessAccountUpn)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessAccountName)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PROPERTIES:DeviceName)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:FileName)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN PROPERTIES:ActionType = ''FileCreated'' THEN 100101
+      WHEN PROPERTIES:ActionType = ''FileRenamed'' THEN 100105 WHEN PROPERTIES:ActionType
+      = ''FileDeleted'' THEN 100104 WHEN PROPERTIES:ActionType = ''FileModified''
+      THEN 100103 WHEN PROPERTIES:ActionType IS NULL THEN 100100 ELSE 100199 END)::NUMBER)
+      WHEN 100100 THEN ''File System Activity: Unknown'' WHEN 100101 THEN ''File System
+      Activity: Create'' WHEN 100102 THEN ''File System Activity: Read'' WHEN 100103
+      THEN ''File System Activity: Update'' WHEN 100104 THEN ''File System Activity:
+      Delete'' WHEN 100105 THEN ''File System Activity: Rename'' WHEN 100106 THEN
+      ''File System Activity: Set Attributes'' WHEN 100107 THEN ''File System Activity:
+      Set Security'' WHEN 100108 THEN ''File System Activity: Get Attributes'' WHEN
+      100109 THEN ''File System Activity: Get Security'' WHEN 100110 THEN ''File System
+      Activity: Encrypt'' WHEN 100111 THEN ''File System Activity: Decrypt'' WHEN
+      100112 THEN ''File System Activity: Mount'' WHEN 100113 THEN ''File System Activity:
+      Unmount'' WHEN 100114 THEN ''File System Activity: Open'' WHEN 100199 THEN ''File
+      System Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN PROPERTIES:ActionType = 'FileCreated' THEN 100101 WHEN PROPERTIES:ActionType
+      = 'FileRenamed' THEN 100105 WHEN PROPERTIES:ActionType = 'FileDeleted' THEN
+      100104 WHEN PROPERTIES:ActionType = 'FileModified' THEN 100103 WHEN PROPERTIES:ActionType
+      IS NULL THEN 100100 ELSE 100199 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: category in ('AdvancedHunting-DeviceFileCertificateInfo','AdvancedHunting-DeviceFileEvents')

@@ -1,0 +1,130 @@
+type: mapping
+id: cb_platform_events_3002_authentication_1.1.0
+version: '10'
+name: Cb Platform Events to OCSF class Authentication
+data-types:
+- cb-platform-events
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.created_time: (date_part('epoch_milliseconds', (DEVICE_TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    device.created_time_dt: (DEVICE_TIMESTAMP)::TIMESTAMP_LTZ
+    device.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', DEVICE_GROUP)))::ARRAY
+    device.ip: (DEVICE_EXTERNAL_IP)::VARCHAR
+    device.name: (DEVICE_NAME)::VARCHAR
+    device.org.uid: (ORG_KEY)::VARCHAR
+    device.os.name: (DEVICE_OS)::VARCHAR
+    device.os.type: (CASE ((CASE DEVICE_OS WHEN NULL THEN 0 ELSE IFF(DEVICE_OS = 'WINDOWS',
+      100, 99) END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101
+      THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300
+      THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris'
+      WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE DEVICE_OS WHEN NULL THEN 0 ELSE IFF(DEVICE_OS = 'WINDOWS',
+      100, 99) END)::NUMBER
+    device.uid: (DEVICE_ID)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process.cmd_line: (PROCESS_CMDLINE)::VARCHAR
+    logon_process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm_id',
+      CASE WHEN PROCESS_HASH_SHA256 IS NULL AND PROCESS_HASH_MD5 IS NULL THEN 'Unknown'
+      WHEN PROCESS_HASH_SHA256 IS NOT NULL THEN 'SHA-256' WHEN PROCESS_HASH_MD5 IS
+      NOT NULL THEN 'MD5' END, 'value', COALESCE(PROCESS_HASH_SHA256, PROCESS_HASH_MD5))))::ARRAY
+    logon_process.file.path: (PROCESS_PATH)::VARCHAR
+    logon_process.parent_process.cmd_line: (PARENT_CMDLINE)::VARCHAR
+    logon_process.parent_process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm_id',
+      CASE WHEN PARENT_HASH_SHA256 IS NULL AND PARENT_HASH_MD5 IS NULL THEN 'Unknown'
+      WHEN PARENT_HASH_SHA256 IS NOT NULL THEN 'SHA-256' WHEN PARENT_HASH_MD5 IS NOT
+      NULL THEN 'MD5' END, 'value', COALESCE(PARENT_HASH_SHA256, PARENT_HASH_MD5))))::ARRAY
+    logon_process.parent_process.file.path: (PARENT_PATH)::VARCHAR
+    logon_process.parent_process.pid: (PARENT_PID)::NUMBER
+    logon_process.parent_process.uid: (PARENT_GUID)::VARCHAR
+    logon_process.pid: (PROCESS_PID)::NUMBER
+    logon_process.uid: (PROCESS_GUID)::VARCHAR
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: NULL::VARCHAR
+    metadata.event_code: (type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cb-platform-events')::VARCHAR
+    metadata.product.vendor_name: ('cb-defense')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DEVICE_EXTERNAL_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (PROCESS_USERNAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint: NULL::VARIANT
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((IFF(SENSOR_ACTION IS NOT NULL AND SENSOR_ACTION = 'ACTION_ALLOW',
+      1, 0))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (IFF(SENSOR_ACTION IS NOT NULL AND SENSOR_ACTION = 'ACTION_ALLOW',
+      1, 0))::NUMBER
+    time: (date_part('epoch_milliseconds', backend_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (backend_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.name: (PROCESS_USERNAME)::VARCHAR
+    user.org.name: (PROCESS_PUBLISHER[0]:name)::VARCHAR
+  predicate: TYPE = 'auth.event.logonop'

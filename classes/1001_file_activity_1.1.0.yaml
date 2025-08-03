@@ -1,0 +1,14 @@
+id: 1001_file_activity_1.1.0
+version: '5'
+description: OCSF View For Class - 1001 File Activity
+source-table-ids:
+- mdatp_device_file_events_1001_file_activity_1.1.0
+- sentinelone_raw_events_v2_1001_file_activity_1.1.0
+- crowdstrike_filevantage_queries_changes_1001_file_activity_1.1.0
+- pan_edr_raw_logs_1001_file_activity_1.1.0
+- cb_platform_events_1001_file_activity_1.1.0
+- crowdstrike_raw_events_1001_file_activity_1.1.0
+- sysdig_activity_file_access_1001_file_activity_1.1.0
+- universal_wel_1001_file_activity_1.1.0
+- microsoft_365_defender_advanced_hunting_1001_file_activity_1.1.0
+- zeek_logs_1001_file_activity_1.1.0

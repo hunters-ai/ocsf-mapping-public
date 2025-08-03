@@ -1,0 +1,121 @@
+type: mapping
+id: microsoft_message_trace_report_4009_email_activity_1.1.0
+version: '1'
+name: Microsoft Message Trace Report to OCSF class Email Activity
+data-types:
+- microsoft-message-trace-report
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN STATUS='Delivered' THEN 1 WHEN STATUS='Failed' THEN
+      2 WHEN STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN STATUS='Delivered' THEN 1 WHEN STATUS='Failed' THEN 2 WHEN
+      STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.org.name: (ORGANIZATION)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud.provider: ('Barracuda')::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN
+      2 THEN 'Outbound' WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (0)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (TO_IP)::VARCHAR
+    duration: NULL::NUMBER
+    email.from: (SENDER_ADDRESS)::VARCHAR
+    email.message_uid: (MESSAGE_ID)::VARCHAR
+    email.size: (SIZE)::NUMBER
+    email.subject: (SUBJECT)::VARCHAR
+    email.to: (ARRAY_CONSTRUCT(RECIPIENT_ADDRESS))::ARRAY
+    email.x_originating_ip: (ARRAY_CONSTRUCT(FROM_IP))::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: (date_part('epoch_milliseconds', (END_DATE)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (END_DATE)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-message-trace-report')::VARCHAR
+    metadata.product.vendor_name: ('office365')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (TO_IP)::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SENDER_ADDRESS)::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ARRAY_CONSTRUCT(RECIPIENT_ADDRESS))::ARRAY
+    - name: '''email.x_originating_ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (ARRAY_CONSTRUCT(FROM_IP))::ARRAY
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (FROM_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: NULL::VARCHAR
+    src_endpoint.ip: (FROM_IP)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (START_DATE)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (START_DATE)::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN STATUS='Delivered' THEN 1 WHEN STATUS='Failed' THEN
+      2 WHEN STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (STATUS)::VARCHAR
+    status_id: (CASE WHEN STATUS='Delivered' THEN 1 WHEN STATUS='Failed' THEN 2 WHEN
+      STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', received::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (received)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((400900)::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400900)::NUMBER
+    unmapped: NULL::VARIANT

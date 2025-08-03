@@ -1,0 +1,100 @@
+type: mapping
+id: confluence_audit_logs_3001_account_change_1.1.0
+version: '9'
+name: Confluence Audit Logs to OCSF class Account Change
+data-types:
+- confluence-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN SUMMARY ILIKE '%created%' THEN 1 WHEN SUMMARY ILIKE '%reactivated%'
+      THEN 2 WHEN SUMMARY ILIKE '%deactivated%' THEN 5 WHEN SUMMARY ILIKE '%deleted%'
+      THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN SUMMARY ILIKE '%created%' THEN 1 WHEN SUMMARY
+      ILIKE '%reactivated%' THEN 2 WHEN SUMMARY ILIKE '%deactivated%' THEN 5 WHEN
+      SUMMARY ILIKE '%deleted%' THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 10 THEN 'MFA Factor Enable'
+      WHEN 11 THEN 'MFA Factor Disable' WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password
+      Change' WHEN 4 THEN 'Password Reset' WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete'
+      WHEN 7 THEN 'Attach Policy' WHEN 8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: (SUMMARY)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('confluence-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('Atlassian')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint: NULL::VARIANT
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', creation_date::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (creation_date)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300100+ (CASE WHEN SUMMARY ILIKE ''%created%'' THEN 1 WHEN
+      SUMMARY ILIKE ''%reactivated%'' THEN 2 WHEN SUMMARY ILIKE ''%deactivated%''
+      THEN 5 WHEN SUMMARY ILIKE ''%deleted%'' THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE
+      99 END))::NUMBER) WHEN 300100 THEN ''Account Change: Unknown'' WHEN 300101 THEN
+      ''Account Change: Create'' WHEN 300102 THEN ''Account Change: Enable'' WHEN
+      300103 THEN ''Account Change: Password Change'' WHEN 300104 THEN ''Account Change:
+      Password Reset'' WHEN 300105 THEN ''Account Change: Disable'' WHEN 300106 THEN
+      ''Account Change: Delete'' WHEN 300107 THEN ''Account Change: Attach Policy''
+      WHEN 300108 THEN ''Account Change: Detach Policy'' WHEN 300109 THEN ''Account
+      Change: Lock'' WHEN 300110 THEN ''Account Change: MFA Factor Enable'' WHEN 300111
+      THEN ''Account Change: MFA Factor Disable'' WHEN 300199 THEN ''Account Change:
+      Other'' END)::VARCHAR'
+    type_uid: (300100+ (CASE WHEN SUMMARY ILIKE '%created%' THEN 1 WHEN SUMMARY ILIKE
+      '%reactivated%' THEN 2 WHEN SUMMARY ILIKE '%deactivated%' THEN 5 WHEN SUMMARY
+      ILIKE '%deleted%' THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.uid: (AUTHOR_ACCOUNT_ID)::VARCHAR
+    user.full_name: (COALESCE(AUTHOR_DISPLAY_NAME, AUTHOR_PUBLIC_NAME))::VARCHAR
+    user.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', CASE WHEN AFFECTED_OBJECT_TYPE
+      = 'Group' THEN AFFECTED_OBJECT_NAME END::VARCHAR)))::ARRAY
+    user.type: (CASE ((CASE WHEN AUTHOR_TYPE = 'user' THEN 1 WHEN IS_SYS_ADMIN = TRUE
+      THEN 2 WHEN IS_SUPER_ADMIN = TRUE THEN 2 WHEN AUTHOR_TYPE IS NULL THEN 0 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin'
+      WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN AUTHOR_TYPE = 'user' THEN 1 WHEN IS_SYS_ADMIN = TRUE
+      THEN 2 WHEN IS_SUPER_ADMIN = TRUE THEN 2 WHEN AUTHOR_TYPE IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    user.uid: (COALESCE(AUTHOR_USER_KEY, AUTHOR_USERNAME))::VARCHAR
+    user_result.full_name: (CASE WHEN CHANGED_VALUES[0]:name = 'Display name' THEN  CHANGED_VALUES[0]:newValue
+      END)::VARCHAR
+    user_result.uid: (CASE WHEN CHANGED_VALUES[0]:name = 'ID' THEN  CHANGED_VALUES[0]:newValue
+      END)::VARCHAR
+  predicate: SUMMARY ilike '%User%'

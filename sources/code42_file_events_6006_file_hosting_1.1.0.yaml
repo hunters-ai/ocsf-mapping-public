@@ -1,0 +1,161 @@
+type: mapping
+id: code42_file_events_6006_file_hosting_1.1.0
+version: '9'
+name: Code42 File Events to OCSF class File Hosting
+data-types:
+- code42-file-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE = 'DELETED' THEN 4 WHEN EVENT_TYPE = 'READ_BY_APP'
+      THEN 9 WHEN EVENT_TYPE = 'DOWNLOADED' THEN 2 WHEN EVENT_TYPE = 'MODIFIED' THEN
+      3 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE = 'DELETED' THEN 4 WHEN EVENT_TYPE
+      = 'READ_BY_APP' THEN 9 WHEN EVENT_TYPE = 'DOWNLOADED' THEN 2 WHEN EVENT_TYPE
+      = 'MODIFIED' THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Upload' WHEN 10 THEN 'Lock' WHEN 11 THEN 'Unlock' WHEN 12 THEN 'Share' WHEN
+      13 THEN 'Unshare' WHEN 14 THEN 'Open' WHEN 15 THEN 'Sync' WHEN 16 THEN 'Unsync'
+      WHEN 2 THEN 'Download' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN
+      'Rename' WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move' WHEN 8 THEN 'Restore' WHEN 9
+      THEN 'Preview' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.name: (PROCESS_NAME)::VARCHAR
+    actor.user.email_addr: (ACTOR)::VARCHAR
+    actor.user.uid: (USER_UID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.created_time: (date_part('epoch_milliseconds', (CREATE_TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    file.created_time_dt: (CREATE_TIMESTAMP)::TIMESTAMP_LTZ
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm', IFF(SHA256_CHECKSUM
+      IS NULL, NULL, 'SHA-256'), 'algorithm_id', IFF(SHA256_CHECKSUM IS NULL, NULL,
+      3), 'value', SHA256_CHECKSUM)))::ARRAY
+    file.modified_time: (date_part('epoch_milliseconds', (MODIFY_TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    file.modified_time_dt: (MODIFY_TIMESTAMP)::TIMESTAMP_LTZ
+    file.name: (FILE_NAME)::VARCHAR
+    file.owner.email_addr: (IFF(FILE_OWNER ILIKE '%%@%%', FILE_OWNER, NULL))::VARCHAR
+    file.owner.name: (IFF(FILE_OWNER NOT LIKE '%%@%%', FILE_OWNER, NULL))::VARCHAR
+    file.path: (FILE_PATH)::VARCHAR
+    file.product.url_string: (URL)::VARCHAR
+    file.size: (RAW:fileSize)::NUMBER
+    file.type: (CASE ((CASE WHEN RAW:fileType = 'FILE' THEN 1 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File' WHEN 2 THEN 'Folder' WHEN 3
+      THEN 'Character Device' WHEN 4 THEN 'Block Device' WHEN 5 THEN 'Local Socket'
+      WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link' WHEN 99 THEN 'Other' END)::VARCHAR
+    file.type_id: (CASE WHEN RAW:fileType = 'FILE' THEN 1 ELSE 99 END)::NUMBER
+    file.uid: (FILE_ID)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('code42-file-events')::VARCHAR
+    metadata.product.vendor_name: ('code42')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (PROCESS_NAME)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (FILE_NAME)::VARCHAR
+    - name: '''file.owner'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.owner.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(FILE_OWNER ILIKE '%%@%%', FILE_OWNER, NULL))::VARCHAR
+    - name: '''file.owner.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(FILE_OWNER NOT LIKE '%%@%%', FILE_OWNER, NULL))::VARCHAR
+    - name: '''file.product.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (URL)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (PUBLIC_IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN RAW:riskSeverity = 'MODERATE' THEN 3 WHEN RAW:riskSeverity
+      = 'NO_RISK_INDICATED' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High'
+      WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN RAW:riskSeverity = 'MODERATE' THEN 3 WHEN RAW:riskSeverity
+      = 'NO_RISK_INDICATED' THEN 1 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (PUBLIC_IP_ADDRESS)::VARCHAR
+    src_endpoint.name: (RAW:sourceName)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (EVENT_TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (EVENT_TIME)::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE = ''DOWNLOADED'' THEN 600602 WHEN EVENT_TYPE
+      = ''MODIFIED'' THEN 600603 WHEN EVENT_TYPE = ''DELETED'' THEN 600604 WHEN EVENT_TYPE
+      = ''READ_BY_APP'' THEN 600609 ELSE 600699 END)::NUMBER) WHEN 600600 THEN ''File
+      Hosting Activity: Unknown'' WHEN 600601 THEN ''File Hosting Activity: Upload''
+      WHEN 600602 THEN ''File Hosting Activity: Download'' WHEN 600603 THEN ''File
+      Hosting Activity: Update'' WHEN 600604 THEN ''File Hosting Activity: Delete''
+      WHEN 600605 THEN ''File Hosting Activity: Rename'' WHEN 600606 THEN ''File Hosting
+      Activity: Copy'' WHEN 600607 THEN ''File Hosting Activity: Move'' WHEN 600608
+      THEN ''File Hosting Activity: Restore'' WHEN 600609 THEN ''File Hosting Activity:
+      Preview'' WHEN 600610 THEN ''File Hosting Activity: Lock'' WHEN 600611 THEN
+      ''File Hosting Activity: Unlock'' WHEN 600612 THEN ''File Hosting Activity:
+      Share'' WHEN 600613 THEN ''File Hosting Activity: Unshare'' WHEN 600614 THEN
+      ''File Hosting Activity: Open'' WHEN 600615 THEN ''File Hosting Activity: Sync''
+      WHEN 600616 THEN ''File Hosting Activity: Unsync'' WHEN 600699 THEN ''File Hosting
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE = 'DOWNLOADED' THEN 600602 WHEN EVENT_TYPE = 'MODIFIED'
+      THEN 600603 WHEN EVENT_TYPE = 'DELETED' THEN 600604 WHEN EVENT_TYPE = 'READ_BY_APP'
+      THEN 600609 ELSE 600699 END)::NUMBER
+    unmapped: NULL::VARIANT

@@ -1,0 +1,123 @@
+type: mapping
+id: gcp_audit_6005_datastore_activity_1.1.0
+version: '9'
+name: Gcp Audit to OCSF class Datastore Activity
+data-types:
+- gcp-audit
+mapping:
+  fields:
+    activity_id: (CASE WHEN METHOD_NAME ILIKE ANY ('%.list', '%.get') THEN 1 WHEN
+      METHOD_NAME ILIKE '%.update' THEN 2 WHEN METHOD_NAME ILIKE '%.create' THEN 6
+      WHEN METHOD_NAME ILIKE '%.delete' THEN 7 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN METHOD_NAME ILIKE ANY ('%.list', '%.get') THEN
+      1 WHEN METHOD_NAME ILIKE '%.update' THEN 2 WHEN METHOD_NAME ILIKE '%.create'
+      THEN 6 WHEN METHOD_NAME ILIKE '%.delete' THEN 7 ELSE 99 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Read' WHEN 2 THEN 'Update' WHEN 3 THEN 'Connect'
+      WHEN 4 THEN 'Query' WHEN 5 THEN 'Write' WHEN 6 THEN 'Create' WHEN 7 THEN 'Delete'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.authorizations: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('policy', OBJECT_CONSTRUCT_KEEP_NULL('name',
+      AUTHORIZATION_PERMISSIONS[0]))))::ARRAY
+    actor.user.email_addr: (PRINCIPAL_EMAIL)::VARCHAR
+    api.response.data: (PROTO_PAYLOAD:response)::VARIANT
+    api.service.name: (SERVICE_NAME)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('datastore_activity')::VARCHAR
+    class_uid: ('6005')::NUMBER
+    cloud.project_uid: (PROJECT_ID)::VARCHAR
+    cloud.provider: ('GCP')::VARCHAR
+    cloud.region: (RESOURCE_LABELS:location)::VARCHAR
+    count: NULL::NUMBER
+    database.type: (CASE ((6)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Relational'
+      WHEN 2 THEN 'Network' WHEN 3 THEN 'Object Oriented' WHEN 4 THEN 'Centralized'
+      WHEN 5 THEN 'Operational' WHEN 6 THEN 'NoSQL' WHEN 99 THEN 'Other' END)::VARCHAR
+    database.type_id: (6)::NUMBER
+    databucket.file.name: (SPLIT_PART(RESOURCE_NAME, '/', ARRAY_SIZE(SPLIT(RESOURCE_NAME,
+      '/'))))::VARCHAR
+    databucket.file.path: (RESOURCE_NAME)::VARCHAR
+    databucket.name: (RESOURCE_LABELS:bucket_name)::VARCHAR
+    databucket.type: (CASE ((3)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'S3' WHEN
+      2 THEN 'Azure Blob' WHEN 3 THEN 'GCP Bucket' WHEN 99 THEN 'Other' END)::VARCHAR
+    databucket.type_id: (3)::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.user_agent: (CALLER_USER_AGENT)::VARCHAR
+    message: (PROTO_PAYLOAD:status:message)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('gcp-audit')::VARCHAR
+    metadata.product.vendor_name: ('gcp')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PRINCIPAL_EMAIL)::VARCHAR
+    - name: '''databucket.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''databucket.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(RESOURCE_NAME, '/', ARRAY_SIZE(SPLIT(RESOURCE_NAME, '/'))))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CALLER_IP)::VARCHAR
+    query_info: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY = 'INFO' THEN
+      1 WHEN SEVERITY = 'NOTICE' THEN 2 WHEN SEVERITY = 'ERROR' THEN 4 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN
+      'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY = 'INFO' THEN 1
+      WHEN SEVERITY = 'NOTICE' THEN 2 WHEN SEVERITY = 'ERROR' THEN 4 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (CALLER_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((IFF(PROTO_PAYLOAD:status:message IS NULL, 1, 2))::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (IFF(PROTO_PAYLOAD:status:message IS NULL, 1, 2))::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type: (CASE ((IFF(RESOURCE_TYPE = 'gcs_bucket', 2, 99))::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Database' WHEN 2 THEN 'Databucket' WHEN 3 THEN 'Table' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    type_id: (IFF(RESOURCE_TYPE = 'gcs_bucket', 2, 99))::NUMBER
+    type_name: '(CASE ((600500 + (CASE WHEN METHOD_NAME ILIKE ANY (''%.list'', ''%.get'')
+      THEN 1 WHEN METHOD_NAME ILIKE ''%.update'' THEN 2 WHEN METHOD_NAME ILIKE ''%.create''
+      THEN 6 WHEN METHOD_NAME ILIKE ''%.delete'' THEN 7 ELSE 99 END))::NUMBER) WHEN
+      600500 THEN ''Datastore Activity: Unknown'' WHEN 600501 THEN ''Datastore Activity:
+      Read'' WHEN 600502 THEN ''Datastore Activity: Update'' WHEN 600503 THEN ''Datastore
+      Activity: Connect'' WHEN 600504 THEN ''Datastore Activity: Query'' WHEN 600505
+      THEN ''Datastore Activity: Write'' WHEN 600506 THEN ''Datastore Activity: Create''
+      WHEN 600507 THEN ''Datastore Activity: Delete'' WHEN 600599 THEN ''Datastore
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (600500 + (CASE WHEN METHOD_NAME ILIKE ANY ('%.list', '%.get') THEN
+      1 WHEN METHOD_NAME ILIKE '%.update' THEN 2 WHEN METHOD_NAME ILIKE '%.create'
+      THEN 6 WHEN METHOD_NAME ILIKE '%.delete' THEN 7 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: SERVICE_NAME = 'storage.googleapis.com'

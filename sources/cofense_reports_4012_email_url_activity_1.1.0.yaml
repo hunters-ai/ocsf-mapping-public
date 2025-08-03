@@ -1,0 +1,98 @@
+type: mapping
+id: cofense_reports_4012_email_url_activity_1.1.0
+version: '10'
+name: Cofense Reports to OCSF class Email Url Activity
+data-types:
+- cofense-reports
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (3)::NUMBER
+    activity_name: (CASE ((3)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_url_activity')::VARCHAR
+    class_uid: ('4012')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    duration: NULL::NUMBER
+    email_uid: (ID)::VARCHAR
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (TYPE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cofense-reports')::VARCHAR
+    metadata.product.vendor_name: ('cofense')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (parse_url(value:raw,1):host)::VARCHAR
+    - name: '''url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (value:raw)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', reported_at::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (reported_at)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((401203)::NUMBER) WHEN 401200 THEN ''Email URL Activity: Unknown''
+      WHEN 401201 THEN ''Email URL Activity: Send'' WHEN 401202 THEN ''Email URL Activity:
+      Receive'' WHEN 401203 THEN ''Email URL Activity: Scan'' WHEN 401299 THEN ''Email
+      URL Activity: Other'' END)::VARCHAR'
+    type_uid: (401203)::NUMBER
+    unmapped: NULL::VARIANT
+    url.hostname: (parse_url(value:raw,1):host)::VARCHAR
+    url.path: (parse_url(value:raw,2):path)::VARCHAR
+    url.query_string: (parse_url(value:raw,3):query)::VARCHAR
+    url.scheme: (parse_url(value:raw,6):scheme)::VARCHAR
+    url.url_string: (value:raw)::VARCHAR
+  predicate: URLS_COUNT > 0
+  sql: SELECT * FROM  cofense_reports,  LATERAL FLATTEN(input => cofense_reports.RAW:attributes:urls)
+    f

@@ -1,0 +1,199 @@
+type: mapping
+id: microsoft_365_defender_advanced_hunting_201002_win_registry_value_activity_1.1.0
+version: '5'
+name: Microsoft 365 Defender Advanced Hunting to OCSF class Win/registry Value Activity
+data-types:
+- microsoft-365-defender-advanced-hunting
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN PROPERTIES:ActionType = 'RegistryValueSet' THEN 2 WHEN
+      PROPERTIES:ActionType = 'RegistryValueDeleted' THEN 4 WHEN PROPERTIES:ActionType
+      = 'RegistryValueGet' THEN 1 WHEN PROPERTIES:ActionType = 'RegistryValueModified'
+      THEN 3 WHEN PROPERTIES:ActionType IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN PROPERTIES:ActionType = 'RegistryValueSet' THEN
+      2 WHEN PROPERTIES:ActionType = 'RegistryValueDeleted' THEN 4 WHEN PROPERTIES:ActionType
+      = 'RegistryValueGet' THEN 1 WHEN PROPERTIES:ActionType = 'RegistryValueModified'
+      THEN 3 WHEN PROPERTIES:ActionType IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Get' WHEN 2 THEN 'Set' WHEN 3 THEN 'Modify' WHEN
+      4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (PROPERTIES:InitiatingProcessCommandLine)::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (PROPERTIES:InitiatingProcessCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (PROPERTIES:InitiatingProcessCreationTime)::TIMESTAMP_LTZ
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256',
+      'algorithm_id',3, 'value', PROPERTIES:InitiatingProcessSHA256),OBJECT_CONSTRUCT('algorithm',
+      'MD5', 'algorithm_id',1, 'value', PROPERTIES:InitiatingProcessMD5),OBJECT_CONSTRUCT('algorithm',
+      'SHA1', 'algorithm_id',2, 'value', PROPERTIES:InitiatingProcessSHA1)))::ARRAY
+    actor.process.file.name: (PROPERTIES:InitiatingProcessFileName)::VARCHAR
+    actor.process.file.path: (PROPERTIES:InitiatingProcessFolderPath)::VARCHAR
+    actor.process.file.product.name: (PROPERTIES:InitiatingProcessVersionInfoProductName)::VARCHAR
+    actor.process.file.product.vendor_name: (PROPERTIES:InitiatingProcessVersionInfoCompanyName)::VARCHAR
+    actor.process.file.product.version: (PROPERTIES:InitiatingProcessVersionInfoProductVersion)::VARCHAR
+    actor.process.file.size: (PROPERTIES:InitiatingProcessFileSize)::NUMBER
+    actor.process.integrity: (CASE ((CASE WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Untrusted'
+      THEN 1 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Low' THEN 2 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Medium'
+      THEN 3 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='High' THEN 4 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='System'
+      THEN 5 WHEN    PROPERTIES:InitiatingProcessIntegrityLevel='Protected' THEN 6
+      WHEN PROPERTIES:InitiatingProcessIntegrityLevel IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted' WHEN 2 THEN 'Low' WHEN 3 THEN
+      'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System' WHEN 6 THEN 'Protected' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    actor.process.integrity_id: (CASE WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Untrusted'
+      THEN 1 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Low' THEN 2 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='Medium'
+      THEN 3 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='High' THEN 4 WHEN PROPERTIES:InitiatingProcessIntegrityLevel='System'
+      THEN 5 WHEN    PROPERTIES:InitiatingProcessIntegrityLevel='Protected' THEN 6
+      WHEN PROPERTIES:InitiatingProcessIntegrityLevel IS NULL THEN 0 ELSE 99 END)::NUMBER
+    actor.process.parent_process.created_time: (date_part('epoch_milliseconds', (PROPERTIES:InitiatingProcessParentCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.created_time_dt: (PROPERTIES:InitiatingProcessParentCreationTime)::TIMESTAMP_LTZ
+    actor.process.parent_process.file.name: (PROPERTIES:InitiatingProcessParentFileName)::VARCHAR
+    actor.process.parent_process.parent_process.pid: (PROPERTIES:InitiatingProcessParentId)::NUMBER
+    actor.process.parent_process.pid: (PROPERTIES:InitiatingProcessId)::NUMBER
+    actor.process.parent_process.user.account.uid: (COALESCE(PROPERTIES:InitiatingProcessAccountObjectId,PROPERTIES:InitiatingProcessAccountSid))::VARCHAR
+    actor.process.parent_process.user.domain: (PROPERTIES:InitiatingProcessAccountDomain)::VARCHAR
+    actor.process.parent_process.user.email_addr: (PROPERTIES:InitiatingProcessAccountUpn)::VARCHAR
+    actor.process.parent_process.user.name: (PROPERTIES:InitiatingProcessAccountName)::VARCHAR
+    actor.user.org.uid: (TENANT_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('win/registry_value_activity')::VARCHAR
+    class_uid: ('201002')::NUMBER
+    cloud.provider: ('Microsoft Defender')::VARCHAR
+    count: NULL::NUMBER
+    device.name: (PROPERTIES:DeviceName)::VARCHAR
+    device.uid: (PROPERTIES:DeviceId)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-365-defender-advanced-hunting')::VARCHAR
+    metadata.product.vendor_name: ('microsoft-defender')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessFileName)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessParentFileName)::VARCHAR
+    - name: '''actor.process.parent_process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessAccountUpn)::VARCHAR
+    - name: '''actor.process.parent_process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (PROPERTIES:InitiatingProcessAccountName)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    prev_reg_value.name: (PROPERTIES:PreviousRegistryValueName)::VARCHAR
+    prev_reg_value.path: (PROPERTIES:PreviousRegistryKey)::VARCHAR
+    raw_data: NULL::VARCHAR
+    reg_value.name: (PROPERTIES:RegistryValueName)::VARCHAR
+    reg_value.path: (PROPERTIES:RegistryKey)::VARCHAR
+    reg_value.type: (CASE ((CASE WHEN PROPERTIES:RegistryValueType = 'Binary' THEN
+      1 WHEN PROPERTIES:RegistryValueType = 'Qword' THEN 8 WHEN PROPERTIES:RegistryValueType
+      = 'Dword' THEN 2 WHEN PROPERTIES:RegistryValueType = 'MultiString' THEN 6 WHEN
+      PROPERTIES:RegistryValueType = 'String' THEN 10 WHEN PROPERTIES:RegistryValueType
+      = 'None' THEN 7 WHEN PROPERTIES:RegistryValueType IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'REG_BINARY' WHEN 10 THEN 'REG_SZ' WHEN 2
+      THEN 'REG_DWORD' WHEN 3 THEN 'REG_DWORD_BIG_ENDIAN' WHEN 4 THEN 'REG_EXPAND_SZ'
+      WHEN 5 THEN 'REG_LINK' WHEN 6 THEN 'REG_MULTI_SZ' WHEN 7 THEN 'REG_NONE' WHEN
+      8 THEN 'REG_QWORD' WHEN 9 THEN 'REG_QWORD_LITTLE_ENDIAN' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    reg_value.type_id: (CASE WHEN PROPERTIES:RegistryValueType = 'Binary' THEN 1 WHEN
+      PROPERTIES:RegistryValueType = 'Qword' THEN 8 WHEN PROPERTIES:RegistryValueType
+      = 'Dword' THEN 2 WHEN PROPERTIES:RegistryValueType = 'MultiString' THEN 6 WHEN
+      PROPERTIES:RegistryValueType = 'String' THEN 10 WHEN PROPERTIES:RegistryValueType
+      = 'None' THEN 7 WHEN PROPERTIES:RegistryValueType IS NULL THEN 0 ELSE 99 END)::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN PROPERTIES:ActionType = ''RegistryValueSet'' THEN
+      20100202 WHEN PROPERTIES:ActionType = ''RegistryValueDeleted'' THEN 20100204
+      WHEN PROPERTIES:ActionType = ''RegistryValueGet'' THEN 20100201 WHEN PROPERTIES:ActionType
+      = ''RegistryValueModified'' THEN 20100203 WHEN PROPERTIES:ActionType IS NULL
+      THEN 20100200 ELSE 20100299 END)::NUMBER) WHEN 20100200 THEN ''Registry Value
+      Activity: Unknown'' WHEN 20100201 THEN ''Registry Value Activity: Get'' WHEN
+      20100202 THEN ''Registry Value Activity: Set'' WHEN 20100203 THEN ''Registry
+      Value Activity: Modify'' WHEN 20100204 THEN ''Registry Value Activity: Delete''
+      WHEN 20100299 THEN ''Registry Value Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN PROPERTIES:ActionType = 'RegistryValueSet' THEN 20100202
+      WHEN PROPERTIES:ActionType = 'RegistryValueDeleted' THEN 20100204 WHEN PROPERTIES:ActionType
+      = 'RegistryValueGet' THEN 20100201 WHEN PROPERTIES:ActionType = 'RegistryValueModified'
+      THEN 20100203 WHEN PROPERTIES:ActionType IS NULL THEN 20100200 ELSE 20100299
+      END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: category = 'AdvancedHunting-DeviceRegistryEvents' AND properties:ActionType
+    ILIKE '%VALUE%'

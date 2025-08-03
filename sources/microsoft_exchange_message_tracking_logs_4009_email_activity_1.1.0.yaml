@@ -1,0 +1,138 @@
+type: mapping
+id: microsoft_exchange_message_tracking_logs_4009_email_activity_1.1.0
+version: '10'
+name: Microsoft Exchange Message Tracking Logs to OCSF class Email Activity
+data-types:
+- microsoft-exchange-message-tracking-logs
+mapping:
+  fields:
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID = 'SEND' THEN 1
+      WHEN EVENT_ID = 'RECEIVE' THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID = 'SEND'
+      THEN 1 WHEN EVENT_ID = 'RECEIVE' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Send' WHEN 2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE ((CASE WHEN DIRECTIONALITY IS NULL THEN 0 WHEN DIRECTIONALITY
+      = 'Incoming' THEN 1 WHEN DIRECTIONALITY = 'Originating' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN
+      'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (CASE WHEN DIRECTIONALITY IS NULL THEN 0 WHEN DIRECTIONALITY = 'Incoming'
+      THEN 1 WHEN DIRECTIONALITY = 'Originating' THEN 2 ELSE 99 END)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.hostname: (SERVER_HOSTNAME)::VARCHAR
+    dst_endpoint.ip: (COALESCE(ORIGINAL_SERVER_IP, SERVER_IP))::VARCHAR
+    duration: NULL::NUMBER
+    email.from: (SENDER_ADDRESS)::VARCHAR
+    email.message_uid: (MESSAGE_ID)::VARCHAR
+    email.reply_to: (IFF(RETURN_PATH='<>', NULL, RETURN_PATH))::VARCHAR
+    email.size: (TOTAL_BYTES)::NUMBER
+    email.subject: (MESSAGE_SUBJECT)::VARCHAR
+    email.to: (SPLIT(RECIPIENT_ADDRESS, ';'))::ARRAY
+    email.uid: (NETWORK_MESSAGE_ID)::VARCHAR
+    email_auth: NULL::VARIANT
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (MESSAGE_INFO)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-exchange-message-tracking-logs')::VARCHAR
+    metadata.product.vendor_name: ('microsoft_exchange')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (SERVER_HOSTNAME)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(ORIGINAL_SERVER_IP, SERVER_IP))::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SENDER_ADDRESS)::VARCHAR
+    - name: '''email.reply_to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(RETURN_PATH='<>', NULL, RETURN_PATH))::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SPLIT(RECIPIENT_ADDRESS, ';'))::ARRAY
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (CLIENT_HOSTNAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(ORIGINAL_CLIENT_IP, CLIENT_IP))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: NULL::VARCHAR
+    src_endpoint.hostname: (CLIENT_HOSTNAME)::VARCHAR
+    src_endpoint.ip: (COALESCE(ORIGINAL_CLIENT_IP, CLIENT_IP))::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RECIPIENT_STATUS IS NULL THEN 0 WHEN RECIPIENT_STATUS
+      ILIKE '250%' OR RECIPIENT_STATUS ILIKE '%LED=250%' THEN 1 WHEN RECIPIENT_STATUS
+      ILIKE '%LED=5%' OR RECIPIENT_STATUS ILIKE '%LED=4%' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (RECIPIENT_STATUS)::VARCHAR
+    status_id: (CASE WHEN RECIPIENT_STATUS IS NULL THEN 0 WHEN RECIPIENT_STATUS ILIKE
+      '250%' OR RECIPIENT_STATUS ILIKE '%LED=250%' THEN 1 WHEN RECIPIENT_STATUS ILIKE
+      '%LED=5%' OR RECIPIENT_STATUS ILIKE '%LED=4%' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', date_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (date_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_ID IS NULL THEN 400900 WHEN EVENT_ID = ''SEND''
+      THEN 400901 WHEN EVENT_ID = ''RECEIVE'' THEN 400902 ELSE 400999 END)::NUMBER)
+      WHEN 400900 THEN ''Email Activity: Unknown'' WHEN 400901 THEN ''Email Activity:
+      Send'' WHEN 400902 THEN ''Email Activity: Receive'' WHEN 400903 THEN ''Email
+      Activity: Scan'' WHEN 400999 THEN ''Email Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_ID IS NULL THEN 400900 WHEN EVENT_ID = 'SEND' THEN
+      400901 WHEN EVENT_ID = 'RECEIVE' THEN 400902 ELSE 400999 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: TRANSPORT_TRAFFIC_TYPE = 'Email'

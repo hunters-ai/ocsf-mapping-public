@@ -1,0 +1,197 @@
+type: mapping
+id: aws_cloudtrail_3002_authentication_1.1.0
+version: '16'
+name: Aws Cloudtrail to OCSF class Authentication
+data-types:
+- aws-cloudtrail
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.authorizations: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('decision',
+      CASE WHEN EVENT_NAME = 'ConsoleLogin' THEN CASE WHEN RESPONSE_ELEMENTS:ConsoleLogin
+      = 'Success' THEN 'allowed' ELSE 'denied' END WHEN EVENT_NAME = 'AssumeRoleWithSAML'
+      THEN   CASE   WHEN RESPONSE_ELEMENTS:credentials:accessKeyId IS NOT NULL THEN
+      'allowed' ELSE 'denied' END END)))::ARRAY
+    actor.session.credential_uid: (USER_IDENTITY_ACCESS_KEY_ID)::VARCHAR
+    actor.session.is_mfa: (CASE WHEN ADDITIONAL_EVENT_DATA:MFAUsed = 'No' THEN FALSE
+      WHEN ADDITIONAL_EVENT_DATA:MFAUsed = 'Yes' THEN TRUE  ELSE NULL::BOOLEAN END)::BOOLEAN
+    actor.user.account.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    actor.user.credential_uid: (USER_IDENTITY_ACCESS_KEY_ID)::VARCHAR
+    actor.user.email_addr: (CASE WHEN EVENT_NAME = 'ConsoleLogin' and CONTAINS(USER_IDENTITY:arn,
+      '/') THEN              SPLIT_PART(USER_IDENTITY:arn, '/', -1)   WHEN EVENT_NAME
+      = 'AssumeRoleWithSAML' THEN REQUEST_PARAMETERS:roleSessionName::VARCHAR END)::VARCHAR
+    actor.user.name: (CASE EVENT_NAME WHEN 'ConsoleLogin' THEN USER_IDENTITY_SESSION_CONTEXT_SESSION_ISSUER_USER_NAME::VARCHAR   ELSE
+      USER_IDENTITY_USER_NAME::VARCHAR END)::VARCHAR
+    actor.user.org.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    actor.user.uid: (CASE EVENT_NAME WHEN 'ConsoleLogin' THEN USER_IDENTITY_ARN::VARCHAR   ELSE
+      RESOURCES[0]:ARN::VARCHAR END)::VARCHAR
+    api.response.error: (ERROR_CODE)::VARCHAR
+    api.response.error_message: (ERROR_MESSAGE)::VARCHAR
+    api.service.name: (EVENT_SOURCE)::VARCHAR
+    api.service.uid: (EVENT_SOURCE)::VARCHAR
+    api.service.version: (EVENT_VERSION)::VARCHAR
+    api.version: (EVENT_VERSION)::VARCHAR
+    auth_protocol: (CASE ((CASE WHEN EVENT_NAME = 'ConsoleLogin' THEN '99'::NUMBER
+      WHEN EVENT_NAME = 'AssumeRoleWithSAML' THEN '5'::NUMBER END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'NTLM' WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos'
+      WHEN 3 THEN 'Digest' WHEN 4 THEN 'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH
+      2.0' WHEN 7 THEN 'PAP' WHEN 8 THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    auth_protocol_id: (CASE WHEN EVENT_NAME = 'ConsoleLogin' THEN '99'::NUMBER WHEN
+      EVENT_NAME = 'AssumeRoleWithSAML' THEN '5'::NUMBER END)::NUMBER
+    category_name: (CASE (('3')::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: ('3')::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud.account.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    cloud.org.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    cloud.provider: ('AWS')::VARCHAR
+    cloud.region: (AWS_REGION)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    dst_endpoint.domain: ('amazonaws.com')::VARCHAR
+    dst_endpoint.hostname: (EVENT_SOURCE)::VARCHAR
+    dst_endpoint.name: (EVENT_SOURCE)::VARCHAR
+    dst_endpoint.type: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server'
+      WHEN 10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    dst_endpoint.type_id: (1)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: (CASE  WHEN ADDITIONAL_EVENT_DATA:MFAUsed = 'No' THEN FALSE  WHEN ADDITIONAL_EVENT_DATA:MFAUsed
+      = 'Yes' THEN TRUE  ELSE NULL::BOOLEAN END)::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: (TRUE)::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: (CASE (CASE WHEN EVENT_NAME = 'ConsoleLogin' THEN 2 WHEN EVENT_NAME
+      = 'AssumeRoleWithSAML' THEN 10 WHEN EVENT_NAME IS NULL THEN 0 ELSE 99 END::NUMBER)
+      WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive' WHEN 11 THEN 'Cached
+      Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN 13 THEN 'Cached Unlock'
+      WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN 4 THEN 'Batch' WHEN 5 THEN
+      'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network Cleartext' WHEN 9 THEN
+      'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
+    logon_type_id: (CASE WHEN EVENT_NAME = 'ConsoleLogin' THEN 2 WHEN EVENT_NAME =
+      'AssumeRoleWithSAML' THEN 10 WHEN EVENT_NAME IS NULL THEN 0 ELSE 99 END)::NUMBER
+    message: NULL::VARCHAR
+    metadata.event_code: (event_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('aws-cloudtrail')::VARCHAR
+    metadata.product.vendor_name: ('aws')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CASE WHEN EVENT_NAME = 'ConsoleLogin' and CONTAINS(USER_IDENTITY:arn,
+        '/') THEN              SPLIT_PART(USER_IDENTITY:arn, '/', -1)   WHEN EVENT_NAME
+        = 'AssumeRoleWithSAML' THEN REQUEST_PARAMETERS:roleSessionName::VARCHAR END)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (CASE EVENT_NAME WHEN 'ConsoleLogin' THEN USER_IDENTITY_SESSION_CONTEXT_SESSION_ISSUER_USER_NAME::VARCHAR   ELSE
+        USER_IDENTITY_USER_NAME::VARCHAR END)::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (EVENT_SOURCE)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP_ADDRESS)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CASE WHEN EVENT_NAME = 'ConsoleLogin' and CONTAINS(USER_IDENTITY:arn,
+        '/') THEN              SPLIT_PART(USER_IDENTITY:arn, '/', -1) WHEN EVENT_NAME
+        = 'AssumeRoleWithSAML' THEN REQUEST_PARAMETERS:roleSessionName::VARCHAR END)::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (CASE EVENT_NAME WHEN 'ConsoleLogin' THEN USER_IDENTITY_SESSION_CONTEXT_SESSION_ISSUER_USER_NAME::VARCHAR   ELSE
+        USER_IDENTITY_USER_NAME::VARCHAR END)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.name: (EVENT_SOURCE)::VARCHAR
+    service.uid: (EVENT_SOURCE)::VARCHAR
+    service.version: (EVENT_VERSION)::VARCHAR
+    session.created_time: (date_part('epoch_milliseconds', (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_CREATION_DATE)::TIMESTAMP_LTZ))::NUMBER
+    session.created_time_dt: (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_CREATION_DATE)::TIMESTAMP_LTZ
+    session.credential_uid: (USER_IDENTITY_ACCESS_KEY_ID)::VARCHAR
+    session.is_mfa: (CASE  WHEN ADDITIONAL_EVENT_DATA:MFAUsed = 'No' THEN FALSE  WHEN
+      ADDITIONAL_EVENT_DATA:MFAUsed = 'Yes' THEN TRUE  ELSE NULL::BOOLEAN END)::BOOLEAN
+    session.issuer: (USER_IDENTITY_SESSION_CONTEXT_SESSION_ISSUER_ARN)::VARCHAR
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    src_endpoint.ip: (SOURCE_IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EVENT_NAME = 'ConsoleLogin' THEN CASE WHEN RESPONSE_ELEMENTS:ConsoleLogin
+      = '1'::NUMBER THEN '1'::number ELSE '2'::number END WHEN EVENT_NAME = 'AssumeRoleWithSAML'
+      THEN CASE WHEN RESPONSE_ELEMENTS:credentials:accessKeyId IS NOT NULL THEN '1'::number
+      ELSE '2'::number END END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success'
+      WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: (ERROR_CODE)::VARCHAR
+    status_detail: (ERROR_MESSAGE)::VARCHAR
+    status_id: (CASE WHEN EVENT_NAME = 'ConsoleLogin' THEN CASE WHEN RESPONSE_ELEMENTS:ConsoleLogin
+      = '1'::NUMBER THEN '1'::number ELSE '2'::number END WHEN EVENT_NAME = 'AssumeRoleWithSAML'
+      THEN CASE WHEN RESPONSE_ELEMENTS:credentials:accessKeyId IS NOT NULL THEN '1'::number
+      ELSE '2'::number END END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    user.credential_uid: (USER_IDENTITY_ACCESS_KEY_ID)::VARCHAR
+    user.email_addr: (CASE WHEN EVENT_NAME = 'ConsoleLogin' and CONTAINS(USER_IDENTITY:arn,
+      '/') THEN              SPLIT_PART(USER_IDENTITY:arn, '/', -1) WHEN EVENT_NAME
+      = 'AssumeRoleWithSAML' THEN REQUEST_PARAMETERS:roleSessionName::VARCHAR END)::VARCHAR
+    user.name: (CASE EVENT_NAME WHEN 'ConsoleLogin' THEN USER_IDENTITY_SESSION_CONTEXT_SESSION_ISSUER_USER_NAME::VARCHAR   ELSE
+      USER_IDENTITY_USER_NAME::VARCHAR END)::VARCHAR
+    user.org.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    user.type: (CASE ((case when USER_IDENTITY_TYPE = 'Unknown' then 0 when USER_IDENTITY_TYPE
+      in ('IAMUser', 'SAMLUser', 'WebIdentityUser') then 1 when USER_IDENTITY_TYPE
+      = 'Root' then 2 else 99 end)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (case when USER_IDENTITY_TYPE = 'Unknown' then 0 when USER_IDENTITY_TYPE
+      in ('IAMUser', 'SAMLUser', 'WebIdentityUser') then 1 when USER_IDENTITY_TYPE
+      = 'Root' then 2 else 99 end)::NUMBER
+    user.uid: (CASE EVENT_NAME WHEN 'ConsoleLogin' THEN USER_IDENTITY_ARN::VARCHAR
+      ELSE RESOURCES[0]:ARN::VARCHAR END)::VARCHAR
+  predicate: EVENT_NAME in ('ConsoleLogin', 'AssumeRoleWithSAML')

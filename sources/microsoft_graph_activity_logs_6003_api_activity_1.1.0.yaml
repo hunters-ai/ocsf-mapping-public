@@ -1,0 +1,110 @@
+type: mapping
+id: microsoft_graph_activity_logs_6003_api_activity_1.1.0
+version: '3'
+name: Microsoft Graph Activity Logs to OCSF class Api Activity
+data-types:
+- microsoft-graph-activity-logs
+mapping:
+  fields:
+    activity_id: (CASE REQUEST_METHOD WHEN 'GET' THEN 2 WHEN 'POST' THEN 1 WHEN 'DELETE'
+      THEN 4 WHEN NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE REQUEST_METHOD WHEN 'GET' THEN 2 WHEN 'POST' THEN
+      1 WHEN 'DELETE' THEN 4 WHEN NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.idp.name: (IDENTITY_PROVIDER)::VARCHAR
+    actor.user.org.name: (TENANT_ID)::VARCHAR
+    actor.user.uid: (USER_PRINCIPAL_OBJECT_ID)::VARCHAR
+    api.operation: (REQUEST_METHOD)::VARCHAR
+    api.request.uid: (REQUEST_ID)::VARCHAR
+    api.response.code: (RESPONSE_STATUS_CODE)::NUMBER
+    api.response.message: (CATEGORY)::VARCHAR
+    api.service.uid: (PROPERTIES:servicePrincipalId)::VARCHAR
+    api.version: (API_VERSION)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.provider: ('Microsoft')::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: (DURATION_MS)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.http_method: (REQUEST_METHOD)::VARCHAR
+    http_request.url.hostname: (PARSE_URL(REQUEST_URI):host)::VARCHAR
+    http_request.url.path: (PARSE_URL(REQUEST_URI):path)::VARCHAR
+    http_request.url.port: (PARSE_URL(REQUEST_URI):port)::NUMBER
+    http_request.url.query_string: (PARSE_URL(REQUEST_URI):query)::VARCHAR
+    http_request.url.scheme: (PARSE_URL(REQUEST_URI):scheme)::VARCHAR
+    http_request.url.url_string: (REQUEST_URI)::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: (CATEGORY)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-graph-activity-logs')::VARCHAR
+    metadata.product.vendor_name: ('microsoft')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PARSE_URL(REQUEST_URI):host)::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (REQUEST_URI)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CALLER_IPADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('uid', RESOURCE_ID)))::ARRAY
+    severity: (CASE ((CASE LEVEL WHEN 'Informational' THEN 1 WHEN NULL THEN 0 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN
+      'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6
+      THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE LEVEL WHEN 'Informational' THEN 1 WHEN NULL THEN 0 ELSE 99
+      END)::NUMBER
+    src_endpoint.ip: (CALLER_IPADDRESS)::VARCHAR
+    src_endpoint.location.region: (LOCATION)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE RESPONSE_STATUS_CODE WHEN REGEXP_SUBSTR(RESPONSE_STATUS_CODE,
+      '^2[0-9]{2}$') THEN 1 WHEN NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: (RESPONSE_STATUS_CODE)::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE RESPONSE_STATUS_CODE WHEN REGEXP_SUBSTR(RESPONSE_STATUS_CODE,
+      '^2[0-9]{2}$') THEN 1 WHEN NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600300 + (CASE REQUEST_METHOD WHEN ''GET'' THEN 2 WHEN ''POST''
+      THEN 1 WHEN ''DELETE'' THEN 4 WHEN NULL THEN 0 ELSE 99 END))::NUMBER) WHEN 600300
+      THEN ''API Activity: Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN
+      600302 THEN ''API Activity: Read'' WHEN 600303 THEN ''API Activity: Update''
+      WHEN 600304 THEN ''API Activity: Delete'' WHEN 600399 THEN ''API Activity: Other''
+      END)::VARCHAR'
+    type_uid: (600300 + (CASE REQUEST_METHOD WHEN 'GET' THEN 2 WHEN 'POST' THEN 1
+      WHEN 'DELETE' THEN 4 WHEN NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

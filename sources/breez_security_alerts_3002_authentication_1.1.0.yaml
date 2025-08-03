@@ -1,0 +1,155 @@
+type: mapping
+id: breez_security_alerts_3002_authentication_1.1.0
+version: '1'
+name: Breez Security Alerts to OCSF class Authentication
+data-types:
+- breez-security-alerts
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.authorizations: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('policy', OBJECT_CONSTRUCT_KEEP_NULL('name',
+      POLICY_TYPE))))::ARRAY
+    api.operation: (OPERATION)::VARCHAR
+    api.response.error_message: (ERROR_DETAILS)::VARCHAR
+    api.response.message: (RULE_NAME)::VARCHAR
+    api.service.name: (API_NAME)::VARCHAR
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud.account.name: (CLOUD_ACCOUNT_NAME)::VARCHAR
+    cloud.account.uid: (CLOUD_ACCOUNT_ID)::VARCHAR
+    cloud.provider: (CASE WHEN DATA_SOURCE = 'AWS' THEN 'AWS' WHEN DATA_SOURCE = 'ENTRA'
+      THEN 'MS Azure' ELSE NULL END)::VARCHAR
+    cloud.region: (CLOUD_REGION)::VARCHAR
+    count: NULL::NUMBER
+    device.name: (TRY_PARSE_JSON(USER_AGENT):displayName)::VARCHAR
+    device.os.name: (TRY_PARSE_JSON(USER_AGENT):operatingSystem)::VARCHAR
+    device.os.type: (CASE ((IFF(TRY_PARSE_JSON(USER_AGENT):operatingSystem::VARCHAR
+      ILIKE 'Windows%', 100, 99))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (IFF(TRY_PARSE_JSON(USER_AGENT):operatingSystem::VARCHAR ILIKE
+      'Windows%', 100, 99))::NUMBER
+    device.uid: (TRY_PARSE_JSON(USER_AGENT):deviceId)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.user_agent: (IFF(USER_AGENT ILIKE '{%}', NULL, USER_AGENT))::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: (CASE WHEN TRY_PARSE_JSON(SUB_RESOURCES):MFAUsed::VARCHAR = 'No' THEN
+      FALSE WHEN TRY_PARSE_JSON(SUB_RESOURCES):MFAUsed::VARCHAR = 'Yes' THEN TRUE
+      ELSE NULL END)::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (COALESCE(RULE_DESCRIPTION, RULE_NAME))::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('breez-security-alerts')::VARCHAR
+    metadata.product.vendor_name: ('breez')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (EVENT_SOURCE)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IFF(COALESCE(GEO_IP, SOURCE_IP_ADDRESS) REGEXP '^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$|[A-Za-z0-9]+',
+        NULL, COALESCE(GEO_IP, SOURCE_IP_ADDRESS)))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(COALESCE(PRINCIPAL_ARN, ROLE_CHAIN, SESSION_NAME) ILIKE '%@%.%',
+        COALESCE(PRINCIPAL_ARN, ROLE_CHAIN, SESSION_NAME), NULL))::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(SESSION_NAME ILIKE ANY ('%@%.%', 'arn:%'), NULL, SESSION_NAME))::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session: NULL::VARIANT
+    severity: (CASE ((CASE WHEN PRIORITY = 'HIGH' THEN 4 WHEN PRIORITY = 'MEDIUM'
+      THEN 3 WHEN PRIORITY = 'CRITICAL' THEN 5 WHEN PRIORITY = 'LOW' THEN 2 ELSE NULL
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN
+      'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6
+      THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN PRIORITY = 'HIGH' THEN 4 WHEN PRIORITY = 'MEDIUM' THEN
+      3 WHEN PRIORITY = 'CRITICAL' THEN 5 WHEN PRIORITY = 'LOW' THEN 2 ELSE NULL END)::NUMBER
+    src_endpoint.hostname: (EVENT_SOURCE)::VARCHAR
+    src_endpoint.ip: (IFF(COALESCE(GEO_IP, SOURCE_IP_ADDRESS) REGEXP '^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$|[A-Za-z0-9]+',
+      NULL, COALESCE(GEO_IP, SOURCE_IP_ADDRESS)))::VARCHAR
+    src_endpoint.location.city: (GEO_CITY)::VARCHAR
+    src_endpoint.location.coordinates: (ARRAY_CONSTRUCT_COMPACT(GEO_LONGITUDE, GEO_LATITUDE))::ARRAY
+    src_endpoint.location.country: (GEO_COUNTRY)::VARCHAR
+    src_endpoint.location.region: (GEO_REGION)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', COALESCE(ALERT_TIMESTAMP, BREEZ_TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (COALESCE(ALERT_TIMESTAMP, BREEZ_TIMESTAMP))::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN API_STATUS = 'Success' THEN 1 WHEN API_STATUS = 'FAILURE'
+      THEN 2 WHEN API_STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN API_STATUS = 'Success' THEN 1 WHEN API_STATUS = 'FAILURE'
+      THEN 2 WHEN API_STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.credential_uid: (ACCESS_KEY_ID)::VARCHAR
+    user.email_addr: (IFF(COALESCE(PRINCIPAL_ARN, ROLE_CHAIN, SESSION_NAME) ILIKE
+      '%@%.%', COALESCE(PRINCIPAL_ARN, ROLE_CHAIN, SESSION_NAME), NULL))::VARCHAR
+    user.name: (IFF(SESSION_NAME ILIKE ANY ('%@%.%', 'arn:%'), NULL, SESSION_NAME))::VARCHAR
+    user.type: (CASE (CASE WHEN BREEZ_IDENTITY_TYPE = 'human' AND IDENTITY_TYPE =
+      'IAMUser' THEN 2 WHEN BREEZ_IDENTITY_TYPE = 'human' AND IDENTITY_TYPE = 'AssumedRole'
+      THEN 1 WHEN BREEZ_IDENTITY_TYPE = 'machine' AND (IDENTITY_TYPE = 'AssumedRole'
+      OR IDENTITY_TYPE = 'IAMUser') THEN 3 WHEN IDENTITY_TYPE IS NULL THEN 0 ELSE
+      99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin'
+      WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN BREEZ_IDENTITY_TYPE = 'human' AND IDENTITY_TYPE = 'IAMUser'
+      THEN 2 WHEN BREEZ_IDENTITY_TYPE = 'human' AND IDENTITY_TYPE = 'AssumedRole'
+      THEN 1 WHEN BREEZ_IDENTITY_TYPE = 'machine' AND (IDENTITY_TYPE = 'AssumedRole'
+      OR IDENTITY_TYPE = 'IAMUser') THEN 3 WHEN IDENTITY_TYPE IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    user.uid: (ROLE_ARN)::VARCHAR
+    user.uid_alt: (COALESCE(CLIENT_ID, BREEZ_EVENT_ID))::VARCHAR
+  predicate: OPERATION IN ('SignIn', 'SIGNIN')

@@ -1,0 +1,122 @@
+type: mapping
+id: opencti_logs_2004_detection_finding_1.1.0
+version: '1'
+name: Opencti Logs to OCSF class Detection Finding
+data-types:
+- opencti-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE '%create%'
+      THEN 1 WHEN EVENT_TYPE ILIKE '%update%' THEN 2 WHEN EVENT_TYPE ILIKE '%close%'
+      THEN 3 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE
+      '%create%' THEN 1 WHEN EVENT_TYPE ILIKE '%update%' THEN 2 WHEN EVENT_TYPE ILIKE
+      '%close%' THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-256', 'algorithm_id', 3, 'value', NAME)))::ARRAY
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((2)::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud.provider: ('OpenCTI')::VARCHAR
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: NULL::ARRAY
+    finding_info.analytic.version: (SPEC_VERSION)::VARCHAR
+    finding_info.created_time: (date_part('epoch_milliseconds', (CREATED_TIME)::TIMESTAMP_LTZ))::NUMBER
+    finding_info.created_time_dt: (CREATED_TIME)::TIMESTAMP_LTZ
+    finding_info.kill_chain: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('phase',
+      CASE WHEN KILL_CHAIN_PHASES[0]:phase_name IS NULL THEN 'Unknown' WHEN KILL_CHAIN_PHASES[0]:phase_name
+      ILIKE '%reconnaissance%' THEN 'Reconnaissance' WHEN KILL_CHAIN_PHASES[0]:phase_name
+      ILIKE '%weaponization%' THEN 'Weaponization' WHEN KILL_CHAIN_PHASES[0]:phase_name
+      ILIKE '%delivery%' THEN 'Delivery' WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE
+      '%exploitation%' THEN 'Exploitation' WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE
+      '%installation%' THEN 'Installation' WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE
+      '%command-and-control%' THEN 'Command & Control' WHEN KILL_CHAIN_PHASES[0]:phase_name
+      ILIKE '%action-on-objectives%' THEN 'Actions on Objectives' ELSE 'Other' END,
+      'phase_id', CASE WHEN KILL_CHAIN_PHASES[0]:phase_name IS NULL THEN 0 WHEN KILL_CHAIN_PHASES[0]:phase_name
+      ILIKE '%reconnaissance%' THEN 1 WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE '%weaponization%'
+      THEN 2 WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE '%delivery%' THEN 3 WHEN KILL_CHAIN_PHASES[0]:phase_name
+      ILIKE '%exploitation%' THEN 4 WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE '%installation%'
+      THEN 5 WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE '%command-and-control%' THEN
+      6 WHEN KILL_CHAIN_PHASES[0]:phase_name ILIKE '%action-on-objectives%' THEN 7
+      ELSE 99 END)))::ARRAY
+    finding_info.modified_time: (date_part('epoch_milliseconds', (MODIFIED_TIME)::TIMESTAMP_LTZ))::NUMBER
+    finding_info.modified_time_dt: (MODIFIED_TIME)::TIMESTAMP_LTZ
+    finding_info.title: (ID)::VARCHAR
+    finding_info.uid: (SPLIT_PART(ID, '--', 2))::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('opencti-logs')::VARCHAR
+    metadata.product.vendor_name: ('opencti')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: NULL::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', created_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (created_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 200400 WHEN EVENT_TYPE ILIKE
+      ''%create%'' THEN 200401 WHEN EVENT_TYPE ILIKE ''%update%'' THEN 200402 WHEN
+      EVENT_TYPE ILIKE ''%close%'' THEN 200403 ELSE 200499 END)::NUMBER) WHEN 200400
+      THEN ''Detection Finding: Unknown'' WHEN 200401 THEN ''Detection Finding: Create''
+      WHEN 200402 THEN ''Detection Finding: Update'' WHEN 200403 THEN ''Detection
+      Finding: Close'' WHEN 200499 THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE IS NULL THEN 200400 WHEN EVENT_TYPE ILIKE '%create%'
+      THEN 200401 WHEN EVENT_TYPE ILIKE '%update%' THEN 200402 WHEN EVENT_TYPE ILIKE
+      '%close%' THEN 200403 ELSE 200499 END)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY

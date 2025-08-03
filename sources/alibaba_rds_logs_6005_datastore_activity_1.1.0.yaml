@@ -1,0 +1,82 @@
+type: mapping
+id: alibaba_rds_logs_6005_datastore_activity_1.1.0
+version: '9'
+name: Alibaba Rds Logs to OCSF class Datastore Activity
+data-types:
+- alibaba-rds-logs
+mapping:
+  fields:
+    activity_id: (4)::NUMBER
+    activity_name: (CASE ((4)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Read' WHEN
+      2 THEN 'Update' WHEN 3 THEN 'Connect' WHEN 4 THEN 'Query' WHEN 5 THEN 'Write'
+      WHEN 6 THEN 'Create' WHEN 7 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (USER)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('datastore_activity')::VARCHAR
+    class_uid: ('6005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    database.name: (DB)::VARCHAR
+    databucket: NULL::VARIANT
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('alibaba-rds-logs')::VARCHAR
+    metadata.product.vendor_name: ('alibaba')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    query_info.query_string: (SQL)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (CLIENT_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', origin_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (origin_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Database' WHEN 2
+      THEN 'Databucket' WHEN 3 THEN 'Table' WHEN 99 THEN 'Other' END)::VARCHAR
+    type_id: (1)::NUMBER
+    type_name: '(CASE ((600504)::NUMBER) WHEN 600500 THEN ''Datastore Activity: Unknown''
+      WHEN 600501 THEN ''Datastore Activity: Read'' WHEN 600502 THEN ''Datastore Activity:
+      Update'' WHEN 600503 THEN ''Datastore Activity: Connect'' WHEN 600504 THEN ''Datastore
+      Activity: Query'' WHEN 600505 THEN ''Datastore Activity: Write'' WHEN 600506
+      THEN ''Datastore Activity: Create'' WHEN 600507 THEN ''Datastore Activity: Delete''
+      WHEN 600599 THEN ''Datastore Activity: Other'' END)::VARCHAR'
+    type_uid: (600504)::NUMBER
+    unmapped: NULL::VARIANT

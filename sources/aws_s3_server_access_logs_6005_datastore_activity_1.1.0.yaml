@@ -1,0 +1,111 @@
+type: mapping
+id: aws_s3_server_access_logs_6005_datastore_activity_1.1.0
+version: '9'
+name: Aws S3 Server Access Logs to OCSF class Datastore Activity
+data-types:
+- aws-s3-server-access-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE '%GET%'
+      THEN 1 WHEN OPERATION ILIKE '%PUT%' THEN 2 WHEN OPERATION ILIKE '%POST%' THEN
+      6 WHEN OPERATION ILIKE '%DELETE%' THEN 7 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE
+      '%GET%' THEN 1 WHEN OPERATION ILIKE '%PUT%' THEN 2 WHEN OPERATION ILIKE '%POST%'
+      THEN 6 WHEN OPERATION ILIKE '%DELETE%' THEN 7 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Read' WHEN 2 THEN 'Update' WHEN 3 THEN 'Connect' WHEN
+      4 THEN 'Query' WHEN 5 THEN 'Write' WHEN 6 THEN 'Create' WHEN 7 THEN 'Delete'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.uid: (coalesce(ACCESS_POINT_ARN, BUCKET_OWNER))::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('datastore_activity')::VARCHAR
+    class_uid: ('6005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    database: NULL::VARIANT
+    databucket.file.size: (OBJECT_SIZE)::NUMBER
+    databucket.name: (BUCKET)::VARCHAR
+    databucket.type: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'S3' WHEN
+      2 THEN 'Azure Blob' WHEN 3 THEN 'GCP Bucket' WHEN 99 THEN 'Other' END)::VARCHAR
+    databucket.type_id: (1)::NUMBER
+    dst_endpoint.hostname: (HOST_HEADER)::VARCHAR
+    dst_endpoint.uid: (HOST_ID)::VARCHAR
+    duration: (TOTAL_TIME)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.referrer: (REFERER)::VARCHAR
+    http_request.uid: (coalesce(REQUEST_ID, REQUESTER))::VARCHAR
+    http_request.url.path: (REGEXP_SUBSTR(REQUEST_URI, '/[^? ]+'))::VARCHAR
+    http_request.url.query_string: (SPLIT_PART(SPLIT_PART(REQUEST_URI, ' ', 2), '?',
+      2))::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('aws-s3-server-access-logs')::VARCHAR
+    metadata.product.vendor_name: ('aws')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''databucket.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST_HEADER)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REMOTE_IP)::VARCHAR
+    query_info: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (REMOTE_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: (HTTP_STATUS)::VARCHAR
+    status_detail: (ERROR_CODE)::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type: NULL::VARCHAR
+    type_id: NULL::NUMBER
+    type_name: '(CASE ((600500 + (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION
+      ILIKE ''%GET%'' THEN 1 WHEN OPERATION ILIKE ''%PUT%'' THEN 2 WHEN OPERATION
+      ILIKE ''%POST%'' THEN 6 WHEN OPERATION ILIKE ''%DELETE%'' THEN 7 ELSE 99 END))::NUMBER)
+      WHEN 600500 THEN ''Datastore Activity: Unknown'' WHEN 600501 THEN ''Datastore
+      Activity: Read'' WHEN 600502 THEN ''Datastore Activity: Update'' WHEN 600503
+      THEN ''Datastore Activity: Connect'' WHEN 600504 THEN ''Datastore Activity:
+      Query'' WHEN 600505 THEN ''Datastore Activity: Write'' WHEN 600506 THEN ''Datastore
+      Activity: Create'' WHEN 600507 THEN ''Datastore Activity: Delete'' WHEN 600599
+      THEN ''Datastore Activity: Other'' END)::VARCHAR'
+    type_uid: (600500 + (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE '%GET%'
+      THEN 1 WHEN OPERATION ILIKE '%PUT%' THEN 2 WHEN OPERATION ILIKE '%POST%' THEN
+      6 WHEN OPERATION ILIKE '%DELETE%' THEN 7 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

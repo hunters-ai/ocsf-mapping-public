@@ -1,0 +1,191 @@
+type: mapping
+id: auth_zero_log_events_3002_authentication_1.1.0
+version: '10'
+name: Auth Zero Log Events to OCSF class Authentication
+data-types:
+- auth-zero-log-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE '%login%'
+      OR EVENT_TYPE ILIKE '%signup%' THEN 1 WHEN EVENT_TYPE ILIKE '%logout%' THEN
+      2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE
+      '%login%' OR EVENT_TYPE ILIKE '%signup%' THEN 1 WHEN EVENT_TYPE ILIKE '%logout%'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: (CASE ((CASE WHEN STRATEGY IS NULL THEN 0 WHEN STRATEGY = 'oidc'
+      THEN 4 WHEN STRATEGY = 'samlp' THEN 5 WHEN STRATEGY = 'auth0' THEN 6 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'NTLM' WHEN 10 THEN 'RADIUS'
+      WHEN 2 THEN 'Kerberos' WHEN 3 THEN 'Digest' WHEN 4 THEN 'OpenID' WHEN 5 THEN
+      'SAML' WHEN 6 THEN 'OAUTH 2.0' WHEN 7 THEN 'PAP' WHEN 8 THEN 'CHAP' WHEN 9 THEN
+      'EAP' WHEN 99 THEN 'Other' END)::VARCHAR
+    auth_protocol_id: (CASE WHEN STRATEGY IS NULL THEN 0 WHEN STRATEGY = 'oidc' THEN
+      4 WHEN STRATEGY = 'samlp' THEN 5 WHEN STRATEGY = 'auth0' THEN 6 ELSE 99 END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: (DETAILS_PROMPTS_STATS_LOGINS_COUNT[0])::NUMBER
+    device.hostname: (HOSTNAME)::VARCHAR
+    device.ip: (IP)::VARCHAR
+    device.name: (CLIENT_NAME)::VARCHAR
+    device.os.name: (SPLIT_PART(USER_AGENT, '/', 2))::VARCHAR
+    device.os.type: (CASE ((CASE WHEN SPLIT_PART(USER_AGENT, '/', 2) IS NULL THEN
+      0 WHEN SPLIT_PART(USER_AGENT, '/', 2) ILIKE '%windows%' THEN 100 WHEN SPLIT_PART(USER_AGENT,
+      '/', 2) ILIKE '%linux%' OR SPLIT_PART(USER_AGENT, '/', 2) ILIKE '%ubuntu%' THEN
+      200 WHEN SPLIT_PART(USER_AGENT, '/', 2) ILIKE '%android%' THEN 201 WHEN SPLIT_PART(USER_AGENT,
+      '/', 2) ILIKE '%mac os%' THEN 300 WHEN SPLIT_PART(USER_AGENT, '/', 2) ILIKE
+      '%ios%' THEN 301 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN SPLIT_PART(USER_AGENT, '/', 2) IS NULL THEN 0 WHEN
+      SPLIT_PART(USER_AGENT, '/', 2) ILIKE '%windows%' THEN 100 WHEN SPLIT_PART(USER_AGENT,
+      '/', 2) ILIKE '%linux%' OR SPLIT_PART(USER_AGENT, '/', 2) ILIKE '%ubuntu%' THEN
+      200 WHEN SPLIT_PART(USER_AGENT, '/', 2) ILIKE '%android%' THEN 201 WHEN SPLIT_PART(USER_AGENT,
+      '/', 2) ILIKE '%mac os%' THEN 300 WHEN SPLIT_PART(USER_AGENT, '/', 2) ILIKE
+      '%ios%' THEN 301 ELSE 99 END)::NUMBER
+    device.os.version: (REGEXP_SUBSTR(SPLIT_PART(USER_AGENT, '/', 2), '([0-9]+.[0-9]+.[0-9]+)',
+      1, 1, 'e', 1))::VARCHAR
+    device.type: (CASE ((IFF(IS_MOBILE, 5, 99))::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Server' WHEN 10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop'
+      WHEN 3 THEN 'Laptop' WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual'
+      WHEN 7 THEN 'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    device.type_id: (IFF(IS_MOBILE, 5, 99))::NUMBER
+    device.uid: (CLIENT_ID)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.http_method: (DETAILS_REQUEST_METHOD)::VARCHAR
+    http_request.url.hostname: (CASE WHEN AUDIENCE ILIKE '["%"]' THEN PARSE_URL(PARSE_JSON(AUDIENCE)[0])
+      WHEN AUDIENCE ILIKE '%, %' THEN PARSE_URL(SPLIT_PART(AUDIENCE, ', ', 1)) WHEN
+      AUDIENCE ILIKE '%://%' AND AUDIENCE NOT ILIKE '%://%://%' THEN PARSE_URL(AUDIENCE)
+      ELSE NULL END:host)::VARCHAR
+    http_request.url.path: (COALESCE(DETAILS_REQUEST_PATH, CASE WHEN AUDIENCE ILIKE
+      '["%"]' THEN PARSE_URL(PARSE_JSON(AUDIENCE)[0]) WHEN AUDIENCE ILIKE '%, %' THEN
+      PARSE_URL(SPLIT_PART(AUDIENCE, ', ', 1)) WHEN AUDIENCE ILIKE '%://%' AND AUDIENCE
+      NOT ILIKE '%://%://%' THEN PARSE_URL(AUDIENCE) ELSE NULL END:path))::VARCHAR
+    http_request.url.query_string: (TRIM(REPLACE(REPLACE(REPLACE(DETAILS_REQUEST:query::VARCHAR,
+      '","', '&'), '":', '='), '"', ''), '{{}}'))::VARCHAR
+    http_request.url.scheme: (CASE WHEN AUDIENCE ILIKE '["%"]' THEN PARSE_URL(PARSE_JSON(AUDIENCE)[0])
+      WHEN AUDIENCE ILIKE '%, %' THEN PARSE_URL(SPLIT_PART(AUDIENCE, ', ', 1)) WHEN
+      AUDIENCE ILIKE '%://%' AND AUDIENCE NOT ILIKE '%://%://%' THEN PARSE_URL(AUDIENCE)
+      ELSE NULL END:scheme)::VARCHAR
+    http_request.user_agent: (DETAILS_REQUEST:userAgent)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (DESCRIPTION)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('auth-zero-log-events')::VARCHAR
+    metadata.product.vendor_name: ('Auth0')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOSTNAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (CASE WHEN AUDIENCE ILIKE '["%"]' THEN PARSE_URL(PARSE_JSON(AUDIENCE)[0])
+        WHEN AUDIENCE ILIKE '%, %' THEN PARSE_URL(SPLIT_PART(AUDIENCE, ', ', 1)) WHEN
+        AUDIENCE ILIKE '%://%' AND AUDIENCE NOT ILIKE '%://%://%' THEN PARSE_URL(AUDIENCE)
+        ELSE NULL END:host)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DETAILS_REQUEST_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (USER_NAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session.uid: (CONNECTION_ID)::VARCHAR
+    session.uid_alt: (CONNECTION)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (DETAILS_REQUEST_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EVENT_TYPE ILIKE '%success%' THEN 1 WHEN EVENT_TYPE
+      ILIKE '%failed%' OR EVENT_TYPE ILIKE '%rejected%' OR EVENT_TYPE ILIKE '%failures%'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (EVENT_TYPE)::VARCHAR
+    status_id: (CASE WHEN EVENT_TYPE ILIKE '%success%' THEN 1 WHEN EVENT_TYPE ILIKE
+      '%failed%' OR EVENT_TYPE ILIKE '%rejected%' OR EVENT_TYPE ILIKE '%failures%'
+      THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', date::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (date)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 300200 WHEN EVENT_TYPE ILIKE
+      ''%login%'' OR EVENT_TYPE ILIKE ''%signup%'' THEN 300201 WHEN EVENT_TYPE ILIKE
+      ''%logout%'' THEN 300202 ELSE 300299 END)::NUMBER) WHEN 300200 THEN ''Authentication:
+      Unknown'' WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE IS NULL THEN 300200 WHEN EVENT_TYPE ILIKE '%login%'
+      OR EVENT_TYPE ILIKE '%signup%' THEN 300201 WHEN EVENT_TYPE ILIKE '%logout%'
+      THEN 300202 ELSE 300299 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (USER_NAME)::VARCHAR
+    user.uid: (USER_ID)::VARCHAR
+  predicate: EVENT_TYPE IN ('Failed Login', 'Failed by Connector', 'Failed by CORS',
+    'Failed cross-origin authentication', 'Failed Connector Provisioning', 'Failed
+    Exchange', 'Failed Logout', 'Failed Login (Incorrect Password)', 'Failed Signup',
+    'Failed Silent Auth', 'Failed Login (Invalid Email/Username)', 'Failed Verification
+    Email', 'Failed Verification Email Request', 'MFA Auth failed', 'MFA Auth rejected',
+    'Too many failures', 'Recovery failed', 'Enrollment failed', 'Enroll failed',
+    'mfar', 'Success Login', 'Success cross-origin authentication', 'Success Delegation',
+    'Success Exchange', 'Success Logout', 'Success Signup', 'Success Silent Auth',
+    'Success Verification Email', 'Success Verification Email Request')

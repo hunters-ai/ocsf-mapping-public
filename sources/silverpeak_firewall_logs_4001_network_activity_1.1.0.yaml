@@ -1,0 +1,156 @@
+type: mapping
+id: silverpeak_firewall_logs_4001_network_activity_1.1.0
+version: '13'
+name: Silverpeak Firewall Logs to OCSF class Network Activity
+data-types:
+- silverpeak-firewall-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'drop' THEN 2
+      WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'drop' THEN 2 WHEN
+      ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN REASON = 'flow create' THEN 1 WHEN REASON = 'flow end'
+      THEN 2 WHEN REASON = 'security policy deny' THEN 5 WHEN REASON IS NULL THEN
+      0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN REASON = 'flow create' THEN 1 WHEN REASON = 'flow
+      end' THEN 2 WHEN REASON = 'security policy deny' THEN 5 WHEN REASON IS NULL
+      THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN 2
+      THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN
+      6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    app_name: (APPLICATION)::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.direction: (CASE ((CASE WHEN DIRECTION = 'Inbound' THEN 1 WHEN
+      DIRECTION = 'Outbound' THEN 2 WHEN DIRECTION IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN
+      'Lateral' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.direction_id: (CASE WHEN DIRECTION = 'Inbound' THEN 1 WHEN DIRECTION
+      = 'Outbound' THEN 2 WHEN DIRECTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    connection_info.protocol_name: (PROTOCOL)::VARCHAR
+    connection_info.protocol_num: (CASE WHEN PROTOCOL = 'icmp' THEN 1 WHEN PROTOCOL
+      = 'tcp' THEN 6 WHEN PROTOCOL = 'udp' THEN 17 WHEN PROTOCOL IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(SOURCE_ADDRESS, 'INET'):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(SOURCE_ADDRESS, 'INET'):family)::NUMBER
+    connection_info.tcp_flags: (TRY_CAST(TCP_FLAGS AS NUMBER))::NUMBER
+    connection_info.uid: (FLOW_ID)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    dst_endpoint.hostname: (HOST)::VARCHAR
+    dst_endpoint.interface_name: (INTERFACE_IMPACTED)::VARCHAR
+    dst_endpoint.ip: (DESTINATION_ADDRESS)::VARCHAR
+    dst_endpoint.port: (DESTINATION_PORT )::NUMBER
+    dst_endpoint.zone: (TO_ZONE)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (END_TIME)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (END_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (log_level)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('silverpeak-firewall-logs')::VARCHAR
+    metadata.product.vendor_name: ('silverpeak')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DESTINATION_ADDRESS)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_ADDRESS)::VARCHAR
+    - name: '''src_endpoint.proxy_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (NAT_IP_ADDRESS_ORIGIN)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.interface_name: (INTERFACE_ORIGIN)::VARCHAR
+    src_endpoint.ip: (SOURCE_ADDRESS)::VARCHAR
+    src_endpoint.port: (SOURCE_PORT )::NUMBER
+    src_endpoint.proxy_endpoint.ip: (NAT_IP_ADDRESS_ORIGIN)::VARCHAR
+    src_endpoint.proxy_endpoint.port: (NAT_TCP_UDP_PORT_ORIGIN)::NUMBER
+    src_endpoint.svc_name: (IP_SERVICE_TYPE)::VARCHAR
+    src_endpoint.zone: (FROM_ZONE)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (START_TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (START_TIME)::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'drop' THEN 2
+      WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'drop' THEN 2 WHEN
+      ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes: (RECEIVED_OCTETS + TRANSMITTED_OCTETS)::NUMBER
+    traffic.bytes_in: (RECEIVED_OCTETS)::NUMBER
+    traffic.bytes_out: (TRANSMITTED_OCTETS)::NUMBER
+    traffic.packets: (RECEIVED_PACKETS + TRANSMITTED_PACKETS)::NUMBER
+    traffic.packets_in: (RECEIVED_PACKETS)::NUMBER
+    traffic.packets_out: (TRANSMITTED_PACKETS)::NUMBER
+    type_name: '(CASE ((CASE WHEN REASON = ''flow create'' THEN 400101 WHEN REASON
+      = ''flow end'' THEN 400102 WHEN REASON = ''security policy deny'' THEN 400105
+      WHEN REASON IS NULL THEN 400100 ELSE 400199 END)::NUMBER) WHEN 400100 THEN ''Network
+      Activity: Unknown'' WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102
+      THEN ''Network Activity: Close'' WHEN 400103 THEN ''Network Activity: Reset''
+      WHEN 400104 THEN ''Network Activity: Fail'' WHEN 400105 THEN ''Network Activity:
+      Refuse'' WHEN 400106 THEN ''Network Activity: Traffic'' WHEN 400199 THEN ''Network
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN REASON = 'flow create' THEN 400101 WHEN REASON = 'flow end'
+      THEN 400102 WHEN REASON = 'security policy deny' THEN 400105 WHEN REASON IS
+      NULL THEN 400100 ELSE 400199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT

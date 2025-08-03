@@ -1,0 +1,14 @@
+id: 6005_datastore_activity_1.1.0
+version: '10'
+description: OCSF View For Class - 6005 Datastore Activity
+source-table-ids:
+- alibaba_oss_6005_datastore_activity_1.1.0
+- snowflake_reader_account_query_history_6005_datastore_activity_1.1.0
+- snowflake_query_history_6005_datastore_activity_1.1.0
+- alibaba_rds_logs_6005_datastore_activity_1.1.0
+- strongdm_audit_queries_6005_datastore_activity_1.1.0
+- aws_rds_aurora_mysql_audit_logs_6005_datastore_activity_1.1.0
+- aws_cloudtrail_6005_datastore_activity_1.1.0
+- aws_s3_server_access_logs_6005_datastore_activity_1.1.0
+- oracle_audit_logs_6005_datastore_activity_1.1.0
+- gcp_audit_6005_datastore_activity_1.1.0

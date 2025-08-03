@@ -1,0 +1,110 @@
+type: mapping
+id: surf_navigations_logs_6001_web_resources_activity_1.1.0
+version: '1'
+name: Surf Navigations Logs to OCSF class Web Resources Activity
+data-types:
+- surf-navigations-logs
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN
+      2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Search'
+      WHEN 6 THEN 'Import' WHEN 7 THEN 'Export' WHEN 8 THEN 'Share' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.user.domain: (DOMAIN)::VARCHAR
+    actor.user.email_addr: (CLIENT_LOGIN)::VARCHAR
+    actor.user.full_name: (CONCAT(CLIENT_FIRSTNAME, ' ', CLIENT_LASTNAME))::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', IFF(GROUP_NAME
+      IS NULL, NULL, GROUP_NAME), 'uid', IFF(GROUP_ID IS NULL, NULL, GROUP_ID))))::ARRAY
+    actor.user.name: (CLIENT_FIRSTNAME)::VARCHAR
+    actor.user.org.uid: (COMPANY_ID)::VARCHAR
+    actor.user.uid: (CLIENT_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (6::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('web_resources_activity')::VARCHAR
+    class_uid: ('6001')::NUMBER
+    cloud.provider: ('Surf')::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    http_request: NULL::VARIANT
+    http_response: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('surf-navigations-logs')::VARCHAR
+    metadata.product.vendor_name: ('surf')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CLIENT_LOGIN)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (CLIENT_FIRSTNAME)::VARCHAR
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint: NULL::VARIANT
+    start_time: (date_part('epoch_milliseconds', CREATED_AT::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (CREATED_AT)::TIMESTAMP_LTZ
+    status: (CASE (CASE ACTIVE WHEN NULL THEN 0 WHEN TRUE THEN 1 WHEN FALSE THEN 2
+      ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN
+      'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE ACTIVE WHEN NULL THEN 0 WHEN TRUE THEN 1 WHEN FALSE THEN 2 ELSE
+      99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', created_at::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (created_at)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    type_name: '(CASE (600100::NUMBER) WHEN 600100 THEN ''Web Resources Activity:
+      Unknown'' WHEN 600101 THEN ''Web Resources Activity: Create'' WHEN 600102 THEN
+      ''Web Resources Activity: Read'' WHEN 600103 THEN ''Web Resources Activity:
+      Update'' WHEN 600104 THEN ''Web Resources Activity: Delete'' WHEN 600105 THEN
+      ''Web Resources Activity: Search'' WHEN 600106 THEN ''Web Resources Activity:
+      Import'' WHEN 600107 THEN ''Web Resources Activity: Export'' WHEN 600108 THEN
+      ''Web Resources Activity: Share'' WHEN 600199 THEN ''Web Resources Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (600100)::NUMBER
+    unmapped: NULL::VARIANT
+    web_resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('url_string', IFF(URL
+      IS NULL, NULL, URL), 'uid', IFF(ID IS NULL, NULL, ID))))::ARRAY
+    web_resources_result: NULL::ARRAY

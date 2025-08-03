@@ -1,0 +1,115 @@
+type: mapping
+id: confluence_audit_logs_3006_group_management_1.1.0
+version: '8'
+name: Confluence Audit Logs to OCSF class Group Management
+data-types:
+- confluence-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN SUMMARY ILIKE ANY ('%permission added%', '%restriction
+      added%') THEN 1 WHEN SUMMARY ILIKE ANY ('%permission removed%', '%restriction
+      removed%') THEN 2 WHEN SUMMARY='User added to group' THEN 3 WHEN SUMMARY='User
+      removed from group' THEN 4 WHEN SUMMARY='Group deleted' THEN 5 WHEN SUMMARY='Group
+      created' THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN SUMMARY ILIKE ANY ('%permission added%', '%restriction
+      added%') THEN 1 WHEN SUMMARY ILIKE ANY ('%permission removed%', '%restriction
+      removed%') THEN 2 WHEN SUMMARY='User added to group' THEN 3 WHEN SUMMARY='User
+      removed from group' THEN 4 WHEN SUMMARY='Group deleted' THEN 5 WHEN SUMMARY='Group
+      created' THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Assign Privileges' WHEN 2 THEN 'Revoke Privileges' WHEN
+      3 THEN 'Add User' WHEN 4 THEN 'Remove User' WHEN 5 THEN 'Delete' WHEN 6 THEN
+      'Create' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.account.uid: (AUTHOR_ACCOUNT_ID)::VARCHAR
+    actor.user.name: (AUTHOR_DISPLAY_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN AUTHOR_TYPE='user' THEN 1 WHEN AUTHOR_TYPE
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN AUTHOR_TYPE='user' THEN 1 WHEN AUTHOR_TYPE IS NULL
+      THEN 0 ELSE 99 END)::NUMBER
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('group_management')::VARCHAR
+    class_uid: ('3006')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    group.name: (AFFECTED_OBJECT_NAME)::VARCHAR
+    message: (SUMMARY)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('confluence-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('Atlassian')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (AUTHOR_DISPLAY_NAME)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ASSOCIATED_OBJECTS[0]:name)::VARCHAR
+    privileges: NULL::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', creation_date::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (creation_date)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300600 + (CASE WHEN SUMMARY ILIKE ANY (''%permission added%'',
+      ''%restriction added%'') THEN 1 WHEN SUMMARY ILIKE ANY (''%permission removed%'',
+      ''%restriction removed%'') THEN 2 WHEN SUMMARY=''User added to group'' THEN
+      3 WHEN SUMMARY=''User removed from group'' THEN 4 WHEN SUMMARY=''Group deleted''
+      THEN 5 WHEN SUMMARY=''Group created'' THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE
+      99 END))::NUMBER) WHEN 300600 THEN ''Group Management: Unknown'' WHEN 300601
+      THEN ''Group Management: Assign Privileges'' WHEN 300602 THEN ''Group Management:
+      Revoke Privileges'' WHEN 300603 THEN ''Group Management: Add User'' WHEN 300604
+      THEN ''Group Management: Remove User'' WHEN 300605 THEN ''Group Management:
+      Delete'' WHEN 300606 THEN ''Group Management: Create'' WHEN 300699 THEN ''Group
+      Management: Other'' END)::VARCHAR'
+    type_uid: (300600 + (CASE WHEN SUMMARY ILIKE ANY ('%permission added%', '%restriction
+      added%') THEN 1 WHEN SUMMARY ILIKE ANY ('%permission removed%', '%restriction
+      removed%') THEN 2 WHEN SUMMARY='User added to group' THEN 3 WHEN SUMMARY='User
+      removed from group' THEN 4 WHEN SUMMARY='Group deleted' THEN 5 WHEN SUMMARY='Group
+      created' THEN 6 WHEN SUMMARY IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.name: (ASSOCIATED_OBJECTS[0]:name)::VARCHAR
+    user.type: (CASE ((CASE WHEN ASSOCIATED_OBJECTS[0]:objectType='User' THEN 1 WHEN
+      ASSOCIATED_OBJECTS[0]:objectType IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN ASSOCIATED_OBJECTS[0]:objectType='User' THEN 1 WHEN ASSOCIATED_OBJECTS[0]:objectType
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+  predicate: SUMMARY ILIKE '%group%'

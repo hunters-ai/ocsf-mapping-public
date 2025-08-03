@@ -1,0 +1,11 @@
+id: 1005_module_activity_1.1.0
+version: '7'
+description: OCSF View For Class - 1005 Module Activity
+source-table-ids:
+- mdatp_device_image_load_events_1005_module_activity_1.1.0
+- microsoft_365_defender_advanced_hunting_1005_module_activity_1.1.0
+- sentinelone_raw_events_v2_1005_module_activity_1.1.0
+- pan_edr_raw_logs_1005_module_activity_1.1.0
+- crowdstrike_raw_events_1005_module_activity_1.1.0
+- cb_platform_events_1005_module_activity_1.1.0
+- osquery_logs_1005_module_activity_1.1.0

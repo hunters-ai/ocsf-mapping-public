@@ -1,0 +1,207 @@
+type: mapping
+id: crowdstrike_raw_events_1007_process_activity_1.1.0
+version: '19'
+name: Crowdstrike Raw Events to OCSF class Process Activity
+data-types:
+- crowdstrike-raw-events
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN event_simple_name in ('ProcessRollup2', 'SyntheticProcessRollup2')
+      THEN 1 WHEN event_simple_name = 'ProcessBlocked' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    action_id: (CASE WHEN event_simple_name in ('ProcessRollup2', 'SyntheticProcessRollup2')
+      THEN 1 WHEN event_simple_name = 'ProcessBlocked' THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (CASE event_simple_name WHEN 'ProcessRollup2' THEN 1 WHEN 'SyntheticProcessRollup2'
+      THEN 2 WHEN  'ProcessBlocked' THEN 2 END)::NUMBER
+    activity_name: (CASE ((CASE event_simple_name WHEN 'ProcessRollup2' THEN 1 WHEN
+      'SyntheticProcessRollup2' THEN 2 WHEN  'ProcessBlocked' THEN 2 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Launch' WHEN 2 THEN 'Terminate' WHEN 3 THEN
+      'Open' WHEN 4 THEN 'Inject' WHEN 5 THEN 'Set User ID' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.uid: (RAW:SourceProcessId)::VARCHAR
+    actor.session.uid: (RAW:"SessionProcessId")::VARCHAR
+    actual_permissions: NULL::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: NULL::VARCHAR
+    category_uid: NULL::NUMBER
+    class_name: ('process_activity')::VARCHAR
+    class_uid: ('1007')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (AIP)::VARCHAR
+    device.os.name: (CASE WHEN EVENT_PLATFORM = 'Win' THEN 'WINDOWS' WHEN EVENT_PLATFORM
+      = 'Lin' THEN 'LINUX' WHEN EVENT_PLATFORM = 'Mac' THEN 'MAC' ELSE UPPER(event_platform)
+      END)::VARCHAR
+    device.uid: (AID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    exit_code: NULL::NUMBER
+    firewall_rule: NULL::VARIANT
+    injection_type: NULL::VARCHAR
+    injection_type_id: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_simple_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('crowdstrike-raw-events')::VARCHAR
+    metadata.product.vendor_name: ('crowdstrike')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    module: NULL::VARIANT
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (AIP)::VARCHAR
+    - name: '''process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
+        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
+        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
+        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY) > 0, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
+        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
+        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
+        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY)[0]:"value", NULL::ARRAY)
+    - name: '''process.file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
+        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
+        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
+        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY) > 1, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
+        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
+        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
+        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY)[1]:"value", NULL::ARRAY)
+    - name: '''process.file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
+        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
+        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
+        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY) > 2, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
+        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
+        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
+        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY)[2]:"value", NULL::ARRAY)
+    - name: '''process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (CASE WHEN EVENT_PLATFORM = 'Win' THEN split_part(IMAGE_FILE_NAME, '\\',
+        -1)::VARCHAR ELSE split_part(IMAGE_FILE_NAME, '/', -1)::VARCHAR END)::VARCHAR
+    - name: '''process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (RAW:ParentBaseFileName)::VARCHAR
+    - name: '''process.parent_process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process.parent_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (RAW:GrandParentBaseFileName)::VARCHAR
+    - name: '''process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    process.cmd_line: (COMMAND_LINE)::VARCHAR
+    process.created_time: (date_part('epoch_milliseconds', (TO_TIMESTAMP_LTZ((try_to_double(RAW:ProcessStartTime::VARCHAR)
+      * 1000)::BIGINT, 3))::TIMESTAMP_LTZ))::NUMBER
+    process.created_time_dt: (TO_TIMESTAMP_LTZ((try_to_double(RAW:ProcessStartTime::VARCHAR)
+      * 1000)::BIGINT, 3))::TIMESTAMP_LTZ
+    process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
+      WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN 'TLSH'
+      WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id', 3::NUMBER,
+      'value', RAW:SHA256HashData::VARCHAR)))::ARRAY
+    process.file.path: (IMAGE_FILE_NAME)::VARCHAR
+    process.integrity: (CASE ((CASE RAW:IntegrityLevel::varchar WHEN '4096' THEN 2
+      WHEN '8192' THEN 3 WHEN '12288' THEN 4 WHEN '16384' THEN 5 WHEN '8448' THEN
+      99 ELSE 0 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted' WHEN 2
+      THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System' WHEN
+      6 THEN 'Protected' WHEN 99 THEN 'Other' END)::VARCHAR
+    process.integrity_id: (CASE RAW:IntegrityLevel::varchar WHEN '4096' THEN 2 WHEN
+      '8192' THEN 3 WHEN '12288' THEN 4 WHEN '16384' THEN 5 WHEN '8448' THEN 99 ELSE
+      0 END)::NUMBER
+    process.name: (CASE WHEN EVENT_PLATFORM = 'Win' THEN split_part(IMAGE_FILE_NAME,
+      '\\', -1)::VARCHAR ELSE split_part(IMAGE_FILE_NAME, '/', -1)::VARCHAR END)::VARCHAR
+    process.parent_process.name: (RAW:ParentBaseFileName)::VARCHAR
+    process.parent_process.parent_process.name: (RAW:GrandParentBaseFileName)::VARCHAR
+    process.parent_process.uid: (RAW:ParentProcessId)::VARCHAR
+    process.pid: (RAW:RawProcessId)::NUMBER
+    process.uid: (RAW:TargetProcessId)::VARCHAR
+    process.user.uid: (CASE event_platform WHEN 'Win' THEN raw:UserSid::VARCHAR WHEN
+      'Mac' THEN CONCAT(AID, ':', raw:UID::VARCHAR) WHEN 'Lin' THEN CONCAT(aid, ':',
+      raw:UID::VARCHAR) ELSE NULL::VARCHAR END)::VARCHAR
+    raw_data: NULL::VARCHAR
+    requested_permissions: NULL::NUMBER
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100799)::NUMBER) WHEN 100700 THEN ''Process Activity: Unknown''
+      WHEN 100701 THEN ''Process Activity: Launch'' WHEN 100702 THEN ''Process Activity:
+      Terminate'' WHEN 100703 THEN ''Process Activity: Open'' WHEN 100704 THEN ''Process
+      Activity: Inject'' WHEN 100705 THEN ''Process Activity: Set User ID'' WHEN 100799
+      THEN ''Process Activity: Other'' END)::VARCHAR'
+    type_uid: (100799)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: event_simple_name in ('ProcessRollup2', 'SyntheticProcessRollup2', 'ProcessBlocked')

@@ -1,0 +1,11 @@
+id: 201001_win/registry_key_activity_1.1.0
+version: '5'
+description: OCSF View For Class - 201001 Win/registry Key Activity
+source-table-ids:
+- crowdstrike_raw_events_201001_win_registry_key_activity_1.1.0
+- mdatp_device_registry_events_201001_win_registry_key_activity_1.1.0
+- cb_platform_events_201001_win_registry_key_activity_1.1.0
+- sentinelone_raw_events_v2_201001_win_registry_key_activity_1.1.0
+- pan_edr_raw_logs_201001_win_registry_key_activity_1.1.0
+- universal_wel_201001_win_registry_key_activity_1.1.0
+- microsoft_365_defender_advanced_hunting_201001_win_registry_key_activity_1.1.0

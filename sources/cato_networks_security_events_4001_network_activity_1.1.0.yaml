@@ -1,0 +1,127 @@
+type: mapping
+id: cato_networks_security_events_4001_network_activity_1.1.0
+version: '17'
+name: Cato Networks Security Events to OCSF class Network Activity
+data-types:
+- cato-networks-security-events
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ACTION is NULL then 0 WHEN ACTION = 'Allow' then 1 WHEN
+      ACTION = 'Block' then 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION is NULL then 0 WHEN ACTION = 'Allow' then 1 WHEN
+      ACTION = 'Block' then 2 ELSE 99 END)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN
+      2 THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN
+      6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    app_name: (APPLICATION)::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_name: (LOWER(IP_PROTOCOL))::VARCHAR
+    connection_info.protocol_num: (CASE WHEN LOWER(IP_PROTOCOL) = 'icmp' THEN 1 WHEN
+      LOWER(IP_PROTOCOL) = 'tcp' THEN 6 WHEN LOWER(IP_PROTOCOL) = 'udp' THEN 17 WHEN
+      LOWER(IP_PROTOCOL) = 'rvd' THEN 66 WHEN LOWER(IP_PROTOCOL) = 'sun_nd' THEN 77
+      WHEN LOWER(IP_PROTOCOL) = 'ipv6' THEN 41 WHEN LOWER(IP_PROTOCOL) = 'mobile'
+      THEN 55 WHEN LOWER(IP_PROTOCOL) = 'fire' THEN 125 END)::NUMBER
+    count: (EVENT_COUNT)::NUMBER
+    device.os.type: (CASE ((CASE WHEN OS_TYPE = 'OS_WINDOWS' THEN 100 WHEN OS_TYPE
+      = 'OS_UNKNOWN' THEN 0 WHEN OS_TYPE = 'OS_MAC' THEN 300 WHEN OS_TYPE = 'OS_LINUX'
+      THEN 200 WHEN OS_TYPE = 'OS_IOS' THEN 301 WHEN OS_TYPE = 'OS_EMBEDDED' THEN
+      99 WHEN OS_TYPE = 'OS_ANDROID' THEN 201 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux'
+      WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN
+      'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN OS_TYPE = 'OS_WINDOWS' THEN 100 WHEN OS_TYPE = 'OS_UNKNOWN'
+      THEN 0 WHEN OS_TYPE = 'OS_MAC' THEN 300 WHEN OS_TYPE = 'OS_LINUX' THEN 200 WHEN
+      OS_TYPE = 'OS_IOS' THEN 301 WHEN OS_TYPE = 'OS_EMBEDDED' THEN 99 WHEN OS_TYPE
+      = 'OS_ANDROID' THEN 201 END)::NUMBER
+    device.region: (DEST_SITE)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.domain: (DOMAIN_NAME)::VARCHAR
+    dst_endpoint.ip: (DEST_IP)::VARCHAR
+    dst_endpoint.location.country: (DEST_COUNTRY)::VARCHAR
+    dst_endpoint.location.isp: (ISP_NAME)::VARCHAR
+    dst_endpoint.location.region: (DEST_SITE)::VARCHAR
+    dst_endpoint.port: (DEST_PORT)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule.desc: (RULE_NAME)::VARCHAR
+    firewall_rule.name: (RULE)::VARCHAR
+    firewall_rule.uid: (RULE_ID)::VARCHAR
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_sub_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cato-networks-security-events')::VARCHAR
+    metadata.product.vendor_name: ('CatoNetworks')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DEST_IP)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SRC_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SRC_IP)::VARCHAR
+    src_endpoint.location.country: (SRC_COUNTRY)::VARCHAR
+    src_endpoint.location.region: (SRC_SITE)::VARCHAR
+    src_endpoint.port: (SRC_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((400100)::NUMBER) WHEN 400100 THEN ''Network Activity: Unknown''
+      WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network Activity:
+      Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN ''Network
+      Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN 400106 THEN
+      ''Network Activity: Traffic'' WHEN 400199 THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (400100)::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT

@@ -1,0 +1,104 @@
+type: mapping
+id: snowflake_query_history_6005_datastore_activity_1.1.0
+version: '9'
+name: Snowflake Query History to OCSF class Datastore Activity
+data-types:
+- snowflake-query-history
+mapping:
+  fields:
+    activity_id: (CASE WHEN QUERY_TYPE IN ('GET_FILES','LIST_FILES') THEN 1 WHEN QUERY_TYPE
+      IN ('UPDATE','PUT_FILES') THEN 2 WHEN QUERY_TYPE IN ('CREATE_USER','CREATE_TABLE','CREATE_VIEW','CREATE_ROLE','CREATE_TASK','CREATE','CREATE_TABLE_AS_SELECT','CREATE_SEQUENCE','CREATE_STREAM','CREATE_EVENT_TABLE','CREATE_MASKING_POLICY','CREATE_VIEW','CREATE_SESSION_POLICY','CREATE_SECRET','CREATE_CONSTRAINT')
+      THEN 6 WHEN QUERY_TYPE IN ('DROP','DROP_TASK','DROP_USER','DROP_STREAM','DROP_ROLE','DROP_SESSION_POLICY','DELETE','DROP_MASKING_POLICY','REMOVE_FILES')
+      THEN 7 WHEN QUERY_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN QUERY_TYPE IN ('GET_FILES','LIST_FILES') THEN
+      1 WHEN QUERY_TYPE IN ('UPDATE','PUT_FILES') THEN 2 WHEN QUERY_TYPE IN ('CREATE_USER','CREATE_TABLE','CREATE_VIEW','CREATE_ROLE','CREATE_TASK','CREATE','CREATE_TABLE_AS_SELECT','CREATE_SEQUENCE','CREATE_STREAM','CREATE_EVENT_TABLE','CREATE_MASKING_POLICY','CREATE_VIEW','CREATE_SESSION_POLICY','CREATE_SECRET','CREATE_CONSTRAINT')
+      THEN 6 WHEN QUERY_TYPE IN ('DROP','DROP_TASK','DROP_USER','DROP_STREAM','DROP_ROLE','DROP_SESSION_POLICY','DELETE','DROP_MASKING_POLICY','REMOVE_FILES')
+      THEN 7 WHEN QUERY_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Read' WHEN 2 THEN 'Update' WHEN 3 THEN 'Connect' WHEN 4 THEN 'Query'
+      WHEN 5 THEN 'Write' WHEN 6 THEN 'Create' WHEN 7 THEN 'Delete' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.session.uid: (SESSION_ID)::VARCHAR
+    actor.user.name: (USER_NAME)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('datastore_activity')::VARCHAR
+    class_uid: ('6005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    database.name: (DATABASE_NAME)::VARCHAR
+    database.type: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Relational'
+      WHEN 2 THEN 'Network' WHEN 3 THEN 'Object Oriented' WHEN 4 THEN 'Centralized'
+      WHEN 5 THEN 'Operational' WHEN 6 THEN 'NoSQL' WHEN 99 THEN 'Other' END)::VARCHAR
+    database.type_id: (1)::NUMBER
+    database.uid: (DATABASE_ID)::VARCHAR
+    databucket: NULL::VARIANT
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (END_TIME)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (END_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: NULL::VARCHAR
+    metadata.event_code: (query_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('snowflake-query-history')::VARCHAR
+    metadata.product.vendor_name: ('snowflake')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER_NAME)::VARCHAR
+    query_info.bytes: (BYTES_WRITTEN_TO_RESULT)::NUMBER
+    query_info.query_string: (QUERY_TEXT)::VARCHAR
+    query_info.uid: (QUERY_ID)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint: NULL::VARIANT
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EXECUTION_STATUS = 'SUCCESS' THEN 1 WHEN EXECUTION_STATUS
+      = 'FAIL' THEN 2 WHEN EXECUTION_STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (ERROR_MESSAGE)::VARCHAR
+    status_id: (CASE WHEN EXECUTION_STATUS = 'SUCCESS' THEN 1 WHEN EXECUTION_STATUS
+      = 'FAIL' THEN 2 WHEN EXECUTION_STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', start_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (start_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type: NULL::VARCHAR
+    type_id: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN QUERY_TYPE IN (''GET_FILES'',''LIST_FILES'') THEN
+      600501 WHEN QUERY_TYPE IN (''UPDATE'',''PUT_FILES'') THEN 600502 WHEN QUERY_TYPE
+      IN (''CREATE_USER'',''CREATE_TABLE'',''CREATE_VIEW'',''CREATE_ROLE'',''CREATE_TASK'',''CREATE'',''CREATE_TABLE_AS_SELECT'',''CREATE_SEQUENCE'',''CREATE_STREAM'',''CREATE_EVENT_TABLE'',''CREATE_MASKING_POLICY'',''CREATE_VIEW'',''CREATE_SESSION_POLICY'',''CREATE_SECRET'',''CREATE_CONSTRAINT'')
+      THEN 600506 WHEN QUERY_TYPE IN (''DROP'',''DROP_TASK'',''DROP_USER'',''DROP_STREAM'',''DROP_ROLE'',''DROP_SESSION_POLICY'',''DELETE'',''DROP_MASKING_POLICY'',''REMOVE_FILES'')
+      THEN 600507 WHEN QUERY_TYPE IS NULL THEN 600500 ELSE 600599 END)::NUMBER) WHEN
+      600500 THEN ''Datastore Activity: Unknown'' WHEN 600501 THEN ''Datastore Activity:
+      Read'' WHEN 600502 THEN ''Datastore Activity: Update'' WHEN 600503 THEN ''Datastore
+      Activity: Connect'' WHEN 600504 THEN ''Datastore Activity: Query'' WHEN 600505
+      THEN ''Datastore Activity: Write'' WHEN 600506 THEN ''Datastore Activity: Create''
+      WHEN 600507 THEN ''Datastore Activity: Delete'' WHEN 600599 THEN ''Datastore
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN QUERY_TYPE IN ('GET_FILES','LIST_FILES') THEN 600501 WHEN
+      QUERY_TYPE IN ('UPDATE','PUT_FILES') THEN 600502 WHEN QUERY_TYPE IN ('CREATE_USER','CREATE_TABLE','CREATE_VIEW','CREATE_ROLE','CREATE_TASK','CREATE','CREATE_TABLE_AS_SELECT','CREATE_SEQUENCE','CREATE_STREAM','CREATE_EVENT_TABLE','CREATE_MASKING_POLICY','CREATE_VIEW','CREATE_SESSION_POLICY','CREATE_SECRET','CREATE_CONSTRAINT')
+      THEN 600506 WHEN QUERY_TYPE IN ('DROP','DROP_TASK','DROP_USER','DROP_STREAM','DROP_ROLE','DROP_SESSION_POLICY','DELETE','DROP_MASKING_POLICY','REMOVE_FILES')
+      THEN 600507 WHEN QUERY_TYPE IS NULL THEN 600500 ELSE 600599 END)::NUMBER
+    unmapped: NULL::VARIANT

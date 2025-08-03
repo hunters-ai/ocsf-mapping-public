@@ -1,0 +1,143 @@
+type: mapping
+id: oracle_audit_logs_6005_datastore_activity_1.1.0
+version: '9'
+name: Oracle Audit Logs to OCSF class Datastore Activity
+data-types:
+- oracle-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'POST' THEN 6 WHEN
+      ACTION IN ('GET', 'HEAD') THEN 1 WHEN ACTION IN ('PUT', 'PATCH') THEN 2 WHEN
+      ACTION = 'CONNECT' THEN 3 WHEN ACTION IN ('DELETEWHERE', 'DELETE') THEN 7 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'POST' THEN
+      6 WHEN ACTION IN ('GET', 'HEAD') THEN 1 WHEN ACTION IN ('PUT', 'PATCH') THEN
+      2 WHEN ACTION = 'CONNECT' THEN 3 WHEN ACTION IN ('DELETEWHERE', 'DELETE') THEN
+      7 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Read' WHEN 2 THEN
+      'Update' WHEN 3 THEN 'Connect' WHEN 4 THEN 'Query' WHEN 5 THEN 'Write' WHEN
+      6 THEN 'Create' WHEN 7 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.idp.name: (ADDITIONAL_DETAILS:ssoIdentityProvider)::VARCHAR
+    actor.session.created_time: (date_part('epoch_milliseconds', (ADDITIONAL_DETAILS:ssoSessionCreateTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.session.created_time_dt: (ADDITIONAL_DETAILS:ssoSessionCreateTime)::TIMESTAMP_LTZ
+    actor.session.uid: (COALESCE(CONSOLE_SESSION_ID, ADDITIONAL_DETAILS:ssoSessionId))::VARCHAR
+    actor.user.email_addr: (IFF(PRINCIPAL_NAME ILIKE '%@%', PRINCIPAL_NAME, NULL))::VARCHAR
+    actor.user.full_name: (ADDITIONAL_DETAILS:actorDisplayName)::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('uid', EVENT_GROUPING_ID)))::ARRAY
+    actor.user.name: (COALESCE(IFF(PRINCIPAL_NAME NOT ILIKE '%@%', PRINCIPAL_NAME,
+      NULL), CALLER_NAME))::VARCHAR
+    actor.user.org.name: (COMPARTMENT_NAME)::VARCHAR
+    actor.user.org.uid: (COMPARTMENT_ID)::VARCHAR
+    actor.user.uid: (COALESCE(ADDITIONAL_DETAILS:actorId, PRINCIPAL_ID))::VARCHAR
+    api.request.data: (REQUEST_PARAMETERS)::VARIANT
+    api.request.uid: (REQUEST_ID)::VARCHAR
+    api.response.code: (STATUS)::NUMBER
+    api.response.data: (RESPONSE)::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('datastore_activity')::VARCHAR
+    class_uid: ('6005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    database.name: (COALESCE(ADDITIONAL_DETAILS:dbName, ADDITIONAL_DETAILS:dbUniqueName))::VARCHAR
+    database.type: (CASE ((3)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Relational'
+      WHEN 2 THEN 'Network' WHEN 3 THEN 'Object Oriented' WHEN 4 THEN 'Centralized'
+      WHEN 5 THEN 'Operational' WHEN 6 THEN 'NoSQL' WHEN 99 THEN 'Other' END)::VARCHAR
+    database.type_id: (3)::NUMBER
+    database.uid: (COALESCE(ADDITIONAL_DETAILS:DatabaseId, ADDITIONAL_DETAILS:databaseId))::VARCHAR
+    databucket.name: (ADDITIONAL_DETAILS:bucketName)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: (ADDITIONAL_DETAILS:executionDuration)::NUMBER
+    end_time: (date_part('epoch_milliseconds', (COALESCE(ADDITIONAL_DETAILS:endTime,
+      ADDITIONAL_DETAILS:actualCompletionTime))::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (COALESCE(ADDITIONAL_DETAILS:endTime, ADDITIONAL_DETAILS:actualCompletionTime))::TIMESTAMP_LTZ
+    enrichments: (OBJECT_CONSTRUCT_KEEP_NULL('data', ADDITIONAL_DETAILS))::ARRAY
+    http_request.http_headers: (OBJECT_CONSTRUCT('name', OBJECT_KEYS(REQUEST_HEADERS)[0],
+      'value', GET(REQUEST_HEADERS, OBJECT_KEYS(REQUEST_HEADERS)[0])))::ARRAY
+    http_request.url.path: (REQUEST_PATH)::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: (COALESCE(MESSAGE, ADDITIONAL_DETAILS:message, ADDITIONAL_DETAILS:description))::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('oracle-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('oracle')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(PRINCIPAL_NAME ILIKE '%@%', PRINCIPAL_NAME, NULL))::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(IFF(PRINCIPAL_NAME NOT ILIKE '%@%', PRINCIPAL_NAME, NULL),
+        CALLER_NAME))::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP_ADDRESS)::VARCHAR
+    query_info: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.domain: (AVAILABILITY_DOMAIN)::VARCHAR
+    src_endpoint.ip: (IP_ADDRESS)::VARCHAR
+    src_endpoint.name: (SOURCE)::VARCHAR
+    src_endpoint.uid: (CALLER_ID)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN STATUS::VARCHAR IS NULL THEN 0 WHEN STATUS::VARCHAR
+      ILIKE '2%' THEN 1 WHEN STATUS::VARCHAR NOT ILIKE '2%' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN STATUS::VARCHAR IS NULL THEN 0 WHEN STATUS::VARCHAR ILIKE
+      '2%' THEN 1 WHEN STATUS::VARCHAR NOT ILIKE '2%' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type: (CASE ((IFF(ADDITIONAL_DETAILS:bucketName IS NULL, IFF(COALESCE(COALESCE(ADDITIONAL_DETAILS:DatabaseId,
+      ADDITIONAL_DETAILS:databaseId), COALESCE(ADDITIONAL_DETAILS:dbName, ADDITIONAL_DETAILS:dbUniqueName))
+      IS NULL, 0, 1), 2))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Database' WHEN
+      2 THEN 'Databucket' WHEN 3 THEN 'Table' WHEN 99 THEN 'Other' END)::VARCHAR
+    type_id: (IFF(ADDITIONAL_DETAILS:bucketName IS NULL, IFF(COALESCE(COALESCE(ADDITIONAL_DETAILS:DatabaseId,
+      ADDITIONAL_DETAILS:databaseId), COALESCE(ADDITIONAL_DETAILS:dbName, ADDITIONAL_DETAILS:dbUniqueName))
+      IS NULL, 0, 1), 2))::NUMBER
+    type_name: '(CASE ((CASE WHEN ACTION IS NULL THEN 600500 WHEN ACTION = ''POST''
+      THEN 600506 WHEN ACTION IN (''GET'', ''HEAD'') THEN 600501 WHEN ACTION IN (''PUT'',
+      ''PATCH'') THEN 600502 WHEN ACTION = ''CONNECT'' THEN 600503 WHEN ACTION IN
+      (''DELETEWHERE'', ''DELETE'') THEN 600507 ELSE 600599 END)::NUMBER) WHEN 600500
+      THEN ''Datastore Activity: Unknown'' WHEN 600501 THEN ''Datastore Activity:
+      Read'' WHEN 600502 THEN ''Datastore Activity: Update'' WHEN 600503 THEN ''Datastore
+      Activity: Connect'' WHEN 600504 THEN ''Datastore Activity: Query'' WHEN 600505
+      THEN ''Datastore Activity: Write'' WHEN 600506 THEN ''Datastore Activity: Create''
+      WHEN 600507 THEN ''Datastore Activity: Delete'' WHEN 600599 THEN ''Datastore
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN ACTION IS NULL THEN 600500 WHEN ACTION = 'POST' THEN 600506
+      WHEN ACTION IN ('GET', 'HEAD') THEN 600501 WHEN ACTION IN ('PUT', 'PATCH') THEN
+      600502 WHEN ACTION = 'CONNECT' THEN 600503 WHEN ACTION IN ('DELETEWHERE', 'DELETE')
+      THEN 600507 ELSE 600599 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: COALESCE(ADDITIONAL_DETAILS:bucketName, ADDITIONAL_DETAILS:DatabaseId,
+    ADDITIONAL_DETAILS:databaseId, ADDITIONAL_DETAILS:dbName) IS NOT NULL

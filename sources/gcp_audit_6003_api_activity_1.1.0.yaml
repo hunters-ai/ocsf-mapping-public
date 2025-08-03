@@ -1,0 +1,140 @@
+type: mapping
+id: gcp_audit_6003_api_activity_1.1.0
+version: '9'
+name: Gcp Audit to OCSF class Api Activity
+data-types:
+- gcp-audit
+mapping:
+  fields:
+    activity_id: (CASE WHEN METHOD_NAME IS NULL THEN 0 WHEN METHOD_NAME ILIKE '%create%'
+      THEN 1 WHEN METHOD_NAME ILIKE '%read%' OR METHOD_NAME ILIKE '%get%' THEN 2 WHEN
+      METHOD_NAME ILIKE '%update%' OR METHOD_NAME ILIKE '%put%' THEN 3 WHEN METHOD_NAME
+      ILIKE '%delete%' OR METHOD_NAME ILIKE '%remove%' THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN METHOD_NAME IS NULL THEN 0 WHEN METHOD_NAME ILIKE
+      '%create%' THEN 1 WHEN METHOD_NAME ILIKE '%read%' OR METHOD_NAME ILIKE '%get%'
+      THEN 2 WHEN METHOD_NAME ILIKE '%update%' OR METHOD_NAME ILIKE '%put%' THEN 3
+      WHEN METHOD_NAME ILIKE '%delete%' OR METHOD_NAME ILIKE '%remove%' THEN 4 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read'
+      WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.authorizations: (OBJECT_CONSTRUCT_KEEP_NULL('decision', GET(LOG_LABELS,
+      'authorization.k8s.io/decision'), 'policy', OBJECT_CONSTRUCT_KEEP_NULL('desc',
+      AUTHORIZATION_PERMISSIONS[0])))::ARRAY
+    actor.process.file.name: (SOURCE_LOCATION:file)::VARCHAR
+    actor.user.email_addr: (PRINCIPAL_EMAIL)::VARCHAR
+    api.operation: (METHOD_NAME)::VARCHAR
+    api.request.data: (COALESCE(RAW:jsonPayload:requestPayload, PROTO_PAYLOAD:request))::VARIANT
+    api.response.data: (PROTO_PAYLOAD:response)::VARIANT
+    api.response.error_message: (LOG_LABELS:exceptionMessage)::VARCHAR
+    api.response.message: (PROTO_PAYLOAD:status:message)::VARCHAR
+    api.service.name: (SERVICE_NAME)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.project_uid: (PROJECT_ID)::VARCHAR
+    cloud.provider: ('GCP')::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.http_method: (HTTP_REQUEST:requestMethod)::VARCHAR
+    http_request.length: (HTTP_REQUEST:requestSize)::NUMBER
+    http_request.url.hostname: (PARSE_URL(HTTP_REQUEST:requestUrl):host)::VARCHAR
+    http_request.url.path: (PARSE_URL(HTTP_REQUEST:requestUrl):path)::VARCHAR
+    http_request.url.port: (PARSE_URL(HTTP_REQUEST:requestUrl):port)::NUMBER
+    http_request.url.query_string: (PARSE_URL(HTTP_REQUEST:requestUrl):query)::VARCHAR
+    http_request.url.scheme: (PARSE_URL(HTTP_REQUEST:requestUrl):scheme)::VARCHAR
+    http_request.user_agent: (CALLER_USER_AGENT)::VARCHAR
+    http_request.version: (HTTP_REQUEST:protocol)::VARCHAR
+    message: (LOG_LABELS:logMessage)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('gcp-audit')::VARCHAR
+    metadata.product.vendor_name: ('gcp')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SOURCE_LOCATION:file)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PRINCIPAL_EMAIL)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PARSE_URL(HTTP_REQUEST:requestUrl):host)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(CALLER_IP, HTTP_REQUEST:remoteIp))::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (OBJECT_CONSTRUCT_KEEP_NULL('group', OBJECT_CONSTRUCT_KEEP_NULL('name',
+      RESOURCE_LABELS:instance_group_name, 'uid', RESOURCE_LABELS:instance_group_id),
+      'name', RESOURCE_NAME, 'region', RESOURCE_LABELS:region, 'type', RESOURCE_TYPE,
+      'uid', RESOURCE_LABELS:id, 'version', RESOURCE_LABELS:version))::ARRAY
+    severity: (CASE ((CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY = 'INFO' THEN
+      1 WHEN SEVERITY = 'DEBUG' THEN 2 WHEN SEVERITY = 'WARNING' THEN 3 WHEN SEVERITY
+      = 'ERROR' THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY = 'INFO' THEN 1
+      WHEN SEVERITY = 'DEBUG' THEN 2 WHEN SEVERITY = 'WARNING' THEN 3 WHEN SEVERITY
+      = 'ERROR' THEN 4 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (COALESCE(CALLER_IP, HTTP_REQUEST:remoteIp))::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN METHOD_NAME IS NULL THEN 600300 WHEN METHOD_NAME
+      ILIKE ''%create%'' THEN 600301 WHEN METHOD_NAME ILIKE ''%read%'' OR METHOD_NAME
+      ILIKE ''%get%'' THEN 600302 WHEN METHOD_NAME ILIKE ''%update%'' OR METHOD_NAME
+      ILIKE ''%put%'' THEN 600303 WHEN METHOD_NAME ILIKE ''%delete%'' OR METHOD_NAME
+      ILIKE ''%remove%'' THEN 600304 ELSE 600399 END)::NUMBER) WHEN 600300 THEN ''API
+      Activity: Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN 600302 THEN
+      ''API Activity: Read'' WHEN 600303 THEN ''API Activity: Update'' WHEN 600304
+      THEN ''API Activity: Delete'' WHEN 600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN METHOD_NAME IS NULL THEN 600300 WHEN METHOD_NAME ILIKE '%create%'
+      THEN 600301 WHEN METHOD_NAME ILIKE '%read%' OR METHOD_NAME ILIKE '%get%' THEN
+      600302 WHEN METHOD_NAME ILIKE '%update%' OR METHOD_NAME ILIKE '%put%' THEN 600303
+      WHEN METHOD_NAME ILIKE '%delete%' OR METHOD_NAME ILIKE '%remove%' THEN 600304
+      ELSE 600399 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: METHOD_NAME IS NOT NULL

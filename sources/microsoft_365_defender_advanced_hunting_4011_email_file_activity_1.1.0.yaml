@@ -1,0 +1,98 @@
+type: mapping
+id: microsoft_365_defender_advanced_hunting_4011_email_file_activity_1.1.0
+version: '5'
+name: Microsoft 365 Defender Advanced Hunting to OCSF class Email File Activity
+data-types:
+- microsoft-365-defender-advanced-hunting
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (3)::NUMBER
+    activity_name: (CASE ((3)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (PROPERTIES:SenderFromAddress)::VARCHAR
+    actor.user.full_name: (PROPERTIES:SenderDisplayName)::VARCHAR
+    actor.user.org.uid: (TENANT_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_file_activity')::VARCHAR
+    class_uid: ('4011')::NUMBER
+    cloud.provider: ('Microsoft Defender')::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    email_uid: (PROPERTIES:NetworkMessageId)::VARCHAR
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256', 'algorithm_id',
+      3, 'value', PROPERTIES:SHA256)))::ARRAY
+    file.name: (PROPERTIES:FileName)::VARCHAR
+    file.size: (PROPERTIES:FileSize)::NUMBER
+    file.type: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File'
+      WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device'
+      WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    file.type_id: (1)::NUMBER
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-365-defender-advanced-hunting')::VARCHAR
+    metadata.product.vendor_name: ('microsoft-defender')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PROPERTIES:SenderFromAddress)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROPERTIES:FileName)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((401103)::NUMBER) WHEN 401100 THEN ''Email File Activity: Unknown''
+      WHEN 401101 THEN ''Email File Activity: Send'' WHEN 401102 THEN ''Email File
+      Activity: Receive'' WHEN 401103 THEN ''Email File Activity: Scan'' WHEN 401199
+      THEN ''Email File Activity: Other'' END)::VARCHAR'
+    type_uid: (401103)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: CATEGORY ILIKE '%EmailAttachmentInfo%'

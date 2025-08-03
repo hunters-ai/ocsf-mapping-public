@@ -1,0 +1,217 @@
+type: mapping
+id: mdatp_device_logon_events_3002_authentication_1.1.0
+version: '17'
+name: Mdatp Device Logon Events to OCSF class Authentication
+data-types:
+- mdatp-device-logon-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE = 'LogonSuccess'
+      THEN 1 WHEN ACTION_TYPE = 'LogonFailed' THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE =
+      'LogonSuccess' THEN 1 WHEN ACTION_TYPE = 'LogonFailed' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN 2 THEN 'Logoff' WHEN 3 THEN 'Authentication
+      Ticket' WHEN 4 THEN 'Service Ticket Request' WHEN 5 THEN 'Service Ticket Renew'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (INITIATING_PROCESS_COMMAND_LINE)::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (INITIATING_PROCESS_CREATION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (INITIATING_PROCESS_CREATION_TIME)::TIMESTAMP_LTZ
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      CASE (CASE WHEN INITIATING_PROCESS_SHA256 IS NULL AND INITIATING_PROCESS_SHA1
+      IS NULL AND INITIATING_PROCESS_MD5 IS NULL THEN 0 WHEN INITIATING_PROCESS_SHA256
+      IS NOT NULL THEN 3 WHEN INITIATING_PROCESS_SHA1 IS NOT NULL THEN 2 WHEN INITIATING_PROCESS_MD5
+      IS NOT NULL THEN 1 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN
+      2 THEN 'SHA-1' WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH'
+      WHEN 6 THEN 'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
+      CASE WHEN INITIATING_PROCESS_SHA256 IS NULL AND INITIATING_PROCESS_SHA1 IS NULL
+      AND INITIATING_PROCESS_MD5 IS NULL THEN 0 WHEN INITIATING_PROCESS_SHA256 IS
+      NOT NULL THEN 3 WHEN INITIATING_PROCESS_SHA1 IS NOT NULL THEN 2 WHEN INITIATING_PROCESS_MD5
+      IS NOT NULL THEN 1 END::NUMBER, 'value', COALESCE(INITIATING_PROCESS_SHA256,
+      INITIATING_PROCESS_SHA1, INITIATING_PROCESS_MD5)::VARCHAR)))::ARRAY
+    actor.process.file.name: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    actor.process.file.path: (INITIATING_PROCESS_FOLDER_PATH)::VARCHAR
+    actor.process.integrity: (CASE ((CASE WHEN INITIATING_PROCESS_INTEGRITY_LEVEL
+      IS NULL THEN 0 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL = 'Low' THEN 2 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL
+      = 'Medium' THEN 3 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL = 'High' THEN 4 WHEN
+      INITIATING_PROCESS_INTEGRITY_LEVEL = 'System' THEN 5 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Untrusted' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium'
+      WHEN 4 THEN 'High' WHEN 5 THEN 'System' WHEN 6 THEN 'Protected' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    actor.process.integrity_id: (CASE WHEN INITIATING_PROCESS_INTEGRITY_LEVEL IS NULL
+      THEN 0 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL = 'Low' THEN 2 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL
+      = 'Medium' THEN 3 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL = 'High' THEN 4 WHEN
+      INITIATING_PROCESS_INTEGRITY_LEVEL = 'System' THEN 5 ELSE 99 END)::NUMBER
+    actor.process.name: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    actor.process.parent_process.file.name: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    actor.process.parent_process.name: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    actor.process.parent_process.pid: (INITIATING_PROCESS_PARENT_ID)::NUMBER
+    actor.process.pid: (INITIATING_PROCESS_ID)::NUMBER
+    actor.process.user.account.name: (INITIATING_PROCESS_ACCOUNT_NAME)::VARCHAR
+    actor.process.user.account.uid: (INITIATING_PROCESS_ACCOUNT_SID)::VARCHAR
+    actor.process.user.domain: (INITIATING_PROCESS_ACCOUNT_DOMAIN)::VARCHAR
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.container.uid: (APP_GUARD_CONTAINER_ID)::VARCHAR
+    device.hostname: (DEVICE_NAME)::VARCHAR
+    device.uid: (DEVICE_ID)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: (REMOTE_IP IS NOT NULL)::BOOLEAN
+    logon_process.uid: (LOGON_ID)::VARCHAR
+    logon_type: (CASE ((CASE WHEN LOGON_TYPE = 'Interactive' THEN 2 WHEN LOGON_TYPE
+      = 'Network' THEN 3 WHEN LOGON_TYPE = 'Batch' THEN 4 WHEN LOGON_TYPE = 'Unlock'
+      THEN 7 WHEN LOGON_TYPE = 'NetworkCleartext' THEN 8 WHEN LOGON_TYPE = 'NewCredentials'
+      THEN 9 WHEN LOGON_TYPE = 'RemoteInteractive' THEN 10 WHEN LOGON_TYPE = 'CachedInteractive'
+      THEN 11 WHEN LOGON_TYPE = 'CachedRemoteInteractive' THEN 12 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive' WHEN 11 THEN 'Cached
+      Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN 13 THEN 'Cached Unlock'
+      WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN 4 THEN 'Batch' WHEN 5 THEN
+      'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network Cleartext' WHEN 9 THEN
+      'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
+    logon_type_id: (CASE WHEN LOGON_TYPE = 'Interactive' THEN 2 WHEN LOGON_TYPE =
+      'Network' THEN 3 WHEN LOGON_TYPE = 'Batch' THEN 4 WHEN LOGON_TYPE = 'Unlock'
+      THEN 7 WHEN LOGON_TYPE = 'NetworkCleartext' THEN 8 WHEN LOGON_TYPE = 'NewCredentials'
+      THEN 9 WHEN LOGON_TYPE = 'RemoteInteractive' THEN 10 WHEN LOGON_TYPE = 'CachedInteractive'
+      THEN 11 WHEN LOGON_TYPE = 'CachedRemoteInteractive' THEN 12 ELSE 99 END)::NUMBER
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('mdatp-device-logon-events')::VARCHAR
+    metadata.product.vendor_name: ('mdatp')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.container'''
+      type: '''Container'''
+      type_id: 27
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (DEVICE_NAME)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (REMOTE_DEVICE_NAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REMOTE_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACCOUNT_NAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session: NULL::VARIANT
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    src_endpoint.hostname: (REMOTE_DEVICE_NAME)::VARCHAR
+    src_endpoint.ip: (REMOTE_IP)::VARCHAR
+    src_endpoint.port: (REMOTE_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE = 'LogonSuccess'
+      THEN 1 WHEN ACTION_TYPE = 'LogonFailed' THEN 2 ELSE 99 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE = 'LogonSuccess'
+      THEN 1 WHEN ACTION_TYPE = 'LogonFailed' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300200 +(CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE
+      = ''LogonSuccess'' THEN 1 WHEN ACTION_TYPE = ''LogonFailed'' THEN 2 ELSE 99
+      END))::NUMBER) WHEN 300200 THEN ''Authentication: Unknown'' WHEN 300201 THEN
+      ''Authentication: Logon'' WHEN 300202 THEN ''Authentication: Logoff'' WHEN 300203
+      THEN ''Authentication: Authentication Ticket'' WHEN 300204 THEN ''Authentication:
+      Service Ticket Request'' WHEN 300205 THEN ''Authentication: Service Ticket Renew''
+      WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300200 +(CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE = 'LogonSuccess'
+      THEN 1 WHEN ACTION_TYPE = 'LogonFailed' THEN 2 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.domain: (ACCOUNT_DOMAIN)::VARCHAR
+    user.name: (ACCOUNT_NAME)::VARCHAR
+    user.uid: (ACCOUNT_SID)::VARCHAR

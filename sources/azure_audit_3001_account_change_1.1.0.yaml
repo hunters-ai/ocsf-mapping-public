@@ -1,0 +1,179 @@
+type: mapping
+id: azure_audit_3001_account_change_1.1.0
+version: '8'
+name: Azure Audit to OCSF class Account Change
+data-types:
+- azure-audit
+mapping:
+  fields:
+    activity_id: (CASE WHEN OPERATION_NAME IS NULL THEN 0 WHEN OPERATION_NAME ILIKE
+      '%create%' THEN 1 WHEN OPERATION_NAME ILIKE '%enable%' THEN 2 WHEN OPERATION_NAME
+      ILIKE '%change%password%' OR OPERATION_NAME ILIKE '%password%change%' THEN 3
+      WHEN OPERATION_NAME ILIKE '%reset%password%' OR OPERATION_NAME ILIKE '%password%reset%'
+      THEN 4 WHEN OPERATION_NAME ILIKE '%disable%' THEN 5 WHEN OPERATION_NAME ILIKE
+      '%delete%' THEN 6 WHEN OPERATION_NAME ILIKE '%add%policy%' OR OPERATION_NAME
+      ILIKE '%add%member%role%' THEN 7 WHEN OPERATION_NAME ILIKE '%remove%policy%'
+      OR OPERATION_NAME ILIKE '%remove%member%role%' THEN 8 WHEN OPERATION_NAME ILIKE
+      '%update%mfa%' THEN 10 WHEN OPERATION_NAME ILIKE '%delete%mfa%' OR OPERATION_NAME
+      ILIKE '%block%mfa%' THEN 11 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN OPERATION_NAME IS NULL THEN 0 WHEN OPERATION_NAME
+      ILIKE '%create%' THEN 1 WHEN OPERATION_NAME ILIKE '%enable%' THEN 2 WHEN OPERATION_NAME
+      ILIKE '%change%password%' OR OPERATION_NAME ILIKE '%password%change%' THEN 3
+      WHEN OPERATION_NAME ILIKE '%reset%password%' OR OPERATION_NAME ILIKE '%password%reset%'
+      THEN 4 WHEN OPERATION_NAME ILIKE '%disable%' THEN 5 WHEN OPERATION_NAME ILIKE
+      '%delete%' THEN 6 WHEN OPERATION_NAME ILIKE '%add%policy%' OR OPERATION_NAME
+      ILIKE '%add%member%role%' THEN 7 WHEN OPERATION_NAME ILIKE '%remove%policy%'
+      OR OPERATION_NAME ILIKE '%remove%member%role%' THEN 8 WHEN OPERATION_NAME ILIKE
+      '%update%mfa%' THEN 10 WHEN OPERATION_NAME ILIKE '%delete%mfa%' OR OPERATION_NAME
+      ILIKE '%block%mfa%' THEN 11 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Create' WHEN 10 THEN 'MFA Factor Enable' WHEN 11 THEN 'MFA Factor Disable'
+      WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password Change' WHEN 4 THEN 'Password Reset'
+      WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete' WHEN 7 THEN 'Attach Policy' WHEN
+      8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    duration: (DURATION_MS)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.user_agent: (PROPERTIES:userAgent)::VARCHAR
+    message: (OPERATION_NAME)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('azure-audit')::VARCHAR
+    metadata.product.vendor_name: ('azure')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CALLER_IP_ADDRESS)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (PROPERTIES_INITIATED_BY:user:userPrincipalName)::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (PROPERTIES_INITIATED_BY:user:displayName)::VARCHAR
+    - name: '''user_result.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CASE PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:displayName
+        WHEN 'GraphUserEmailAuthMethod.Email' THEN PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue
+        WHEN 'StrongAuthenticationUserDetails' THEN PARSE_JSON(PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue)[0]:Email
+        WHEN 'UserPrincipalName' THEN PARSE_JSON(PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue)[0]
+        ELSE NULL END)::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN LEVEL IS NULL THEN 0 WHEN LEVEL ILIKE '%Information%'
+      THEN 1 WHEN LEVEL = 'Warning' THEN 3 WHEN LEVEL = 'Error' THEN 4 WHEN LEVEL
+      = 'Critical' THEN 5 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN
+      5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN LEVEL IS NULL THEN 0 WHEN LEVEL ILIKE '%Information%'
+      THEN 1 WHEN LEVEL = 'Warning' THEN 3 WHEN LEVEL = 'Error' THEN 4 WHEN LEVEL
+      = 'Critical' THEN 5 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (CALLER_IP_ADDRESS)::VARCHAR
+    src_endpoint.svc_name: (PROPERTIES_LOGGED_BY_SERVICE)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE) IS NULL
+      OR COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE) = 'None' THEN 0 WHEN COALESCE(PROPERTIES_RESULT,
+      RESULT_SIGNATURE) = 'success' OR COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE)
+      ILIKE '%Succeeded%' THEN 1 WHEN COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE)
+      = 'failure' OR COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE) ILIKE '%Failed%'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (COALESCE(PROPERTIES_RESULT_REASON, PROPERTIES_RESULT, RESULT_SIGNATURE))::VARCHAR
+    status_id: (CASE WHEN COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE) IS NULL OR
+      COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE) = 'None' THEN 0 WHEN COALESCE(PROPERTIES_RESULT,
+      RESULT_SIGNATURE) = 'success' OR COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE)
+      ILIKE '%Succeeded%' THEN 1 WHEN COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE)
+      = 'failure' OR COALESCE(PROPERTIES_RESULT, RESULT_SIGNATURE) ILIKE '%Failed%'
+      THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN OPERATION_NAME IS NULL THEN 300100 WHEN OPERATION_NAME
+      ILIKE ''%create%'' THEN 300101 WHEN OPERATION_NAME ILIKE ''%enable%'' THEN 300102
+      WHEN OPERATION_NAME ILIKE ''%change%password%'' OR OPERATION_NAME ILIKE ''%password%change%''
+      THEN 300103 WHEN OPERATION_NAME ILIKE ''%reset%password%'' OR OPERATION_NAME
+      ILIKE ''%password%reset%'' THEN 300104 WHEN OPERATION_NAME ILIKE ''%disable%''
+      THEN 300105 WHEN OPERATION_NAME ILIKE ''%delete%'' THEN 300106 WHEN OPERATION_NAME
+      ILIKE ''%add%policy%'' OR OPERATION_NAME ILIKE ''%add%member%role%'' THEN 300107
+      WHEN OPERATION_NAME ILIKE ''%remove%policy%'' OR OPERATION_NAME ILIKE ''%remove%member%role%''
+      THEN 300108 WHEN OPERATION_NAME ILIKE ''%update%mfa%'' THEN 300110 WHEN OPERATION_NAME
+      ILIKE ''%delete%mfa%'' OR OPERATION_NAME ILIKE ''%block%mfa%'' THEN 300111 ELSE
+      300199 END)::NUMBER) WHEN 300100 THEN ''Account Change: Unknown'' WHEN 300101
+      THEN ''Account Change: Create'' WHEN 300102 THEN ''Account Change: Enable''
+      WHEN 300103 THEN ''Account Change: Password Change'' WHEN 300104 THEN ''Account
+      Change: Password Reset'' WHEN 300105 THEN ''Account Change: Disable'' WHEN 300106
+      THEN ''Account Change: Delete'' WHEN 300107 THEN ''Account Change: Attach Policy''
+      WHEN 300108 THEN ''Account Change: Detach Policy'' WHEN 300109 THEN ''Account
+      Change: Lock'' WHEN 300110 THEN ''Account Change: MFA Factor Enable'' WHEN 300111
+      THEN ''Account Change: MFA Factor Disable'' WHEN 300199 THEN ''Account Change:
+      Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN OPERATION_NAME IS NULL THEN 300100 WHEN OPERATION_NAME ILIKE
+      '%create%' THEN 300101 WHEN OPERATION_NAME ILIKE '%enable%' THEN 300102 WHEN
+      OPERATION_NAME ILIKE '%change%password%' OR OPERATION_NAME ILIKE '%password%change%'
+      THEN 300103 WHEN OPERATION_NAME ILIKE '%reset%password%' OR OPERATION_NAME ILIKE
+      '%password%reset%' THEN 300104 WHEN OPERATION_NAME ILIKE '%disable%' THEN 300105
+      WHEN OPERATION_NAME ILIKE '%delete%' THEN 300106 WHEN OPERATION_NAME ILIKE '%add%policy%'
+      OR OPERATION_NAME ILIKE '%add%member%role%' THEN 300107 WHEN OPERATION_NAME
+      ILIKE '%remove%policy%' OR OPERATION_NAME ILIKE '%remove%member%role%' THEN
+      300108 WHEN OPERATION_NAME ILIKE '%update%mfa%' THEN 300110 WHEN OPERATION_NAME
+      ILIKE '%delete%mfa%' OR OPERATION_NAME ILIKE '%block%mfa%' THEN 300111 ELSE
+      300199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (PROPERTIES_INITIATED_BY:user:userPrincipalName)::VARCHAR
+    user.name: (PROPERTIES_INITIATED_BY:user:displayName)::VARCHAR
+    user.org.uid: (TENANT_ID)::VARCHAR
+    user.type: (CASE ((CASE WHEN OPERATION_NAME IS NULL THEN 0 WHEN OPERATION_NAME
+      ILIKE '%user%' OR OPERATION_NAME ILIKE '%member%' THEN 1 WHEN OPERATION_NAME
+      ILIKE '%admin%' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN OPERATION_NAME IS NULL THEN 0 WHEN OPERATION_NAME ILIKE
+      '%user%' OR OPERATION_NAME ILIKE '%member%' THEN 1 WHEN OPERATION_NAME ILIKE
+      '%admin%' THEN 2 ELSE 99 END)::NUMBER
+    user.uid: (PROPERTIES_INITIATED_BY:user:id)::VARCHAR
+    user_result.email_addr: (CASE PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:displayName
+      WHEN 'GraphUserEmailAuthMethod.Email' THEN PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue
+      WHEN 'StrongAuthenticationUserDetails' THEN PARSE_JSON(PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue)[0]:Email
+      WHEN 'UserPrincipalName' THEN PARSE_JSON(PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue)[0]
+      ELSE NULL END)::VARCHAR
+    user_result.type: (CASE ((IFF(PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:displayName
+      IN ('TargetId.UserType', 'UserType') AND PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue
+      ILIKE '%member%', 1, 0))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN
+      2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user_result.type_id: (IFF(PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:displayName
+      IN ('TargetId.UserType', 'UserType') AND PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue
+      ILIKE '%member%', 1, 0))::NUMBER
+    user_result.uid: (IFF(PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:displayName
+      = 'User.ObjectID', PROPERTIES_TARGET_RESOURCES[0]:modifiedProperties[0]:newValue,
+      NULL))::VARCHAR
+  predicate: OPERATION_NAME ILIKE '%user%' OR OPERATION_NAME ILIKE '%admin%' OR OPERATION_NAME
+    ILIKE '%owner%' OR OPERATION_NAME ILIKE '%member%' OR OPERATION_NAME ILIKE '%account%'

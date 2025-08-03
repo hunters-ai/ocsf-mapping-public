@@ -1,0 +1,188 @@
+type: mapping
+id: pan_edr_raw_logs_1004_memory_activity_1.1.0
+version: '2'
+name: Pan Edr Raw Logs to OCSF class Memory Activity
+data-types:
+- pan-edr-raw-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN EVENT_TYPE = 9 THEN 1 WHEN EVENT_TYPE = 14 THEN 2 WHEN
+      EVENT_TYPE = 5 THEN 8 WHEN EVENT_TYPE = 6 THEN 7 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE = 9 THEN 1 WHEN EVENT_TYPE = 14 THEN
+      2 WHEN EVENT_TYPE = 5 THEN 8 WHEN EVENT_TYPE = 6 THEN 7 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Allocate Page' WHEN 2 THEN 'Modify Page' WHEN 3
+      THEN 'Delete Page' WHEN 4 THEN 'Buffer Overflow' WHEN 5 THEN 'Disable DEP' WHEN
+      6 THEN 'Enable DEP' WHEN 7 THEN 'Read' WHEN 8 THEN 'Write' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.cmd_line: (OS_ACTOR_PROCESS_COMMAND_LINE)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('value',
+      COALESCE(OS_ACTOR_PROCESS_IMAGE_SHA256, OS_ACTOR_PROCESS_IMAGE_MD5), 'algorithm_id',
+      CASE WHEN OS_ACTOR_PROCESS_IMAGE_SHA256 IS NOT NULL THEN 3 WHEN OS_ACTOR_PROCESS_IMAGE_MD5
+      IS NOT NULL THEN 1 ELSE NULL END, 'algorithm', CASE WHEN OS_ACTOR_PROCESS_IMAGE_SHA256
+      IS NOT NULL THEN 'SHA-256' WHEN OS_ACTOR_PROCESS_IMAGE_MD5 IS NOT NULL THEN
+      'MD5' ELSE NULL END)))::ARRAY
+    actor.process.file.name: (OS_ACTOR_PROCESS_IMAGE_NAME)::VARCHAR
+    actor.process.file.path: (OS_ACTOR_PROCESS_IMAGE_PATH)::VARCHAR
+    actor.process.pid: (OS_ACTOR_PROCESS_OS_PID)::NUMBER
+    actor.process.tid: (OS_ACTOR_THREAD_THREAD_ID)::NUMBER
+    actor.user.name: (OS_ACTOR_PRIMARY_USERNAME)::VARCHAR
+    actor.user.uid: (OS_ACTOR_PRIMARY_USER_SID)::VARCHAR
+    actual_permissions: NULL::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    base_address: (RAW:action_module_base_address)::VARCHAR
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('memory_activity')::VARCHAR
+    class_uid: ('1004')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (AGENT_HOSTNAME)::VARCHAR
+    device.instance_uid: (OS_ACTOR_PROCESS_INSTANCE_ID)::VARCHAR
+    device.interface_uid: (AGENT_INTERFACE_MAP_MAC[0])::VARCHAR
+    device.ip: (AGENT_IP_ADDRESSES[0])::VARCHAR
+    device.os.build: (REGEXP_SUBSTR(AGENT_OS_SUB_TYPE, 'Build (.*)\\)', 1, 1, 'e'))::VARCHAR
+    device.os.type: (CASE ((CASE WHEN AGENT_OS_TYPE = 1 THEN 100 WHEN AGENT_OS_TYPE
+      = 2 THEN 300 WHEN AGENT_OS_TYPE = 4 THEN 200 WHEN AGENT_OS_TYPE IS NULL THEN
+      0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101
+      THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300
+      THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris'
+      WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN AGENT_OS_TYPE = 1 THEN 100 WHEN AGENT_OS_TYPE =
+      2 THEN 300 WHEN AGENT_OS_TYPE = 4 THEN 200 WHEN AGENT_OS_TYPE IS NULL THEN 0
+      ELSE 99 END)::NUMBER
+    device.uid: (AGENT_ID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('pan-edr-raw-logs')::VARCHAR
+    metadata.product.vendor_name: ('paloalto')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (OS_ACTOR_PROCESS_IMAGE_NAME)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (OS_ACTOR_PRIMARY_USERNAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (AGENT_HOSTNAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (AGENT_IP_ADDRESSES[0])::VARCHAR
+    - name: '''process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (ACTION_PROCESS_IMAGE_NAME)::VARCHAR
+    - name: '''process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACTION_PROCESS_USERNAME)::VARCHAR
+    process.cmd_line: (ACTION_PROCESS_IMAGE_COMMAND_LINE)::VARCHAR
+    process.created_time: (date_part('epoch_milliseconds', (ACTION_PROCESS_INSTANCE_EXECUTION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    process.created_time_dt: (ACTION_PROCESS_INSTANCE_EXECUTION_TIME)::TIMESTAMP_LTZ
+    process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('value', COALESCE(ACTION_PROCESS_IMAGE_SHA256,
+      ACTION_PROCESS_IMAGE_MD5), 'algorithm_id', CASE WHEN ACTION_PROCESS_IMAGE_SHA256
+      IS NOT NULL THEN 3 WHEN ACTION_PROCESS_IMAGE_MD5 IS NOT NULL THEN 1 ELSE NULL
+      END, 'algorithm', CASE WHEN ACTION_PROCESS_IMAGE_SHA256 IS NOT NULL THEN 'SHA-256'
+      WHEN ACTION_PROCESS_IMAGE_MD5 IS NOT NULL THEN 'MD5' ELSE NULL END)))::ARRAY
+    process.file.name: (ACTION_PROCESS_IMAGE_NAME)::VARCHAR
+    process.file.path: (ACTION_PROCESS_IMAGE_PATH)::VARCHAR
+    process.pid: (ACTION_PROCESS_OS_PID)::NUMBER
+    process.terminated_time: (date_part('epoch_milliseconds', (ACTION_PROCESS_TERMINATION_DATE)::TIMESTAMP_LTZ))::NUMBER
+    process.terminated_time_dt: (ACTION_PROCESS_TERMINATION_DATE)::TIMESTAMP_LTZ
+    process.user.name: (ACTION_PROCESS_USERNAME)::VARCHAR
+    process.user.uid: (ACTION_PROCESS_USER_SID)::VARCHAR
+    raw_data: NULL::VARCHAR
+    requested_permissions: NULL::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    size: (RAW:action_module_image_size)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', event_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100400 + (CASE WHEN EVENT_TYPE = 9 THEN 1 WHEN EVENT_TYPE
+      = 14 THEN 2 WHEN EVENT_TYPE = 5 THEN 8 WHEN EVENT_TYPE = 6 THEN 7 END))::NUMBER)
+      WHEN 100400 THEN ''Memory Activity: Unknown'' WHEN 100401 THEN ''Memory Activity:
+      Allocate Page'' WHEN 100402 THEN ''Memory Activity: Modify Page'' WHEN 100403
+      THEN ''Memory Activity: Delete Page'' WHEN 100404 THEN ''Memory Activity: Buffer
+      Overflow'' WHEN 100405 THEN ''Memory Activity: Disable DEP'' WHEN 100406 THEN
+      ''Memory Activity: Enable DEP'' WHEN 100407 THEN ''Memory Activity: Read'' WHEN
+      100408 THEN ''Memory Activity: Write'' WHEN 100499 THEN ''Memory Activity: Other''
+      END)::VARCHAR'
+    type_uid: (100400 + (CASE WHEN EVENT_TYPE = 9 THEN 1 WHEN EVENT_TYPE = 14 THEN
+      2 WHEN EVENT_TYPE = 5 THEN 8 WHEN EVENT_TYPE = 6 THEN 7 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TYPE IN (5, 6, 9, 14)

@@ -1,0 +1,132 @@
+type: mapping
+id: aws_eks_api_server_audit_logs_6003_api_activity_1.1.0
+version: '9'
+name: Aws Eks Api Server Audit Logs to OCSF class Api Activity
+data-types:
+- aws-eks-api-server-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN VERB IS NULL THEN 0 WHEN VERB IN ('create', 'post') THEN
+      1 WHEN VERB IN ('list', 'get', 'options') THEN 2 WHEN VERB IN ('update', 'patch',
+      'put') THEN 3 WHEN VERB ILIKE '%delete%' THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN VERB IS NULL THEN 0 WHEN VERB IN ('create', 'post')
+      THEN 1 WHEN VERB IN ('list', 'get', 'options') THEN 2 WHEN VERB IN ('update',
+      'patch', 'put') THEN 3 WHEN VERB ILIKE '%delete%' THEN 4 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update'
+      WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.authorizations: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('decision', PARSE_JSON(ANNOTATIONS):"authorization.k8s.io/decision"::VARCHAR,
+      'policy', OBJECT_CONSTRUCT('desc', PARSE_JSON(ANNOTATIONS):"authorization.k8s.io/reason"::VARCHAR))))::ARRAY
+    actor.session.uid: (USER_SESSION_NAMES[0])::VARCHAR
+    actor.user.credential_uid: (USER_ACCESS_KEY_IDS[0])::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('name', USER_GROUPS[0])))::ARRAY
+    actor.user.name: (USERNAME)::VARCHAR
+    actor.user.uid: (COALESCE(USER_ARNS[0], USER_CANONICAL_ARNS[0]))::VARCHAR
+    actor.user.uid_alt: (USER_PRINCIPAL_IDS[0])::VARCHAR
+    api.group.name: (PARSE_JSON(OBJECT_REF):apiGroup)::VARCHAR
+    api.operation: (VERB)::VARCHAR
+    api.request.containers: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('image', PARSE_JSON(REQUEST_OBJECT_STATUS):initContainerStatuses[0]:image::VARCHAR,
+      'name', PARSE_JSON(REQUEST_OBJECT_STATUS):initContainerStatuses[0]:name::VARCHAR,
+      'uid', REGEXP_SUBSTR(PARSE_JSON(REQUEST_OBJECT_STATUS):initContainerStatuses[0]:containerID,
+      '[0-9a-f]{64}')::VARCHAR)))::ARRAY
+    api.request.data: (PARSE_JSON(REQUEST_OBJECT))::VARIANT
+    api.response.code: (RESPONSE_STATUS_CODE)::NUMBER
+    api.response.data: (PARSE_JSON(RESPONSE_OBJECT))::VARIANT
+    api.response.error_message: (RESPONSE_STATUS_REASON)::VARCHAR
+    api.response.message: (RESPONSE_OBJECT_MESSAGE)::VARCHAR
+    api.service.name: (COALESCE(PARSE_JSON(REQUEST_OBJECT_SOURCE):component, PARSE_JSON(RESPONSE_OBJECT_SOURCE):component))::VARCHAR
+    api.version: (COALESCE(PARSE_JSON(OBJECT_REF):apiVersion, API_VERSION))::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint.hostname: (PARSE_JSON(REQUEST_OBJECT_TARGET):name)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (REQUEST_RECEIVED_TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (REQUEST_RECEIVED_TIMESTAMP)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.http_method: (CASE WHEN VERB = 'connect' THEN 'CONNECT' WHEN VERB
+      = 'delete' THEN 'DELETE' WHEN VERB = 'get' THEN 'GET' WHEN VERB = 'head' THEN
+      'HEAD' WHEN VERB = 'options' THEN 'OPTIONS' WHEN VERB = 'post' THEN 'POST' WHEN
+      VERB = 'put' THEN 'PUT' WHEN VERB = 'trace' THEN 'TRACE' ELSE NULL END)::VARCHAR
+    http_request.url.path: (SPLIT_PART(REQUEST_URI, '?', 1))::VARCHAR
+    http_request.url.query_string: (SPLIT_PART(REQUEST_URI, '?', 2))::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: (REQUEST_OBJECT_MESSAGE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('aws-eks-api-server-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('aws')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PARSE_JSON(REQUEST_OBJECT_TARGET):name)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (COALESCE(PARSE_JSON(RESPONSE_OBJECT_SOURCE):host, PARSE_JSON(REQUEST_OBJECT_SOURCE):host))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IPS[0])::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('name', PARSE_JSON(OBJECT_REF):name::VARCHAR,
+      'namespace', PARSE_JSON(OBJECT_REF):namespace::VARCHAR, 'type', PARSE_JSON(OBJECT_REF):resource::VARCHAR,
+      'uid', PARSE_JSON(OBJECT_REF):uid::VARCHAR, 'version', PARSE_JSON(OBJECT_REF):resourceVersion::VARCHAR)))::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.hostname: (COALESCE(PARSE_JSON(RESPONSE_OBJECT_SOURCE):host, PARSE_JSON(REQUEST_OBJECT_SOURCE):host))::VARCHAR
+    src_endpoint.ip: (SOURCE_IPS[0])::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RESPONSE_STATUS_STATUS IS NULL THEN 0 WHEN RESPONSE_STATUS_STATUS
+      = 'Success' THEN 1 WHEN RESPONSE_STATUS_STATUS = 'Failure' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: (RESPONSE_STATUS_CODE)::VARCHAR
+    status_detail: (COALESCE(REQUEST_OBJECT_REASON::VARCHAR, RESPONSE_OBJECT_REASON::VARCHAR))::VARCHAR
+    status_id: (CASE WHEN RESPONSE_STATUS_STATUS IS NULL THEN 0 WHEN RESPONSE_STATUS_STATUS
+      = 'Success' THEN 1 WHEN RESPONSE_STATUS_STATUS = 'Failure' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', request_received_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (request_received_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600300 + (CASE WHEN VERB IS NULL THEN 0 WHEN VERB IN (''create'',
+      ''post'') THEN 1 WHEN VERB IN (''list'', ''get'', ''options'') THEN 2 WHEN VERB
+      IN (''update'', ''patch'', ''put'') THEN 3 WHEN VERB ILIKE ''%delete%'' THEN
+      4 ELSE 99 END))::NUMBER) WHEN 600300 THEN ''API Activity: Unknown'' WHEN 600301
+      THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity: Read'' WHEN 600303
+      THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity: Delete'' WHEN
+      600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (600300 + (CASE WHEN VERB IS NULL THEN 0 WHEN VERB IN ('create', 'post')
+      THEN 1 WHEN VERB IN ('list', 'get', 'options') THEN 2 WHEN VERB IN ('update',
+      'patch', 'put') THEN 3 WHEN VERB ILIKE '%delete%' THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: VERB is not NULL

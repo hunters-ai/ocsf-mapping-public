@@ -1,0 +1,17 @@
+id: 3006_group_management_1.1.0
+version: '13'
+description: OCSF View For Class - 3006 Group Management
+source-table-ids:
+- onelogin_events_3006_group_management_1.1.0
+- duo_administrator_logs_3006_group_management_1.1.0
+- jira_audit_logs_3006_group_management_1.1.0
+- o365_audit_logs_3006_group_management_1.1.0
+- jumpcloud_directory_insights_3006_group_management_1.1.0
+- lastpass_user_activity_reports_3006_group_management_1.1.0
+- onepassword_audit_events_3006_group_management_1.1.0
+- azure_audit_3006_group_management_1.1.0
+- confluence_audit_logs_3006_group_management_1.1.0
+- okta_logs_3006_group_management_1.1.0
+- cyberark_privileged_access_security_3006_group_management_1.1.0
+- sailpoint_identitynow_audit_reports_events_3006_group_management_1.1.0
+- universal_wel_3006_group_management_1.1.0

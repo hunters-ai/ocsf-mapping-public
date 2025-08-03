@@ -1,0 +1,144 @@
+type: mapping
+id: zeek_logs_1001_file_activity_1.1.0
+version: '1'
+name: Zeek Logs to OCSF class File Activity
+data-types:
+- zeek-logs
+mapping:
+  fields:
+    access_mask: NULL::NUMBER
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN RAW:action IS NULL THEN 0 WHEN RAW:action ILIKE '%file%delete%'
+      THEN 4 WHEN RAW:action ILIKE '%file%rename%' THEN 5 WHEN RAW:action ILIKE '%file%open%'
+      THEN 14 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:action IS NULL THEN 0 WHEN RAW:action ILIKE
+      '%file%delete%' THEN 4 WHEN RAW:action ILIKE '%file%rename%' THEN 5 WHEN RAW:action
+      ILIKE '%file%open%' THEN 14 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Create' WHEN 10 THEN 'Encrypt' WHEN 11 THEN 'Decrypt' WHEN 12 THEN 'Mount'
+      WHEN 13 THEN 'Unmount' WHEN 14 THEN 'Open' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update'
+      WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Set Attributes' WHEN
+      7 THEN 'Set Security' WHEN 8 THEN 'Get Attributes' WHEN 9 THEN 'Get Security'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (0)::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('file_activity')::VARCHAR
+    class_uid: ('1001')::NUMBER
+    cloud: NULL::VARIANT
+    component: NULL::VARCHAR
+    connection_uid: (UID)::VARCHAR
+    count: NULL::NUMBER
+    create_mask: NULL::VARCHAR
+    device.ip: (RESPONDER_HOST)::VARCHAR
+    device.type: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN
+      10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (99)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: (DURATION)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    file.accessed_time: (date_part('epoch_milliseconds', (RAW:"times.accessed")::TIMESTAMP_LTZ))::NUMBER
+    file.accessed_time_dt: (RAW:"times.accessed")::TIMESTAMP_LTZ
+    file.created_time: (date_part('epoch_milliseconds', (RAW:"times.created")::TIMESTAMP_LTZ))::NUMBER
+    file.created_time_dt: (RAW:"times.created")::TIMESTAMP_LTZ
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm', 'MD5','algorithm_id',
+      1, 'value', RAW:md5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm', 'SHA-1', 'algorithm_id',
+      2, 'value', RAW:sha1)))::ARRAY
+    file.mime_type: (RAW:mime_type)::VARCHAR
+    file.modified_time: (date_part('epoch_milliseconds', (RAW:"times.modified")::TIMESTAMP_LTZ))::NUMBER
+    file.modified_time_dt: (RAW:"times.modified")::TIMESTAMP_LTZ
+    file.name: (COALESCE(RAW:filename, RAW:name))::VARCHAR
+    file.path: (RAW:path)::VARCHAR
+    file.size: (RAW:size)::NUMBER
+    file.type: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File'
+      WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device'
+      WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    file.type_id: (99)::NUMBER
+    file.uid: (RAW:fuid)::VARCHAR
+    file_diff: NULL::VARCHAR
+    file_result: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (log_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zeek-logs')::VARCHAR
+    metadata.product.vendor_name: ('zeek')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RESPONDER_HOST)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:filename, RAW:name))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100100 + (CASE WHEN RAW:action IS NULL THEN 0 WHEN RAW:action
+      ILIKE ''%file%delete%'' THEN 4 WHEN RAW:action ILIKE ''%file%rename%'' THEN
+      5 WHEN RAW:action ILIKE ''%file%open%'' THEN 14 ELSE 99 END))::NUMBER) WHEN
+      100100 THEN ''File System Activity: Unknown'' WHEN 100101 THEN ''File System
+      Activity: Create'' WHEN 100102 THEN ''File System Activity: Read'' WHEN 100103
+      THEN ''File System Activity: Update'' WHEN 100104 THEN ''File System Activity:
+      Delete'' WHEN 100105 THEN ''File System Activity: Rename'' WHEN 100106 THEN
+      ''File System Activity: Set Attributes'' WHEN 100107 THEN ''File System Activity:
+      Set Security'' WHEN 100108 THEN ''File System Activity: Get Attributes'' WHEN
+      100109 THEN ''File System Activity: Get Security'' WHEN 100110 THEN ''File System
+      Activity: Encrypt'' WHEN 100111 THEN ''File System Activity: Decrypt'' WHEN
+      100112 THEN ''File System Activity: Mount'' WHEN 100113 THEN ''File System Activity:
+      Unmount'' WHEN 100114 THEN ''File System Activity: Open'' WHEN 100199 THEN ''File
+      System Activity: Other'' END)::VARCHAR'
+    type_uid: (100100 + (CASE WHEN RAW:action IS NULL THEN 0 WHEN RAW:action ILIKE
+      '%file%delete%' THEN 4 WHEN RAW:action ILIKE '%file%rename%' THEN 5 WHEN RAW:action
+      ILIKE '%file%open%' THEN 14 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: LOG_TYPE ILIKE '%file%'

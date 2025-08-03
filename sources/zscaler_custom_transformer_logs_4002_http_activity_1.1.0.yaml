@@ -1,0 +1,162 @@
+type: mapping
+id: zscaler_custom_transformer_logs_4002_http_activity_1.1.0
+version: '2'
+name: Zscaler Custom Transformer Logs to OCSF class Http Activity
+data-types:
+- zscaler-custom-transformer-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ZSCALER_ACTION='Allowed' THEN 1 WHEN ZSCALER_ACTION
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed'
+      WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ZSCALER_ACTION='Allowed' THEN 1 WHEN ZSCALER_ACTION IS NULL
+      THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN HTTP_METHOD IS NULL THEN 0 WHEN HTTP_METHOD='CONNECT'
+      THEN 1 WHEN HTTP_METHOD='GET' THEN 3 WHEN HTTP_METHOD='OPTIONS' THEN 5 WHEN
+      HTTP_METHOD='POST' THEN 6 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN HTTP_METHOD IS NULL THEN 0 WHEN HTTP_METHOD='CONNECT'
+      THEN 1 WHEN HTTP_METHOD='GET' THEN 3 WHEN HTTP_METHOD='OPTIONS' THEN 5 WHEN
+      HTTP_METHOD='POST' THEN 6 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1
+      THEN 'Connect' WHEN 2 THEN 'Delete' WHEN 3 THEN 'Get' WHEN 4 THEN 'Head' WHEN
+      5 THEN 'Options' WHEN 6 THEN 'Post' WHEN 7 THEN 'Put' WHEN 8 THEN 'Trace' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (SRC_USER)::VARCHAR
+    api: NULL::VARIANT
+    app_name: (APP_NAME)::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud.provider: ('Zscaler')::VARCHAR
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    device.os.name: (SRC_DEVICE_TYPE)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN SRC_DEVICE_TYPE='Windows OS' THEN 1 WHEN SRC_DEVICE_TYPE
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN SRC_DEVICE_TYPE='Windows OS' THEN 1 WHEN SRC_DEVICE_TYPE
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.hostname: (DST_HOST)::VARCHAR
+    dst_endpoint.ip: (DST_IP)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    http_cookies: NULL::ARRAY
+    http_request.http_method: (HTTP_METHOD)::VARCHAR
+    http_request.length: (BYTES_IN)::NUMBER
+    http_request.referrer: (HTTP_REFERRER)::VARCHAR
+    http_request.url.resource_type: (FILE_TYPE)::VARCHAR
+    http_request.url.url_string: (HTTP_REQUEST)::VARCHAR
+    http_request.user_agent: (HTTP_UA)::VARCHAR
+    http_request.version: (HTTP_VERSION)::VARCHAR
+    http_response.code: (HTTP_CODE)::NUMBER
+    http_response.content_type: (HTTP_CONTENT_TYPE)::VARCHAR
+    http_status: (HTTP_CODE)::NUMBER
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zscaler-custom-transformer-logs')::VARCHAR
+    metadata.product.vendor_name: ('zscaler')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (SRC_USER)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (DST_HOST)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DST_IP)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (HTTP_REQUEST)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (SRC_HOSTNAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SRC_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN SEVERITY IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium'
+      WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY IS NULL THEN 0 ELSE 99 END)::NUMBER
+    src_endpoint.hostname: (SRC_HOSTNAME)::VARCHAR
+    src_endpoint.ip: (SRC_IP)::VARCHAR
+    src_endpoint.location.desc: (SRC_LOCATION)::VARCHAR
+    src_endpoint.port: (SRC_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes_in: (BYTES_IN)::NUMBER
+    traffic.bytes_out: (BYTES_OUT)::NUMBER
+    type_name: '(CASE ((400200 + CASE WHEN HTTP_METHOD IS NULL THEN 0 WHEN HTTP_METHOD=''CONNECT''
+      THEN 1 WHEN HTTP_METHOD=''GET'' THEN 3 WHEN HTTP_METHOD=''OPTIONS'' THEN 5 WHEN
+      HTTP_METHOD=''POST'' THEN 6 ELSE 99 END)::NUMBER) WHEN 400200 THEN ''HTTP Activity:
+      Unknown'' WHEN 400201 THEN ''HTTP Activity: Connect'' WHEN 400202 THEN ''HTTP
+      Activity: Delete'' WHEN 400203 THEN ''HTTP Activity: Get'' WHEN 400204 THEN
+      ''HTTP Activity: Head'' WHEN 400205 THEN ''HTTP Activity: Options'' WHEN 400206
+      THEN ''HTTP Activity: Post'' WHEN 400207 THEN ''HTTP Activity: Put'' WHEN 400208
+      THEN ''HTTP Activity: Trace'' WHEN 400299 THEN ''HTTP Activity: Other'' END)::VARCHAR'
+    type_uid: (400200 + CASE WHEN HTTP_METHOD IS NULL THEN 0 WHEN HTTP_METHOD='CONNECT'
+      THEN 1 WHEN HTTP_METHOD='GET' THEN 3 WHEN HTTP_METHOD='OPTIONS' THEN 5 WHEN
+      HTTP_METHOD='POST' THEN 6 ELSE 99 END)::NUMBER
+    unmapped: NULL::VARIANT

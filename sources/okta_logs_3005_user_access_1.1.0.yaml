@@ -1,0 +1,105 @@
+type: mapping
+id: okta_logs_3005_user_access_1.1.0
+version: '8'
+name: Okta Logs to OCSF class User Access
+data-types:
+- okta-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE = 'application.provision.user.push_profile'
+      THEN 1 WHEN EVENT_TYPE = 'application.provision.user.deactivate' THEN 2 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE = 'application.provision.user.push_profile'
+      THEN 1 WHEN EVENT_TYPE = 'application.provision.user.deactivate' THEN 2 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Assign Privileges' WHEN
+      2 THEN 'Revoke Privileges' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (ACTOR_DISPLAY_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN ACTOR_TYPE ILIKE '%User%' THEN 1 WHEN ACTOR_TYPE
+      ILIKE '%System%' THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN ACTOR_TYPE ILIKE '%User%' THEN 1 WHEN ACTOR_TYPE
+      ILIKE '%System%' THEN 3 ELSE 99 END)::NUMBER
+    actor.user.uid: (ACTOR_ID)::VARCHAR
+    actor.user.uid_alt: (ACTOR_ALTERNATE_ID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('user_access')::VARCHAR
+    class_uid: ('3005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: (DISPLAY_MESSAGE)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('okta-logs')::VARCHAR
+    metadata.product.vendor_name: ('okta')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACTOR_DISPLAY_NAME)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (TARGET_USER_DISPLAY_NAME)::VARCHAR
+    privileges: NULL::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((CASE WHEN SEVERITY = 'INFO' THEN 1 WHEN SEVERITY = 'WARN' THEN
+      2 WHEN SEVERITY = 'ERROR' THEN 6 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN
+      'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY = 'INFO' THEN 1 WHEN SEVERITY = 'WARN' THEN 2
+      WHEN SEVERITY = 'ERROR' THEN 6 ELSE 99 END)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (PUBLISHED)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (PUBLISHED)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', published::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (published)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE = ''application.provision.user.push_profile''
+      THEN 300501 WHEN EVENT_TYPE = ''application.provision.user.deactivate'' THEN
+      300502 ELSE 300599 END)::NUMBER) WHEN 300500 THEN ''User Access Management:
+      Unknown'' WHEN 300501 THEN ''User Access Management: Assign Privileges'' WHEN
+      300502 THEN ''User Access Management: Revoke Privileges'' WHEN 300599 THEN ''User
+      Access Management: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE = 'application.provision.user.push_profile' THEN
+      300501 WHEN EVENT_TYPE = 'application.provision.user.deactivate' THEN 300502
+      ELSE 300599 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.name: (TARGET_APP_USER_DISPLAY_NAME)::VARCHAR
+    user.account.uid: (TARGET_APP_USER_ID)::VARCHAR
+    user.name: (TARGET_USER_DISPLAY_NAME)::VARCHAR
+    user.uid: (TARGET_USER_ID)::VARCHAR
+    user.uid_alt: (TARGET_USER_ALTERNATE_ID)::VARCHAR
+  predicate: EVENT_TYPE in ('application.provision.user.deactivate','application.provision.user.push_profile',
+    'application.user_membership.add', 'application.user_membership.remove', 'application.user_membership.restore',
+    'application.user_membership.update', 'user.account.unlock')

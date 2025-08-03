@@ -1,0 +1,165 @@
+type: mapping
+id: o365_audit_logs_3006_group_management_1.1.0
+version: '8'
+name: O365 Audit Logs to OCSF class Group Management
+data-types:
+- o365-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE ANY ('%add%assign%group%')
+      THEN 1 WHEN OPERATION ILIKE ANY ('%remove%assign%group%') THEN 2 WHEN OPERATION
+      ILIKE ANY ('%add%owner%group%', '%add%member%group%', '%AddedToGroup%', '%Add%GroupMember%')
+      THEN 3 WHEN OPERATION ILIKE ANY ('%remove%owner%group%', '%remove%member%group%',
+      '%RemovedFromGroup%', '%Remove%GroupMember%', '%DeleteGroupMembers%') THEN 4
+      WHEN OPERATION ILIKE ANY ('%Delete group%', '%GroupRemoved%', '%GroupDeletion%',
+      '%Remove-RoleGroup%', '%Remove-DistributionGroup%', '%Remove-UnifiedGroup%',
+      '%Remove-SyncGroup%', '%Remove-DynamicDistributionGroup%') THEN 5 WHEN OPERATION
+      ILIKE ANY ('%GroupAdded%', '%Add group%', '%new%group%', '%groupcreation%',
+      '%streamcreategroup%') THEN 6 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE
+      ANY ('%add%assign%group%') THEN 1 WHEN OPERATION ILIKE ANY ('%remove%assign%group%')
+      THEN 2 WHEN OPERATION ILIKE ANY ('%add%owner%group%', '%add%member%group%',
+      '%AddedToGroup%', '%Add%GroupMember%') THEN 3 WHEN OPERATION ILIKE ANY ('%remove%owner%group%',
+      '%remove%member%group%', '%RemovedFromGroup%', '%Remove%GroupMember%', '%DeleteGroupMembers%')
+      THEN 4 WHEN OPERATION ILIKE ANY ('%Delete group%', '%GroupRemoved%', '%GroupDeletion%',
+      '%Remove-RoleGroup%', '%Remove-DistributionGroup%', '%Remove-UnifiedGroup%',
+      '%Remove-SyncGroup%', '%Remove-DynamicDistributionGroup%') THEN 5 WHEN OPERATION
+      ILIKE ANY ('%GroupAdded%', '%Add group%', '%new%group%', '%groupcreation%',
+      '%streamcreategroup%') THEN 6 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Assign Privileges' WHEN 2 THEN 'Revoke Privileges' WHEN 3 THEN 'Add
+      User' WHEN 4 THEN 'Remove User' WHEN 5 THEN 'Delete' WHEN 6 THEN 'Create' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (CASE WHEN RECORD_SPECIFIC_DETAILS:actor[0]:Type = 5 AND
+      RECORD_SPECIFIC_DETAILS:actor[0]:ID ILIKE '%@%' THEN RECORD_SPECIFIC_DETAILS:actor[0]:ID
+      ELSE NULL END)::VARCHAR
+    actor.user.name: (CASE WHEN RECORD_SPECIFIC_DETAILS:actor[0]:Type = 1 THEN RECORD_SPECIFIC_DETAILS:actor[0]:ID
+      ELSE NULL END)::VARCHAR
+    actor.user.uid: (CASE WHEN RECORD_SPECIFIC_DETAILS:actor[0]:Type = 2 THEN RECORD_SPECIFIC_DETAILS:actor[0]:ID
+      ELSE NULL END)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('group_management')::VARCHAR
+    class_uid: ('3006')::NUMBER
+    cloud.org.uid: (ORGANIZATION_ID)::VARCHAR
+    count: NULL::NUMBER
+    device.ip: (CLIENT_IP)::VARCHAR
+    device.is_managed: (RECORD_SPECIFIC_DETAILS:is_managed_device)::BOOLEAN
+    device.os.name: (RECORD_SPECIFIC_DETAILS:platform)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    group.name: (COALESCE(RECORD_SPECIFIC_DETAILS:modified_properties:"group._display_name":NewValue,
+      IFF(RAW:TargetUserOrGroupName NOT ILIKE '%@%', RAW:TargetUserOrGroupName, NULL)))::VARCHAR
+    group.type: (RECORD_SPECIFIC_DETAILS:modified_properties:"target_id._group_type":NewValue)::VARCHAR
+    group.uid: (RECORD_SPECIFIC_DETAILS:modified_properties:"group._object_id":NewValue)::VARCHAR
+    message: (PARSE_JSON(RECORD_SPECIFIC_DETAILS:modified_properties:description:NewValue)[0])::VARCHAR
+    metadata.event_code: (workload)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('o365-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('office365')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CASE WHEN RECORD_SPECIFIC_DETAILS:actor[0]:Type = 5 AND RECORD_SPECIFIC_DETAILS:actor[0]:ID
+        ILIKE '%@%' THEN RECORD_SPECIFIC_DETAILS:actor[0]:ID ELSE NULL END)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (CASE WHEN RECORD_SPECIFIC_DETAILS:actor[0]:Type = 1 THEN RECORD_SPECIFIC_DETAILS:actor[0]:ID
+        ELSE NULL END)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CASE WHEN COALESCE(USER_ID, OBJECT_ID) ILIKE '%@%' THEN COALESCE(USER_ID,
+        OBJECT_ID) ELSE NULL END)::VARCHAR
+    privileges: NULL::ARRAY
+    raw_data: NULL::VARCHAR
+    resource.uid: (RECORD_SPECIFIC_DETAILS:site)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RESULT_STATUS IS NULL THEN 0 WHEN RESULT_STATUS IN ('Success',
+      'Succeeded') THEN 1 WHEN RESULT_STATUS IN ('Failed', 'Failure') THEN 2 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RESULT_STATUS IS NULL THEN 0 WHEN RESULT_STATUS IN ('Success',
+      'Succeeded') THEN 1 WHEN RESULT_STATUS IN ('Failed', 'Failure') THEN 2 ELSE
+      99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300600 + (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION
+      ILIKE ANY (''%add%assign%group%'') THEN 1 WHEN OPERATION ILIKE ANY (''%remove%assign%group%'')
+      THEN 2 WHEN OPERATION ILIKE ANY (''%add%owner%group%'', ''%add%member%group%'',
+      ''%AddedToGroup%'', ''%Add%GroupMember%'') THEN 3 WHEN OPERATION ILIKE ANY (''%remove%owner%group%'',
+      ''%remove%member%group%'', ''%RemovedFromGroup%'', ''%Remove%GroupMember%'',
+      ''%DeleteGroupMembers%'') THEN 4 WHEN OPERATION ILIKE ANY (''%Delete group%'',
+      ''%GroupRemoved%'', ''%GroupDeletion%'', ''%Remove-RoleGroup%'', ''%Remove-DistributionGroup%'',
+      ''%Remove-UnifiedGroup%'', ''%Remove-SyncGroup%'', ''%Remove-DynamicDistributionGroup%'')
+      THEN 5 WHEN OPERATION ILIKE ANY (''%GroupAdded%'', ''%Add group%'', ''%new%group%'',
+      ''%groupcreation%'', ''%streamcreategroup%'') THEN 6 ELSE 99 END))::NUMBER)
+      WHEN 300600 THEN ''Group Management: Unknown'' WHEN 300601 THEN ''Group Management:
+      Assign Privileges'' WHEN 300602 THEN ''Group Management: Revoke Privileges''
+      WHEN 300603 THEN ''Group Management: Add User'' WHEN 300604 THEN ''Group Management:
+      Remove User'' WHEN 300605 THEN ''Group Management: Delete'' WHEN 300606 THEN
+      ''Group Management: Create'' WHEN 300699 THEN ''Group Management: Other'' END)::VARCHAR'
+    type_uid: (300600 + (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE ANY
+      ('%add%assign%group%') THEN 1 WHEN OPERATION ILIKE ANY ('%remove%assign%group%')
+      THEN 2 WHEN OPERATION ILIKE ANY ('%add%owner%group%', '%add%member%group%',
+      '%AddedToGroup%', '%Add%GroupMember%') THEN 3 WHEN OPERATION ILIKE ANY ('%remove%owner%group%',
+      '%remove%member%group%', '%RemovedFromGroup%', '%Remove%GroupMember%', '%DeleteGroupMembers%')
+      THEN 4 WHEN OPERATION ILIKE ANY ('%Delete group%', '%GroupRemoved%', '%GroupDeletion%',
+      '%Remove-RoleGroup%', '%Remove-DistributionGroup%', '%Remove-UnifiedGroup%',
+      '%Remove-SyncGroup%', '%Remove-DynamicDistributionGroup%') THEN 5 WHEN OPERATION
+      ILIKE ANY ('%GroupAdded%', '%Add group%', '%new%group%', '%groupcreation%',
+      '%streamcreategroup%') THEN 6 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (CASE WHEN COALESCE(USER_ID, OBJECT_ID) ILIKE '%@%' THEN COALESCE(USER_ID,
+      OBJECT_ID) ELSE NULL END)::VARCHAR
+    user.type: (CASE ((CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE = 0 THEN
+      1 WHEN USER_TYPE = 2 THEN 2 WHEN USER_TYPE = 4 THEN 3 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE = 0 THEN 1 WHEN
+      USER_TYPE = 2 THEN 2 WHEN USER_TYPE = 4 THEN 3 ELSE 99 END)::NUMBER
+    user.uid: (USER_KEY)::VARCHAR
+  predicate: OPERATION ILIKE '%group%'

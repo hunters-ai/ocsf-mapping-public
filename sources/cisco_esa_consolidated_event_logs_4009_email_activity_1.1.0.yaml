@@ -1,0 +1,170 @@
+type: mapping
+id: cisco_esa_consolidated_event_logs_4009_email_activity_1.1.0
+version: '11'
+name: Cisco Esa Consolidated Event Logs to OCSF class Email Activity
+data-types:
+- cisco-esa-consolidated-event-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN MESSAGE_FINAL_ACTION IS NULL THEN 0 WHEN MESSAGE_FINAL_ACTION
+      IN ('DELIVERED') THEN 1 WHEN MESSAGE_FINAL_ACTION IN ('ABORTED', 'QUARANTINED',
+      'DROPPED') THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed'
+      WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN MESSAGE_FINAL_ACTION IS NULL THEN 0 WHEN MESSAGE_FINAL_ACTION
+      IN ('DELIVERED') THEN 1 WHEN MESSAGE_FINAL_ACTION IN ('ABORTED', 'QUARANTINED',
+      'DROPPED') THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm_id', IFF(ATTACHMENT_DETAILS_FILEHASH[0]
+      IS NULL, 0, 3)::NUMBER, 'value', ATTACHMENT_DETAILS_FILEHASH[0]::VARCHAR)))::ARRAY
+    actor.process.file.name: (ATTACHMENT_FILE_NAMES[0])::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (DATA_IP)::VARCHAR
+    direction: (CASE ((CASE WHEN MAIL_DIRECTION IS NULL THEN 0 WHEN MAIL_DIRECTION
+      = '0' THEN 1 WHEN MAIL_DIRECTION = '1' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Internal'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (CASE WHEN MAIL_DIRECTION IS NULL THEN 0 WHEN MAIL_DIRECTION = '0'
+      THEN 1 WHEN MAIL_DIRECTION = '1' THEN 2 ELSE 99 END)::NUMBER
+    disposition: (CASE ((CASE WHEN MESSAGE_FINAL_ACTION IS NULL THEN 0 WHEN MESSAGE_FINAL_ACTION
+      = 'DELIVERED' THEN 1 WHEN MESSAGE_FINAL_ACTION = 'ABORTED' THEN 2 WHEN MESSAGE_FINAL_ACTION
+      = 'QUARANTINED' THEN 3 WHEN MESSAGE_FINAL_ACTION = 'DROPPED' THEN 6 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated'
+      WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected'
+      WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN
+      17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked'
+      WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN
+      'Challenge' WHEN 24 THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN
+      'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated'
+      WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN
+      8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN MESSAGE_FINAL_ACTION IS NULL THEN 0 WHEN MESSAGE_FINAL_ACTION
+      = 'DELIVERED' THEN 1 WHEN MESSAGE_FINAL_ACTION = 'ABORTED' THEN 2 WHEN MESSAGE_FINAL_ACTION
+      = 'QUARANTINED' THEN 3 WHEN MESSAGE_FINAL_ACTION = 'DROPPED' THEN 6 ELSE 99
+      END)::NUMBER
+    dst_endpoint.hostname: (REMOTE_HOST)::VARCHAR
+    dst_endpoint.ip: (REMOTE_IP)::VARCHAR
+    duration: NULL::NUMBER
+    email.from: (CASE WHEN MAIL_FROM ILIKE '%%@%%' THEN MAIL_FROM WHEN FRIENDLY_FROM
+      IS NOT NULL THEN REGEXP_SUBSTR(FRIENDLY_FROM, '.*<(.*)>', 1, 1, 'e', 1) WHEN
+      SPF_VERDICT_MAILFROM_SENDER IS NOT NULL THEN SPF_VERDICT_MAILFROM_SENDER END)::VARCHAR
+    email.message_uid: (MESSAGE_ID)::VARCHAR
+    email.reply_to: (RAW:ESAReplyTo)::VARCHAR
+    email.subject: (SUBJECT)::VARCHAR
+    email.to: ((SPLIT(RECIPIENTS, ';')))::ARRAY
+    email_auth.dkim: (DKIM_VERDICT)::VARCHAR
+    email_auth.spf: (SPF_VERDICT_MAILFROM_RESULT)::VARCHAR
+    end_time: (date_part('epoch_milliseconds', (END_TIME)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (END_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('classification_ids', CASE WHEN SDR_CONSOLIDATED_THREAT_CATEGORY
+      IS NULL THEN 0 ELSE 99 END)))::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cisco-esa-consolidated-event-logs')::VARCHAR
+    metadata.product.vendor_name: ('cisco-esa')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (ATTACHMENT_FILE_NAMES[0])::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DATA_IP)::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (REMOTE_HOST)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REMOTE_IP)::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CASE WHEN MAIL_FROM ILIKE '%%@%%' THEN MAIL_FROM WHEN FRIENDLY_FROM
+        IS NOT NULL THEN REGEXP_SUBSTR(FRIENDLY_FROM, '.*<(.*)>', 1, 1, 'e', 1) WHEN
+        SPF_VERDICT_MAILFROM_SENDER IS NOT NULL THEN SPF_VERDICT_MAILFROM_SENDER END)::VARCHAR
+    - name: '''email.reply_to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RAW:ESAReplyTo)::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: ((SPLIT(RECIPIENTS, ';')))::ARRAY
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SENDER_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((IFF(SEVERITY is NULL, 0, 99))::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN
+      'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (IFF(SEVERITY is NULL, 0, 99))::NUMBER
+    smtp_hello: NULL::VARCHAR
+    src_endpoint.domain: (SENDER_DOMAIN)::VARCHAR
+    src_endpoint.ip: (SENDER_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', start_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (start_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((400900)::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400900)::NUMBER
+    unmapped: NULL::VARIANT

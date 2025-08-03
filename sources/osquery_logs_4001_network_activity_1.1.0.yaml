@@ -1,0 +1,172 @@
+type: mapping
+id: osquery_logs_4001_network_activity_1.1.0
+version: '16'
+name: Osquery Logs to OCSF class Network Activity
+data-types:
+- osquery-logs
+mapping:
+  fields:
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN 2 THEN 'Close' WHEN 3 THEN 'Reset'
+      WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.cmd_line: ( COMMAND_LINE)::VARCHAR
+    actor.process.file.name: (COLUMNS:name)::VARCHAR
+    actor.process.file.path: (PATH)::VARCHAR
+    actor.process.name: (COLUMNS:name)::VARCHAR
+    actor.process.parent_process.file.name: (COLUMNS:parentname)::VARCHAR
+    actor.process.parent_process.file.path: (COLUMNS:parentpath)::VARCHAR
+    actor.process.parent_process.name: (COLUMNS:parentname)::VARCHAR
+    actor.process.parent_process.pid: (COLUMNS:parentid)::NUMBER
+    actor.process.pid: (COLUMNS:pid)::NUMBER
+    actor.process.user.name: (COALESCE(USER, COLUMNS:username))::VARCHAR
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_name: (CASE WHEN IFF(LEN(COLUMNS:protocol)>=1,COLUMNS:protocol,NULL)::NUMBER
+      = 0 THEN 'HOPOPT' WHEN IFF(LEN(COLUMNS:protocol)>=1,COLUMNS:protocol,NULL)::NUMBER
+      = 17 THEN 'UDP' WHEN IFF(LEN(COLUMNS:protocol)>=1,COLUMNS:protocol,NULL)::NUMBER
+      = 3 THEN 'GGP' WHEN IFF(LEN(COLUMNS:protocol)>=1,COLUMNS:protocol,NULL)::NUMBER
+      = 2 THEN 'IGMP' WHEN IFF(LEN(COLUMNS:protocol)>=1,COLUMNS:protocol,NULL)::NUMBER
+      = 1 THEN 'ICMP' WHEN IFF(LEN(COLUMNS:protocol)>=1,COLUMNS:protocol,NULL)::NUMBER
+      = 6 THEN 'TCP' ELSE NULL::VARCHAR END)::VARCHAR
+    connection_info.protocol_num: (IFF(LEN(COLUMNS:protocol)>=1,COLUMNS:protocol,NULL))::NUMBER
+    count: (COUNTER)::NUMBER
+    device.hostname: (COALESCE(HOST, HOST_IDENTIFIER))::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (COLUMNS:remote_address)::VARCHAR
+    dst_endpoint.port: (COLUMNS:remote_port)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('osquery-logs')::VARCHAR
+    metadata.product.vendor_name: ('osquery')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (COLUMNS:name)::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (COLUMNS:name)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (COLUMNS:parentname)::VARCHAR
+    - name: '''actor.process.parent_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (COLUMNS:parentname)::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(USER, COLUMNS:username))::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (COALESCE(HOST, HOST_IDENTIFIER))::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COLUMNS:remote_address)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COLUMNS:local_address)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (COLUMNS:local_address)::VARCHAR
+    src_endpoint.port: (COLUMNS:local_port)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((4001*100 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END))::NUMBER)
+      WHEN 400100 THEN ''Network Activity: Unknown'' WHEN 400101 THEN ''Network Activity:
+      Open'' WHEN 400102 THEN ''Network Activity: Close'' WHEN 400103 THEN ''Network
+      Activity: Reset'' WHEN 400104 THEN ''Network Activity: Fail'' WHEN 400105 THEN
+      ''Network Activity: Refuse'' WHEN 400106 THEN ''Network Activity: Traffic''
+      WHEN 400199 THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (4001*100 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT

@@ -1,0 +1,103 @@
+type: mapping
+id: crowdstrike_falcon_event_streams_6003_api_activity_1.1.0
+version: '4'
+name: Crowdstrike Falcon Event Streams to OCSF class Api Activity
+data-types:
+- crowdstrike-falcon-event-streams
+mapping:
+  fields:
+    activity_id: (CASE WHEN RAW:Attributes:request_method IS NULL THEN 0 WHEN RAW:Attributes:request_method
+      ILIKE '%post%' THEN 1 WHEN RAW:Attributes:request_method ILIKE '%get%' THEN
+      2 WHEN RAW:Attributes:request_method ILIKE '%patch%' OR RAW:Attributes:request_method
+      ILIKE '%put%' THEN 3 WHEN RAW:Attributes:request_method ILIKE '%delete%' THEN
+      4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:Attributes:request_method IS NULL THEN 0
+      WHEN RAW:Attributes:request_method ILIKE '%post%' THEN 1 WHEN RAW:Attributes:request_method
+      ILIKE '%get%' THEN 2 WHEN RAW:Attributes:request_method ILIKE '%patch%' OR RAW:Attributes:request_method
+      ILIKE '%put%' THEN 3 WHEN RAW:Attributes:request_method ILIKE '%delete%' THEN
+      4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN
+      'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.uid: (RAW:UserId)::VARCHAR
+    api.operation: (RAW:OperationName)::VARCHAR
+    api.response.code: (RAW:Attributes:status_code)::NUMBER
+    api.service.name: (RAW:ServiceName)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.http_headers: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name',
+      'Content-Type', 'value', RAW:Attributes:request_content_type)))::ARRAY
+    http_request.http_method: (RAW:Attributes:request_method)::VARCHAR
+    http_request.length: (RAW:Attributes:request_uri_length)::NUMBER
+    http_request.url.path: (RAW:Attributes:request_path)::VARCHAR
+    http_request.url.query_string: (RAW:Attributes:request_query)::VARCHAR
+    http_request.user_agent: (RAW:Attributes:user_agent)::VARCHAR
+    message: (RAW:Message)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('crowdstrike-falcon-event-streams')::VARCHAR
+    metadata.product.vendor_name: ('crowdstrike')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:SourceIp, RAW:UserIp))::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: NULL::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (COALESCE(RAW:SourceIp, RAW:UserIp))::VARCHAR
+    src_endpoint.name: (RAW:Source)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RAW:Success IS NULL THEN 0 WHEN RAW:Success = true THEN
+      1 WHEN RAW:Success = false THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RAW:Success IS NULL THEN 0 WHEN RAW:Success = true THEN
+      1 WHEN RAW:Success = false THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', METADATA$INSERTION_TIME::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (METADATA$INSERTION_TIME)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN RAW:Attributes:request_method IS NULL THEN 600300
+      WHEN RAW:Attributes:request_method ILIKE ''%post%'' THEN 600301 WHEN RAW:Attributes:request_method
+      ILIKE ''%get%'' THEN 600302 WHEN RAW:Attributes:request_method ILIKE ''%patch%''
+      OR RAW:Attributes:request_method ILIKE ''%put%'' THEN 600303 WHEN RAW:Attributes:request_method
+      ILIKE ''%delete%'' THEN 600304 ELSE 600399 END)::NUMBER) WHEN 600300 THEN ''API
+      Activity: Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN 600302 THEN
+      ''API Activity: Read'' WHEN 600303 THEN ''API Activity: Update'' WHEN 600304
+      THEN ''API Activity: Delete'' WHEN 600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN RAW:Attributes:request_method IS NULL THEN 600300 WHEN RAW:Attributes:request_method
+      ILIKE '%post%' THEN 600301 WHEN RAW:Attributes:request_method ILIKE '%get%'
+      THEN 600302 WHEN RAW:Attributes:request_method ILIKE '%patch%' OR RAW:Attributes:request_method
+      ILIKE '%put%' THEN 600303 WHEN RAW:Attributes:request_method ILIKE '%delete%'
+      THEN 600304 ELSE 600399 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: RAW:ServiceName = 'api_request'

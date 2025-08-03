@@ -1,0 +1,179 @@
+type: mapping
+id: crowdstrike_detects_2004_detection_finding_1.1.0
+version: '1'
+name: Crowdstrike Detects to OCSF class Detection Finding
+data-types:
+- crowdstrike-detects
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN
+      2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (RAW:behaviors[0]:cmdline)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm_id', 1,
+      'algorithm', 'MD5', 'value', RAW:behaviors[0]:md5), OBJECT_CONSTRUCT('algorithm_id',
+      3, 'algorithm', 'SHA-256', 'value', RAW:behaviors[0]:sha256)))::ARRAY
+    actor.process.file.name: (RAW:behaviors[0]:filename)::VARCHAR
+    actor.process.file.path: (RAW:behaviors[0]:filepath)::VARCHAR
+    actor.process.parent_process.cmd_line: (RAW:behaviors[0]:parent_details:parent_cmdline)::VARCHAR
+    actor.process.parent_process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm_id',
+      1, 'algorithm', 'MD5', 'value', RAW:behaviors[0]:parent_details:parent_md5),
+      OBJECT_CONSTRUCT('algorithm_id', 3, 'algorithm', 'SHA-256', 'value', RAW:behaviors[0]:parent_details:parent_sha256)))::ARRAY
+    actor.process.user.name: (RAW:behaviors[0]:user_name)::VARCHAR
+    actor.process.user.uid: (RAW:behaviors[0]:user_id)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (2::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud.provider: ('Crowdstrike')::VARCHAR
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device.desc: (RAW:device:product_type_desc)::VARCHAR
+    device.groups: (RAW:device:groups)::ARRAY
+    device.hostname: (RAW:device:hostname)::VARCHAR
+    device.hw_info.bios_manufacturer: (RAW:device:system_manufacturer)::VARCHAR
+    device.ip: (RAW:device:local_ip)::VARCHAR
+    device.mac: (RAW:device:mac_address)::VARCHAR
+    device.modified_time: (date_part('epoch_milliseconds', RAW:device:modified_timestamp::TIMESTAMP_LTZ))::NUMBER
+    device.modified_time_dt: (RAW:device:modified_timestamp)::TIMESTAMP_LTZ
+    device.name: (RAW:device:system_product_name)::VARCHAR
+    device.os.type: (CASE (CASE WHEN RAW:device:platform_name='Mac' THEN 300 WHEN
+      RAW:device:platform_name IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux'
+      WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN
+      'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN RAW:device:platform_name='Mac' THEN 300 WHEN RAW:device:platform_name
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    device.os.version: (RAW:device:os_version)::VARCHAR
+    device.uid: (RAW:device:device_id)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: NULL::ARRAY
+    finding_info.analytic.category: (RAW:behaviors[0]:scenario)::VARCHAR
+    finding_info.analytic.name: (RAW:behaviors[0]:display_name)::VARCHAR
+    finding_info.analytic.type: (CASE (2::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Rule' WHEN 2 THEN 'Behavioral' WHEN 3 THEN 'Statistical' WHEN 4 THEN 'Learning
+      (ML/DL)' WHEN 99 THEN 'Other' END)::VARCHAR
+    finding_info.analytic.type_id: (2)::NUMBER
+    finding_info.analytic.uid: (RAW:behaviors[0]:behavior_id)::VARCHAR
+    finding_info.attacks: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('tactic', OBJECT_CONSTRUCT('uid',
+      RAW:behaviors[0]:tactic_id, 'name', RAW:behaviors[0]:tactic), 'technique', OBJECT_CONSTRUCT('uid',
+      RAW:behaviors[0]:technique_id, 'name', RAW:behaviors[0]:technique))))::ARRAY
+    finding_info.desc: (RAW:behaviors[0]:description)::VARCHAR
+    finding_info.related_analytics: (RAW:behaviors)::ARRAY
+    finding_info.title: (RAW:behaviors[0]:description)::VARCHAR
+    finding_info.uid: (DETECTION_ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('crowdstrike-detects')::VARCHAR
+    metadata.product.vendor_name: ('crowdstrike')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (RAW:behaviors[0]:filename)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:behaviors[0]:user_name)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:device:hostname)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:device:local_ip)::VARCHAR
+    - name: '''device.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (RAW:device:mac_address)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: NULL::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE (CASE RAW:max_severity_displayname WHEN 'Informational' THEN 1
+      WHEN 'High' THEN 4 WHEN NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN
+      'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE RAW:max_severity_displayname WHEN 'Informational' THEN 1 WHEN
+      'High' THEN 4 WHEN NULL THEN 0 ELSE 99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (RAW:status)::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', created_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (created_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (200400::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200400)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY

@@ -1,0 +1,130 @@
+type: mapping
+id: appgate_audit_logs_3002_authentication_1.1.0
+version: '10'
+name: Appgate Audit Logs to OCSF class Authentication
+data-types:
+- appgate-audit-logs
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (RAW:hostname)::VARCHAR
+    device.uid: (DISTINGUISHED_NAME_DEVICE_ID)::VARCHAR
+    dst_endpoint.ip: (DESTINATION_IP)::VARCHAR
+    dst_endpoint.port: (DESTINATION_PORT)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process.uid: (ID)::VARCHAR
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (REASON)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('appgate-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('appgate')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:hostname)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DESTINATION_IP)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(SOURCE_IP, CLIENT_IP))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (DISTINGUISHED_NAME_USER)::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:user_claims:username, RAW:username))::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.name: (DISTINGUISHED_NAME_OU)::VARCHAR
+    service.uid: (RAW:user_claims:ag:identityProviderId)::VARCHAR
+    session: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (COALESCE(SOURCE_IP, CLIENT_IP))::VARCHAR
+    src_endpoint.location.continent: (CASE GEOIP:continent_code WHEN 'AF' THEN 'Africa'
+      WHEN 'AN' THEN 'Antarctica' WHEN 'AS' THEN 'Asia' WHEN 'EU' THEN 'Europe' WHEN
+      'NA' THEN 'North America' WHEN 'OC' THEN 'Oceania' WHEN 'SA' THEN 'South America'
+      ELSE NULL END)::VARCHAR
+    src_endpoint.location.coordinates: (GEOIP:cordinates)::ARRAY
+    src_endpoint.location.country: (GEOIP:country_code2)::VARCHAR
+    src_endpoint.location.postal_code: (GEOIP:postal_code)::VARCHAR
+    src_endpoint.location.region: (CONCAT(GEOIP:country_code2, '-', GEOIP:region_code))::VARCHAR
+    src_endpoint.port: (COALESCE(SOURCE_PORT, CLIENT_PORT))::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((IFF(EVENT_TYPE IN ('authentication_succeeded', 'password_authentication_succeeded',  'ssh_access_succeeded'),
+      1, 2))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (EVENT_TYPE)::VARCHAR
+    status_id: (IFF(EVENT_TYPE IN ('authentication_succeeded', 'password_authentication_succeeded',  'ssh_access_succeeded'),
+      1, 2))::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (DISTINGUISHED_NAME_USER)::VARCHAR
+    user.name: (COALESCE(RAW:user_claims:username, RAW:username))::VARCHAR
+    user.org.name: (COLLECTIVE_NAME)::VARCHAR
+    user.org.uid: (COLLECTIVE_ID)::VARCHAR
+  predicate: EVENT_TYPE IN ('authentication_succeeded', 'authentication_failed', 'password_authentication_succeeded',
+    'password_authentication_failed', 'ssh_access_succeeded', 'ssh_access_failed')

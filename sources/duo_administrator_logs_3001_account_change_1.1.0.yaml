@@ -1,0 +1,131 @@
+type: mapping
+id: duo_administrator_logs_3001_account_change_1.1.0
+version: '9'
+name: Duo Administrator Logs to OCSF class Account Change
+data-types:
+- duo-administrator-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%create%' THEN
+      1 WHEN ACTION ILIKE '%reset%password%' THEN 4 WHEN ACTION ILIKE '%delete%' THEN
+      6 WHEN ACTION ILIKE '%lockout%' THEN 9 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%create%'
+      THEN 1 WHEN ACTION ILIKE '%reset%password%' THEN 4 WHEN ACTION ILIKE '%delete%'
+      THEN 6 WHEN ACTION ILIKE '%lockout%' THEN 9 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Create' WHEN 10 THEN 'MFA Factor Enable' WHEN 11 THEN
+      'MFA Factor Disable' WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password Change' WHEN
+      4 THEN 'Password Reset' WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete' WHEN 7 THEN
+      'Attach Policy' WHEN 8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    actor.idp.name: (DESCRIPTION_SAML_IDP)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.name: (DESCRIPTION_DEVICE)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN DESCRIPTION_PHONES_INFO:phone1:platform = 'Android'
+      THEN 201 WHEN DESCRIPTION_PHONES_INFO:phone1:platform = 'iOS' THEN 301 ELSE
+      0 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN
+      'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN
+      'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN
+      401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN DESCRIPTION_PHONES_INFO:phone1:platform = 'Android'
+      THEN 201 WHEN DESCRIPTION_PHONES_INFO:phone1:platform = 'iOS' THEN 301 ELSE
+      0 END)::NUMBER
+    device.type: (CASE ((IFF(DESCRIPTION_DEVICE ILIKE '%samsung%' OR DESCRIPTION_DEVICE
+      ILIKE '%iphone%' OR DESCRIPTION_DEVICE ILIKE '%asus%' OR DESCRIPTION_DEVICE
+      ILIKE '%google%pixel%', 5, 0))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server'
+      WHEN 10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (IFF(DESCRIPTION_DEVICE ILIKE '%samsung%' OR DESCRIPTION_DEVICE
+      ILIKE '%iphone%' OR DESCRIPTION_DEVICE ILIKE '%asus%' OR DESCRIPTION_DEVICE
+      ILIKE '%google%pixel%', 5, 0))::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: (OBJECT_CONSTRUCT_KEEP_NULL('data', DESCRIPTION))::ARRAY
+    http_request: NULL::VARIANT
+    message: NULL::VARCHAR
+    metadata.event_code: (action)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('duo-administrator-logs')::VARCHAR
+    metadata.product.vendor_name: ('duo')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DESCRIPTION_IP_ADDRESS)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(COALESCE(DESCRIPTION_EMAIL, OBJECT_THAT_WAS_ACTED_ON) ILIKE '%@%',
+        COALESCE(DESCRIPTION_EMAIL, OBJECT_THAT_WAS_ACTED_ON), NULL))::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(COALESCE(OBJECT_THAT_WAS_ACTED_ON, DESCRIPTION_USER_NAME) NOT ILIKE
+        '%@%', COALESCE(OBJECT_THAT_WAS_ACTED_ON, DESCRIPTION_USER_NAME), NULL))::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (DESCRIPTION_IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN ACTION IS NULL THEN 300100 WHEN ACTION ILIKE ''%create%''
+      THEN 300101 WHEN ACTION ILIKE ''%reset%password%'' THEN 300104 WHEN ACTION ILIKE
+      ''%delete%'' THEN 300106 WHEN ACTION ILIKE ''%lockout%'' THEN 300109 ELSE 300199
+      END)::NUMBER) WHEN 300100 THEN ''Account Change: Unknown'' WHEN 300101 THEN
+      ''Account Change: Create'' WHEN 300102 THEN ''Account Change: Enable'' WHEN
+      300103 THEN ''Account Change: Password Change'' WHEN 300104 THEN ''Account Change:
+      Password Reset'' WHEN 300105 THEN ''Account Change: Disable'' WHEN 300106 THEN
+      ''Account Change: Delete'' WHEN 300107 THEN ''Account Change: Attach Policy''
+      WHEN 300108 THEN ''Account Change: Detach Policy'' WHEN 300109 THEN ''Account
+      Change: Lock'' WHEN 300110 THEN ''Account Change: MFA Factor Enable'' WHEN 300111
+      THEN ''Account Change: MFA Factor Disable'' WHEN 300199 THEN ''Account Change:
+      Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN ACTION IS NULL THEN 300100 WHEN ACTION ILIKE '%create%' THEN
+      300101 WHEN ACTION ILIKE '%reset%password%' THEN 300104 WHEN ACTION ILIKE '%delete%'
+      THEN 300106 WHEN ACTION ILIKE '%lockout%' THEN 300109 ELSE 300199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (IFF(COALESCE(DESCRIPTION_EMAIL, OBJECT_THAT_WAS_ACTED_ON) ILIKE
+      '%@%', COALESCE(DESCRIPTION_EMAIL, OBJECT_THAT_WAS_ACTED_ON), NULL))::VARCHAR
+    user.full_name: (COALESCE(DESCRIPTION_REAL_NAME, USERNAME))::VARCHAR
+    user.name: (IFF(COALESCE(OBJECT_THAT_WAS_ACTED_ON, DESCRIPTION_USER_NAME) NOT
+      ILIKE '%@%', COALESCE(OBJECT_THAT_WAS_ACTED_ON, DESCRIPTION_USER_NAME), NULL))::VARCHAR
+    user_result: NULL::VARIANT
+  predicate: ACTION ILIKE '%user%' OR ACTION ILIKE '%admin%'

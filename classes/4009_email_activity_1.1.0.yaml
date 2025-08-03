@@ -1,0 +1,14 @@
+id: 4009_email_activity_1.1.0
+version: '7'
+description: OCSF View For Class - 4009 Email Activity
+source-table-ids:
+- cofense_reports_4009_email_activity_1.1.0
+- linux_mail_logs_4009_email_activity_1.1.0
+- microsoft_exchange_message_tracking_logs_4009_email_activity_1.1.0
+- cisco_esa_consolidated_event_logs_4009_email_activity_1.1.0
+- proofpoint_on_demand_message_4009_email_activity_1.1.0
+- azure_purview_4009_email_activity_1.1.0
+- fortimail_logs_4009_email_activity_1.1.0
+- microsoft_message_trace_report_4009_email_activity_1.1.0
+- zeek_logs_4009_email_activity_1.1.0
+- abnormal_threats_4009_email_activity_1.1.0

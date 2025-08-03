@@ -1,0 +1,98 @@
+type: mapping
+id: onelogin_events_3005_user_access_1.1.0
+version: '7'
+name: Onelogin Events to OCSF class User Access
+data-types:
+- onelogin-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE_ID IN (4, 72, 147, 149, 151, 513, 520, 2106,
+      2107, 2111, 9040, 9044) THEN 1 WHEN EVENT_TYPE_ID IN (73, 148, 150, 152, 514,
+      521, 2108, 2109, 2113, 9041, 9045) THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE_ID IN (4, 72, 147, 149, 151, 513,
+      520, 2106, 2107, 2111, 9040, 9044) THEN 1 WHEN EVENT_TYPE_ID IN (73, 148, 150,
+      152, 514, 521, 2108, 2109, 2113, 9041, 9045) THEN 2 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Assign Privileges' WHEN 2 THEN 'Revoke Privileges'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.invoked_by: (ACTOR_SYSTEM)::VARCHAR
+    actor.user.full_name: (ACTOR_USER_NAME)::VARCHAR
+    actor.user.uid: (ACTOR_USER_ID)::VARCHAR
+    api.service.name: (APP_NAME)::VARCHAR
+    api.service.uid: (APP_ID)::VARCHAR
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('user_access')::VARCHAR
+    class_uid: ('3005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (IPADDR)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: (COALESCE(CUSTOM_MESSAGE, NOTES))::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('onelogin-events')::VARCHAR
+    metadata.product.vendor_name: ('OneLogin')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IPADDR)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    privileges: (ARRAY_CONSTRUCT(RAW:event:privilege_name))::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EVENT_TYPE_ID IN (520, 521, 9040, 9041, 9044, 9045)
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN EVENT_TYPE_ID IN (520, 521, 9040, 9041, 9044, 9045) THEN
+      2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300500 + (CASE WHEN EVENT_TYPE_ID IN (4, 72, 147, 149, 151,
+      513, 520, 2106, 2107, 2111, 9040, 9044) THEN 1 WHEN EVENT_TYPE_ID IN (73, 148,
+      150, 152, 514, 521, 2108, 2109, 2113, 9041, 9045) THEN 2 ELSE 99 END))::NUMBER)
+      WHEN 300500 THEN ''User Access Management: Unknown'' WHEN 300501 THEN ''User
+      Access Management: Assign Privileges'' WHEN 300502 THEN ''User Access Management:
+      Revoke Privileges'' WHEN 300599 THEN ''User Access Management: Other'' END)::VARCHAR'
+    type_uid: (300500 + (CASE WHEN EVENT_TYPE_ID IN (4, 72, 147, 149, 151, 513, 520,
+      2106, 2107, 2111, 9040, 9044) THEN 1 WHEN EVENT_TYPE_ID IN (73, 148, 150, 152,
+      514, 521, 2108, 2109, 2113, 9041, 9045) THEN 2 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.uid: (ACCOUNT_ID)::VARCHAR
+    user.full_name: (USER_NAME)::VARCHAR
+  predicate: EVENT_TYPE_ID IN (4, 72, 73, 147, 148, 149, 150, 151, 152, 513, 514,
+    520, 521, 2106, 2107, 2108, 2109, 2111, 2113, 9040, 9041, 9044, 9045)

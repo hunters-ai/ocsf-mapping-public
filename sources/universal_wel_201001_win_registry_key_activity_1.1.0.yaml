@@ -1,0 +1,142 @@
+type: mapping
+id: universal_wel_201001_win_registry_key_activity_1.1.0
+version: '15'
+name: Universal Wel to OCSF class Win/registry Key Activity
+data-types:
+- universal-wel
+mapping:
+  fields:
+    access_mask: (TO_NUMBER(SUBSTRING(RAW:AccessMask, 3), 'XX'))::NUMBER
+    action: (CASE ((CASE WHEN AUDIT_SUCCESS IS NULL THEN 0 WHEN AUDIT_SUCCESS = TRUE
+      THEN 1 WHEN AUDIT_SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN AUDIT_SUCCESS IS NULL THEN 0 WHEN AUDIT_SUCCESS = TRUE THEN
+      1 WHEN AUDIT_SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (99)::NUMBER
+    activity_name: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Read' WHEN 3 THEN 'Modify' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename'
+      WHEN 6 THEN 'Set Security' WHEN 7 THEN 'Restore' WHEN 8 THEN 'Import' WHEN 9
+      THEN 'Export' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.name: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.name: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.pid: (RAW:ExecutionProcessID)::NUMBER
+    actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
+    actor.process.uid: (MESSAGE_DETAILS:process_information:process_id)::VARCHAR
+    actor.user.account.name: (MESSAGE_DETAILS:subject:account_name)::VARCHAR
+    actor.user.domain: (MESSAGE_DETAILS:subject:account_domain)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('win/registry_key_activity')::VARCHAR
+    class_uid: ('201001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    create_mask: NULL::VARCHAR
+    device.hostname: (MACHINE_NAME)::VARCHAR
+    device.ip: (RAW:MessageSourceAddress)::VARCHAR
+    disposition: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed'
+      WHEN 10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (99)::NUMBER
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (RAW:EventReceivedTime)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (RAW:EventReceivedTime)::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (RAW:Message)::VARCHAR
+    metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('universal-wel')::VARCHAR
+    metadata.product.vendor_name: ('windows-event-log')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (MACHINE_NAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:MessageSourceAddress)::VARCHAR
+    open_mask: NULL::NUMBER
+    prev_reg_key: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    reg_key.path: (MESSAGE_DETAILS:object:object_name)::VARCHAR
+    severity: (CASE ((CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 ELSE 99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN AUDIT_SUCCESS IS NULL THEN 0 WHEN AUDIT_SUCCESS = TRUE
+      THEN 1 WHEN AUDIT_SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN AUDIT_SUCCESS IS NULL THEN 0 WHEN AUDIT_SUCCESS = TRUE THEN
+      1 WHEN AUDIT_SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((20100199)::NUMBER) WHEN 20100100 THEN ''Registry Key Activity:
+      Unknown'' WHEN 20100101 THEN ''Registry Key Activity: Create'' WHEN 20100102
+      THEN ''Registry Key Activity: Read'' WHEN 20100103 THEN ''Registry Key Activity:
+      Modify'' WHEN 20100104 THEN ''Registry Key Activity: Delete'' WHEN 20100105
+      THEN ''Registry Key Activity: Rename'' WHEN 20100106 THEN ''Registry Key Activity:
+      Set Security'' WHEN 20100107 THEN ''Registry Key Activity: Restore'' WHEN 20100108
+      THEN ''Registry Key Activity: Import'' WHEN 20100109 THEN ''Registry Key Activity:
+      Export'' WHEN 20100199 THEN ''Registry Key Activity: Other'' END)::VARCHAR'
+    type_uid: (20100199)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: (raw:Category = 'Registry' OR raw:EventCategory::VARCHAR = '12801') AND
+    EVENT_ID = 4663

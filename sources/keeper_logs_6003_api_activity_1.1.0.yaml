@@ -1,0 +1,87 @@
+type: mapping
+id: keeper_logs_6003_api_activity_1.1.0
+version: '9'
+name: Keeper Logs to OCSF class Api Activity
+data-types:
+- keeper-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN AUDIT_EVENT IS NULL THEN 0 WHEN AUDIT_EVENT ILIKE '%create%'
+      THEN 1 WHEN AUDIT_EVENT ILIKE '%update%' THEN 3 WHEN AUDIT_EVENT ILIKE '%delete%'
+      THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN AUDIT_EVENT IS NULL THEN 0 WHEN AUDIT_EVENT ILIKE
+      '%create%' THEN 1 WHEN AUDIT_EVENT ILIKE '%update%' THEN 3 WHEN AUDIT_EVENT
+      ILIKE '%delete%' THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (COALESCE(USERNAME, EMAIL, TO_USERNAME))::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('uid', TEAM_UID::VARCHAR)))::ARRAY
+    api.operation: (AUDIT_EVENT)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.org.uid: (ENTERPRISE_ID)::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.user_agent: (CLIENT_VERSION)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('keeper-logs')::VARCHAR
+    metadata.product.vendor_name: ('keeper')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(USERNAME, EMAIL, TO_USERNAME))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REMOTE_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: NULL::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (REMOTE_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RESULT_CODE IS NULL THEN 0 WHEN RESULT_CODE ILIKE '%failed%'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RESULT_CODE IS NULL THEN 0 WHEN RESULT_CODE ILIKE '%failed%'
+      THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600300 + (CASE WHEN AUDIT_EVENT IS NULL THEN 0 WHEN AUDIT_EVENT
+      ILIKE ''%create%'' THEN 1 WHEN AUDIT_EVENT ILIKE ''%update%'' THEN 3 WHEN AUDIT_EVENT
+      ILIKE ''%delete%'' THEN 4 ELSE 99 END))::NUMBER) WHEN 600300 THEN ''API Activity:
+      Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity:
+      Read'' WHEN 600303 THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity:
+      Delete'' WHEN 600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (600300 + (CASE WHEN AUDIT_EVENT IS NULL THEN 0 WHEN AUDIT_EVENT ILIKE
+      '%create%' THEN 1 WHEN AUDIT_EVENT ILIKE '%update%' THEN 3 WHEN AUDIT_EVENT
+      ILIKE '%delete%' THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

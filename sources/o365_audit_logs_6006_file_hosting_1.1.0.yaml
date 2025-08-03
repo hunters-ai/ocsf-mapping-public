@@ -1,0 +1,169 @@
+type: mapping
+id: o365_audit_logs_6006_file_hosting_1.1.0
+version: '10'
+name: O365 Audit Logs to OCSF class File Hosting
+data-types:
+- o365-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE '%Upload%'
+      THEN 1 WHEN OPERATION ILIKE '%Download%' THEN 2 WHEN OPERATION ILIKE '%Modified%'
+      THEN 3 WHEN OPERATION ILIKE '%Delete%' THEN 4 WHEN OPERATION ILIKE '%Rename%'
+      THEN 5 WHEN OPERATION ILIKE '%Move%' THEN 7 WHEN OPERATION ILIKE '%Restore%'
+      THEN 8 WHEN OPERATION ILIKE '%Preview%' THEN 9 WHEN OPERATION ILIKE '%Share%'
+      THEN 12 WHEN OPERATION ILIKE '%Open%' THEN 14 WHEN OPERATION ILIKE '%Sync%'
+      THEN 15 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE
+      '%Upload%' THEN 1 WHEN OPERATION ILIKE '%Download%' THEN 2 WHEN OPERATION ILIKE
+      '%Modified%' THEN 3 WHEN OPERATION ILIKE '%Delete%' THEN 4 WHEN OPERATION ILIKE
+      '%Rename%' THEN 5 WHEN OPERATION ILIKE '%Move%' THEN 7 WHEN OPERATION ILIKE
+      '%Restore%' THEN 8 WHEN OPERATION ILIKE '%Preview%' THEN 9 WHEN OPERATION ILIKE
+      '%Share%' THEN 12 WHEN OPERATION ILIKE '%Open%' THEN 14 WHEN OPERATION ILIKE
+      '%Sync%' THEN 15 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Upload'
+      WHEN 10 THEN 'Lock' WHEN 11 THEN 'Unlock' WHEN 12 THEN 'Share' WHEN 13 THEN
+      'Unshare' WHEN 14 THEN 'Open' WHEN 15 THEN 'Sync' WHEN 16 THEN 'Unsync' WHEN
+      2 THEN 'Download' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename'
+      WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move' WHEN 8 THEN 'Restore' WHEN 9 THEN 'Preview'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.session.uid: (RECORD_SPECIFIC_DETAILS:user_session_id)::VARCHAR
+    actor.user.domain: (RAW:user:domain)::VARCHAR
+    actor.user.email_addr: (COALESCE(USER_ID, RAW:user:email))::VARCHAR
+    actor.user.name: (RAW:user:name)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE = 0
+      THEN 1 WHEN USER_TYPE = 2 THEN 2 WHEN USER_TYPE = 4 THEN 3 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE = 0 THEN
+      1 WHEN USER_TYPE = 2 THEN 2 WHEN USER_TYPE = 4 THEN 3 ELSE 99 END)::NUMBER
+    actor.user.uid: (USER_KEY)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud.account.uid: (RAW:cloud:account:id)::VARCHAR
+    cloud.org.uid: (ORGANIZATION_ID)::VARCHAR
+    cloud.provider: (RAW:cloud:provider)::VARCHAR
+    cloud.region: (RAW:cloud:region)::VARCHAR
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint.domain: (RECORD_SPECIFIC_DETAILS:target_domain)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm_id', CASE
+      WHEN RECORD_SPECIFIC_DETAILS:sha256 IS NULL AND RECORD_SPECIFIC_DETAILS:sha1
+      IS NULL THEN 0 WHEN RECORD_SPECIFIC_DETAILS:sha256 IS NOT NULL THEN 3 WHEN RECORD_SPECIFIC_DETAILS:sha1
+      IS NOT NULL THEN 2 END::NUMBER, 'value', COALESCE(RECORD_SPECIFIC_DETAILS:sha256,
+      RECORD_SPECIFIC_DETAILS:sha1)::VARCHAR)))::ARRAY
+    file.name: (RECORD_SPECIFIC_DETAILS:source_file_name)::VARCHAR
+    file.path: (RECORD_SPECIFIC_DETAILS:target_file_path)::VARCHAR
+    file.size: (RECORD_SPECIFIC_DETAILS:file_size_bytes)::NUMBER
+    file.type: (CASE ((CASE WHEN RECORD_SPECIFIC_DETAILS:file_type IS NULL THEN 0
+      ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File' WHEN
+      2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device' WHEN
+      5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    file.type_id: (CASE WHEN RECORD_SPECIFIC_DETAILS:file_type IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    message: NULL::VARCHAR
+    metadata.event_code: (workload)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('o365-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('office365')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(USER_ID, RAW:user:email))::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:user:name)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (RECORD_SPECIFIC_DETAILS:source_file_name)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:host:name)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.domain: (RECORD_SPECIFIC_DETAILS:originating_domain)::VARCHAR
+    src_endpoint.hostname: (RAW:host:name)::VARCHAR
+    src_endpoint.ip: (CLIENT_IP)::VARCHAR
+    src_endpoint.uid: (RAW:host:id)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RESULT_STATUS IS NULL THEN 0 WHEN RESULT_STATUS IN ('Success',
+      'Succeeded') THEN 1 WHEN RESULT_STATUS='Failed' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RESULT_STATUS IS NULL THEN 0 WHEN RESULT_STATUS IN ('Success',
+      'Succeeded') THEN 1 WHEN RESULT_STATUS='Failed' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600600 + (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION
+      ILIKE ''%Upload%'' THEN 1 WHEN OPERATION ILIKE ''%Download%'' THEN 2 WHEN OPERATION
+      ILIKE ''%Modified%'' THEN 3 WHEN OPERATION ILIKE ''%Delete%'' THEN 4 WHEN OPERATION
+      ILIKE ''%Rename%'' THEN 5 WHEN OPERATION ILIKE ''%Move%'' THEN 7 WHEN OPERATION
+      ILIKE ''%Restore%'' THEN 8 WHEN OPERATION ILIKE ''%Preview%'' THEN 9 WHEN OPERATION
+      ILIKE ''%Share%'' THEN 12 WHEN OPERATION ILIKE ''%Open%'' THEN 14 WHEN OPERATION
+      ILIKE ''%Sync%'' THEN 15 ELSE 99 END))::NUMBER) WHEN 600600 THEN ''File Hosting
+      Activity: Unknown'' WHEN 600601 THEN ''File Hosting Activity: Upload'' WHEN
+      600602 THEN ''File Hosting Activity: Download'' WHEN 600603 THEN ''File Hosting
+      Activity: Update'' WHEN 600604 THEN ''File Hosting Activity: Delete'' WHEN 600605
+      THEN ''File Hosting Activity: Rename'' WHEN 600606 THEN ''File Hosting Activity:
+      Copy'' WHEN 600607 THEN ''File Hosting Activity: Move'' WHEN 600608 THEN ''File
+      Hosting Activity: Restore'' WHEN 600609 THEN ''File Hosting Activity: Preview''
+      WHEN 600610 THEN ''File Hosting Activity: Lock'' WHEN 600611 THEN ''File Hosting
+      Activity: Unlock'' WHEN 600612 THEN ''File Hosting Activity: Share'' WHEN 600613
+      THEN ''File Hosting Activity: Unshare'' WHEN 600614 THEN ''File Hosting Activity:
+      Open'' WHEN 600615 THEN ''File Hosting Activity: Sync'' WHEN 600616 THEN ''File
+      Hosting Activity: Unsync'' WHEN 600699 THEN ''File Hosting Activity: Other''
+      END)::VARCHAR'
+    type_uid: (600600 + (CASE WHEN OPERATION IS NULL THEN 0 WHEN OPERATION ILIKE '%Upload%'
+      THEN 1 WHEN OPERATION ILIKE '%Download%' THEN 2 WHEN OPERATION ILIKE '%Modified%'
+      THEN 3 WHEN OPERATION ILIKE '%Delete%' THEN 4 WHEN OPERATION ILIKE '%Rename%'
+      THEN 5 WHEN OPERATION ILIKE '%Move%' THEN 7 WHEN OPERATION ILIKE '%Restore%'
+      THEN 8 WHEN OPERATION ILIKE '%Preview%' THEN 9 WHEN OPERATION ILIKE '%Share%'
+      THEN 12 WHEN OPERATION ILIKE '%Open%' THEN 14 WHEN OPERATION ILIKE '%Sync%'
+      THEN 15 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: OPERATION ILIKE '%file%'

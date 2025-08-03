@@ -1,0 +1,161 @@
+type: mapping
+id: abnormal_threats_4009_email_activity_1.1.0
+version: '1'
+name: Abnormal Threats to OCSF class Email Activity
+data-types:
+- abnormal-threats
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (3)::NUMBER
+    activity_name: (CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.domain: (SPLIT_PART(FROM_ADDRESS, '@', 2))::VARCHAR
+    actor.user.email_addr: (FROM_ADDRESS)::VARCHAR
+    actor.user.name: (IFF(FROM_NAME ILIKE '%@%', SPLIT_PART(FROM_NAME, '@', 1), FROM_NAME))::VARCHAR
+    actor.user.type: (CASE (CASE WHEN FROM_NAME ILIKE '%admin%' THEN 2 WHEN FROM_NAME
+      IS NULL THEN 0 ELSE 1 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN FROM_NAME ILIKE '%admin%' THEN 2 WHEN FROM_NAME
+      IS NULL THEN 0 ELSE 1 END)::NUMBER
+    api: NULL::VARIANT
+    attacks: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('attacks', OBJECT_CONSTRUCT_KEEP_NULL('tactic',
+      OBJECT_CONSTRUCT_KEEP_NULL('name', ATTACK_TYPE), 'technique', OBJECT_CONSTRUCT_KEEP_NULL('name',
+      ATTACK_STRATEGY, 'src_url', IFF(ARRAY_TO_STRING(URLS, '; ') IS NULL OR ARRAY_TO_STRING(URLS,
+      '; ') = '', NULL, ARRAY_TO_STRING(URLS, '; ')))))))::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE (1::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN
+      2 THEN 'Outbound' WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (1)::NUMBER
+    disposition: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    dst_endpoint.domain: (SPLIT_PART(RECIPIENT_ADDRESS, '@', 2))::VARCHAR
+    duration: NULL::NUMBER
+    email.cc: (IFF(ARRAY_SIZE(CC_EMAILS) = 0, NULL, CC_EMAILS))::ARRAY
+    email.delivered_to: (RECIPIENT_ADDRESS)::VARCHAR
+    email.from: (FROM_ADDRESS)::VARCHAR
+    email.message_uid: (INTERNET_MESSAGE_ID)::VARCHAR
+    email.reply_to: (IFF(ARRAY_TO_STRING(REPLY_TO_EMAILS, '; ') = '', NULL, ARRAY_TO_STRING(REPLY_TO_EMAILS,
+      '; ')))::VARCHAR
+    email.subject: (SUBJECT)::VARCHAR
+    email.to: (IFF(ARRAY_SIZE(TO_ADDRESSES) = 0, NULL, TO_ADDRESSES))::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: (date_part('epoch_milliseconds', RECEIVED_TIME::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (RECEIVED_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('uid', THREAT_ID)))::ARRAY
+    message: (ARRAY_TO_STRING(SUMMARY_INSIGHTS, '; '))::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('abnormal-threats')::VARCHAR
+    metadata.product.vendor_name: ('abnormal_security')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (FROM_ADDRESS)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(FROM_NAME ILIKE '%@%', SPLIT_PART(FROM_NAME, '@', 1), FROM_NAME))::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.cc'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(ARRAY_SIZE(CC_EMAILS) = 0, NULL, CC_EMAILS))::ARRAY
+    - name: '''email.delivered_to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RECIPIENT_ADDRESS)::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (FROM_ADDRESS)::VARCHAR
+    - name: '''email.reply_to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(ARRAY_TO_STRING(REPLY_TO_EMAILS, '; ') = '', NULL, ARRAY_TO_STRING(REPLY_TO_EMAILS,
+        '; ')))::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(ARRAY_SIZE(TO_ADDRESSES) = 0, NULL, TO_ADDRESSES))::ARRAY
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IFF(SENDER_IP_ADDRESS = '' OR SENDER_IP_ADDRESS IS NULL, NULL, SENDER_IP_ADDRESS))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: NULL::VARCHAR
+    src_endpoint.domain: (SPLIT_PART(FROM_ADDRESS, '@', 2))::VARCHAR
+    src_endpoint.ip: (IFF(SENDER_IP_ADDRESS = '' OR SENDER_IP_ADDRESS IS NULL, NULL,
+      SENDER_IP_ADDRESS))::VARCHAR
+    src_endpoint.name: (IFF(FROM_NAME ILIKE '%@%', SPLIT_PART(FROM_NAME, '@', 1),
+      FROM_NAME))::VARCHAR
+    start_time: (date_part('epoch_milliseconds', SENT_TIME::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (SENT_TIME)::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN AUTO_REMEDIATED = 'true' THEN 1 WHEN AUTO_REMEDIATED
+      = 'false' THEN 2 WHEN AUTO_REMEDIATED IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN AUTO_REMEDIATED = 'true' THEN 1 WHEN AUTO_REMEDIATED = 'false'
+      THEN 2 WHEN AUTO_REMEDIATED IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', received_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (received_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (400903::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400903)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: SENT_TIME IS NOT NULL

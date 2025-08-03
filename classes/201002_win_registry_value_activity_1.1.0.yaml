@@ -1,0 +1,11 @@
+id: 201002_win/registry_value_activity_1.1.0
+version: '6'
+description: OCSF View For Class - 201002 Win/registry Value Activity
+source-table-ids:
+- crowdstrike_raw_events_201002_win_registry_value_activity_1.1.0
+- sentinelone_raw_events_v2_201002_win_registry_value_activity_1.1.0
+- cb_platform_events_201002_win_registry_value_activity_1.1.0
+- mdatp_device_registry_events_201002_win_registry_value_activity_1.1.0
+- pan_edr_raw_logs_201002_win_registry_value_activity_1.1.0
+- universal_wel_201002_win_registry_value_activity_1.1.0
+- microsoft_365_defender_advanced_hunting_201002_win_registry_value_activity_1.1.0

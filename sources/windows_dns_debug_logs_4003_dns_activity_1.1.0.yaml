@@ -1,0 +1,149 @@
+type: mapping
+id: windows_dns_debug_logs_4003_dns_activity_1.1.0
+version: '13'
+name: Windows Dns Debug Logs to OCSF class Dns Activity
+data-types:
+- windows-dns-debug-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN AUTHORITATIVE_ANSWER='TRUE' THEN 1 WHEN AUTHORITATIVE_ANSWER='FALSE'
+      THEN 2 WHEN AUTHORITATIVE_ANSWER IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    action_id: (CASE WHEN AUTHORITATIVE_ANSWER='TRUE' THEN 1 WHEN AUTHORITATIVE_ANSWER='FALSE'
+      THEN 2 WHEN AUTHORITATIVE_ANSWER IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN QUERY_TYPE_PRETTY='Query' THEN 1 WHEN QUERY_TYPE_PRETTY='Response'
+      THEN 2 WHEN QUERY_TYPE_PRETTY='Traffic' THEN 6 WHEN QUERY_TYPE_PRETTY IS NULL
+      THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN QUERY_TYPE_PRETTY='Query' THEN 1 WHEN QUERY_TYPE_PRETTY='Response'
+      THEN 2 WHEN QUERY_TYPE_PRETTY='Traffic' THEN 6 WHEN QUERY_TYPE_PRETTY IS NULL
+      THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Query' WHEN
+      2 THEN 'Response' WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    answers: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('flags', SPLIT(REGEXP_REPLACE(FLAGS_CHAR_CODES,
+      '(.)', '\\1.'), '.'))))::ARRAY
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('dns_activity')::VARCHAR
+    class_uid: ('4003')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.direction: (CASE ((CASE WHEN SEND_RECEIVE_INDICATOR='Rcv' THEN
+      1 WHEN SEND_RECEIVE_INDICATOR='Snd' THEN 2 WHEN SEND_RECEIVE_INDICATOR IS NULL
+      THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN
+      2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.direction_id: (CASE WHEN SEND_RECEIVE_INDICATOR='Rcv' THEN 1 WHEN
+      SEND_RECEIVE_INDICATOR='Snd' THEN 2 WHEN SEND_RECEIVE_INDICATOR IS NULL THEN
+      0 ELSE 99 END)::NUMBER
+    connection_info.protocol_name: (PROTOCOL)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (REMOTE_IP)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('windows-dns-debug-logs')::VARCHAR
+    metadata.product.vendor_name: ('windows-dns')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REMOTE_IP)::VARCHAR
+    - name: '''query.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (QUESTION_NAME)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    query.hostname: (QUESTION_NAME)::VARCHAR
+    query.opcode: (OPCODE)::VARCHAR
+    query.opcode_id: (CASE WHEN OPCODE_PRETTY='Standard Query' THEN 0 WHEN OPCODE_PRETTY='Inverse
+      Query' THEN 1 WHEN OPCODE_PRETTY='Status' THEN 2 WHEN OPCODE_PRETTY='Reserved'
+      THEN 3 WHEN OPCODE_PRETTY='Notify' THEN 4 WHEN OPCODE_PRETTY='Update' THEN 5
+      WHEN OPCODE_PRETTY='DSO Message' THEN 6 END)::NUMBER
+    query.type: (QUESTION_TYPE)::VARCHAR
+    query_time: NULL::NUMBER
+    query_time_dt: NULL::TIMESTAMP_LTZ
+    raw_data: NULL::VARCHAR
+    rcode: (CASE ((CASE WHEN RESPONSE_CODE='NOERROR' THEN 0 WHEN RESPONSE_CODE='FORMERROR'
+      THEN 1 WHEN RESPONSE_CODE='SERVFAIL' THEN 2 WHEN RESPONSE_CODE='NXDOMAIN' THEN
+      100 WHEN RESPONSE_CODE='NOTIMP' THEN 4 WHEN RESPONSE_CODE='REFUSED' THEN 5 WHEN
+      RESPONSE_CODE='YXDOMAIN' THEN 6 WHEN RESPONSE_CODE='YXRRSET' THEN 7 WHEN RESPONSE_CODE='NXRRSET'
+      THEN 8 WHEN RESPONSE_CODE='NOTAUTH' THEN 9 WHEN RESPONSE_CODE='NOTZONE' THEN
+      10 WHEN RESPONSE_CODE='DSOTYPENI' THEN 11 WHEN RESPONSE_CODE='BADSIG_VERS' THEN
+      16 WHEN RESPONSE_CODE='BADKEY' THEN 17 WHEN RESPONSE_CODE='BADTIME' THEN 18
+      WHEN RESPONSE_CODE='BADMODE' THEN 19 WHEN RESPONSE_CODE='BADNAME' THEN 20 WHEN
+      RESPONSE_CODE='BADALG' THEN 21 WHEN RESPONSE_CODE='BADTRUNC' THEN 22 WHEN RESPONSE_CODE='BADCOOKIE'
+      THEN 23 WHEN RESPONSE_CODE='UNASSIGNED' THEN 24 WHEN RESPONSE_CODE='RESERVED'
+      THEN 25 ELSE 99 END)::NUMBER) WHEN 0 THEN 'NoError' WHEN 1 THEN 'FormError'
+      WHEN 10 THEN 'NotZone' WHEN 11 THEN 'DSOTYPENI' WHEN 16 THEN 'BADSIG_VERS' WHEN
+      17 THEN 'BADKEY' WHEN 18 THEN 'BADTIME' WHEN 19 THEN 'BADMODE' WHEN 2 THEN 'ServError'
+      WHEN 20 THEN 'BADNAME' WHEN 21 THEN 'BADALG' WHEN 22 THEN 'BADTRUNC' WHEN 23
+      THEN 'BADCOOKIE' WHEN 24 THEN 'Unassigned' WHEN 25 THEN 'Reserved' WHEN 3 THEN
+      'NXDomain' WHEN 4 THEN 'NotImp' WHEN 5 THEN 'Refused' WHEN 6 THEN 'YXDomain'
+      WHEN 7 THEN 'YXRRSet' WHEN 8 THEN 'NXRRSet' WHEN 9 THEN 'NotAuth' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    rcode_id: (CASE WHEN RESPONSE_CODE='NOERROR' THEN 0 WHEN RESPONSE_CODE='FORMERROR'
+      THEN 1 WHEN RESPONSE_CODE='SERVFAIL' THEN 2 WHEN RESPONSE_CODE='NXDOMAIN' THEN
+      100 WHEN RESPONSE_CODE='NOTIMP' THEN 4 WHEN RESPONSE_CODE='REFUSED' THEN 5 WHEN
+      RESPONSE_CODE='YXDOMAIN' THEN 6 WHEN RESPONSE_CODE='YXRRSET' THEN 7 WHEN RESPONSE_CODE='NXRRSET'
+      THEN 8 WHEN RESPONSE_CODE='NOTAUTH' THEN 9 WHEN RESPONSE_CODE='NOTZONE' THEN
+      10 WHEN RESPONSE_CODE='DSOTYPENI' THEN 11 WHEN RESPONSE_CODE='BADSIG_VERS' THEN
+      16 WHEN RESPONSE_CODE='BADKEY' THEN 17 WHEN RESPONSE_CODE='BADTIME' THEN 18
+      WHEN RESPONSE_CODE='BADMODE' THEN 19 WHEN RESPONSE_CODE='BADNAME' THEN 20 WHEN
+      RESPONSE_CODE='BADALG' THEN 21 WHEN RESPONSE_CODE='BADTRUNC' THEN 22 WHEN RESPONSE_CODE='BADCOOKIE'
+      THEN 23 WHEN RESPONSE_CODE='UNASSIGNED' THEN 24 WHEN RESPONSE_CODE='RESERVED'
+      THEN 25 ELSE 99 END)::NUMBER
+    response_time: NULL::NUMBER
+    response_time_dt: NULL::TIMESTAMP_LTZ
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint: NULL::VARIANT
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((CASE WHEN QUERY_TYPE_PRETTY=''Query'' THEN 400301 WHEN QUERY_TYPE_PRETTY=''Response''
+      THEN 400302 WHEN QUERY_TYPE_PRETTY=''Traffic'' THEN 400306 WHEN QUERY_TYPE_PRETTY
+      IS NULL THEN 400300 ELSE 400399 END)::NUMBER) WHEN 400300 THEN ''DNS Activity:
+      Unknown'' WHEN 400301 THEN ''DNS Activity: Query'' WHEN 400302 THEN ''DNS Activity:
+      Response'' WHEN 400306 THEN ''DNS Activity: Traffic'' WHEN 400399 THEN ''DNS
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN QUERY_TYPE_PRETTY='Query' THEN 400301 WHEN QUERY_TYPE_PRETTY='Response'
+      THEN 400302 WHEN QUERY_TYPE_PRETTY='Traffic' THEN 400306 WHEN QUERY_TYPE_PRETTY
+      IS NULL THEN 400300 ELSE 400399 END)::NUMBER
+    unmapped: NULL::VARIANT

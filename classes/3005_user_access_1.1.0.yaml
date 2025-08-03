@@ -1,0 +1,13 @@
+id: 3005_user_access_1.1.0
+version: '9'
+description: OCSF View For Class - 3005 User Access
+source-table-ids:
+- lastpass_user_activity_reports_3005_user_access_1.1.0
+- sailpoint_identitynow_audit_reports_events_3005_user_access_1.1.0
+- onepassword_audit_events_3005_user_access_1.1.0
+- onelogin_events_3005_user_access_1.1.0
+- jumpcloud_directory_insights_3005_user_access_1.1.0
+- azure_audit_3005_user_access_1.1.0
+- o365_audit_logs_3005_user_access_1.1.0
+- okta_logs_3005_user_access_1.1.0
+- teleport_audit_events_3005_user_access_1.1.0

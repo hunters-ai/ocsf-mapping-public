@@ -1,0 +1,151 @@
+type: mapping
+id: slack_audit_logs_3002_authentication_1.1.0
+version: '11'
+name: Slack Audit Logs to OCSF class Authentication
+data-types:
+- slack-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION = 'user_login' THEN 1 WHEN ACTION = 'user_login_failed'
+      THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION = 'user_login' THEN 1 WHEN ACTION = 'user_login_failed'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (ACTOR_USER_EMAIL)::VARCHAR
+    actor.user.name: (ACTOR_USER_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN ACTOR_TYPE IS NULL THEN 0 WHEN ACTOR_TYPE =
+      'user' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN ACTOR_TYPE IS NULL THEN 0 WHEN ACTOR_TYPE = 'user'
+      THEN 1 ELSE 99 END)::NUMBER
+    actor.user.uid: (ACTOR_USER_ID)::VARCHAR
+    api: NULL::VARIANT
+    auth_protocol: (CASE ((CASE WHEN DETAILS:config_type IS NULL THEN 0 WHEN DETAILS:config_type
+      = 'SAML' THEN 5 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'NTLM'
+      WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos' WHEN 3 THEN 'Digest' WHEN 4 THEN
+      'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH 2.0' WHEN 7 THEN 'PAP' WHEN 8
+      THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other' END)::VARCHAR
+    auth_protocol_id: (CASE WHEN DETAILS:config_type IS NULL THEN 0 WHEN DETAILS:config_type
+      = 'SAML' THEN 5 ELSE 99 END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    dst_endpoint.uid: (CONTEXT_LOCATION_ID)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.user_agent: (CONTEXT_USER_AGENT)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: (CASE WHEN DETAILS:config_type IS NOT NULL THEN TRUE ELSE FALSE END)::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process.file.name: (ENTITY_FILE_NAME)::VARCHAR
+    logon_process.file.uid: (ENTITY_FILE_ID)::VARCHAR
+    logon_process.name: (ENTITY_FILE_NAME)::VARCHAR
+    logon_process.session.uid: (CONTEXT_SESSION_ID)::VARCHAR
+    logon_process.user.domain: (CONTEXT_LOCATION_DOMAIN)::VARCHAR
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('slack-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('slack')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR_USER_EMAIL)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACTOR_USER_NAME)::VARCHAR
+    - name: '''logon_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (ENTITY_FILE_NAME)::VARCHAR
+    - name: '''logon_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (ENTITY_FILE_NAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CONTEXT_IP_ADDRESS)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RAW:entity:user:email)::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:entity:user:name)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (CONTEXT_IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN ACTION = 'user_login' THEN 1 WHEN ACTION = 'user_login_failed'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN ACTION = 'user_login' THEN 1 WHEN ACTION = 'user_login_failed'
+      THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', date_create::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (date_create)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300200 + (CASE WHEN ACTION = ''user_login'' THEN 1 WHEN ACTION
+      = ''user_login_failed'' THEN 2 ELSE 99 END))::NUMBER) WHEN 300200 THEN ''Authentication:
+      Unknown'' WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300200 + (CASE WHEN ACTION = 'user_login' THEN 1 WHEN ACTION = 'user_login_failed'
+      THEN 2 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (RAW:entity:user:email)::VARCHAR
+    user.name: (RAW:entity:user:name)::VARCHAR
+    user.type: (CASE ((CASE WHEN ENTITY_TYPE IS NULL THEN 0 WHEN ENTITY_TYPE = 'user'
+      THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2
+      THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN ENTITY_TYPE IS NULL THEN 0 WHEN ENTITY_TYPE = 'user'
+      THEN 1 ELSE 99 END)::NUMBER
+    user.uid: (RAW:entity:user:id)::VARCHAR
+  predicate: ACTION IN ('user_login', 'user_login_failed')

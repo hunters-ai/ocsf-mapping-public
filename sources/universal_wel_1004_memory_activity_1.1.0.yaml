@@ -1,0 +1,187 @@
+type: mapping
+id: universal_wel_1004_memory_activity_1.1.0
+version: '2'
+name: Universal Wel to OCSF class Memory Activity
+data-types:
+- universal-wel
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN AUDIT_SUCCESS IS NULL THEN 0 WHEN AUDIT_SUCCESS = TRUE
+      THEN 1 WHEN AUDIT_SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN AUDIT_SUCCESS IS NULL THEN 0 WHEN AUDIT_SUCCESS = TRUE THEN
+      1 WHEN AUDIT_SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN COALESCE(RAW:Message, RAW:message) IS NULL THEN 0 WHEN
+      COALESCE(RAW:Message, RAW:message) ILIKE '%Read%memory%' THEN 7 WHEN COALESCE(RAW:Message,
+      RAW:message) ILIKE '%Write%memory%' THEN 8 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN COALESCE(RAW:Message, RAW:message) IS NULL THEN
+      0 WHEN COALESCE(RAW:Message, RAW:message) ILIKE '%Read%memory%' THEN 7 WHEN
+      COALESCE(RAW:Message, RAW:message) ILIKE '%Write%memory%' THEN 8 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allocate Page' WHEN 2 THEN 'Modify Page'
+      WHEN 3 THEN 'Delete Page' WHEN 4 THEN 'Buffer Overflow' WHEN 5 THEN 'Disable
+      DEP' WHEN 6 THEN 'Enable DEP' WHEN 7 THEN 'Read' WHEN 8 THEN 'Write' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    actor.process.file.path: (MESSAGE_DETAILS:path)::VARCHAR
+    actor.process.pid: (RAW:ExecutionProcessID)::NUMBER
+    actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
+    actor.user.account.name: (MESSAGE_DETAILS:subject:account_name)::VARCHAR
+    actor.user.domain: (COALESCE(MESSAGE_DETAILS:subject:account_domain, RAW:SubjectDomainName))::VARCHAR
+    actor.user.name: (RAW:SubjectUserName)::VARCHAR
+    actor.user.uid: (RAW:SubjectUserSid)::VARCHAR
+    actual_permissions: NULL::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    base_address: NULL::VARCHAR
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('memory_activity')::VARCHAR
+    class_uid: ('1004')::NUMBER
+    cloud.provider: ('Windows')::VARCHAR
+    count: NULL::NUMBER
+    device.domain: (RAW:Domain)::VARCHAR
+    device.hostname: (COALESCE(MACHINE_NAME , RAW:Hostname))::VARCHAR
+    device.ip: (RAW:MessageSourceAddress)::VARCHAR
+    device.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN
+      10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (0)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (RAW:EventReceivedTime)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (RAW:EventReceivedTime)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (RAW:Message)::VARCHAR
+    metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('universal-wel')::VARCHAR
+    metadata.product.vendor_name: ('windows-event-log')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:SubjectUserName)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (COALESCE(MACHINE_NAME , RAW:Hostname))::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:MessageSourceAddress)::VARCHAR
+    - name: '''process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:TargetUserName)::VARCHAR
+    process.cmd_line: (COALESCE(MESSAGE_DETAILS:process_information:process_command_line,
+      RAW:CommandLine))::VARCHAR
+    process.file.path: (COALESCE(MESSAGE_DETAILS:process_information:new_process_name,
+      RAW:NewProcessName))::VARCHAR
+    process.parent_process.file.path: (COALESCE(MESSAGE_DETAILS:process_information:creator_process_name,
+      RAW:ParentProcessName::VARCHAR))::VARCHAR
+    process.parent_process.pid: (COALESCE(TO_NUMBER(split_part(MESSAGE_DETAILS:process_information:creator_process_id,'x',2),'XXXX'),
+      TO_NUMBER(split_part(RAW:ProcessId,'x',2),'XXXX')))::NUMBER
+    process.pid: (COALESCE(TO_NUMBER(split_part(RAW:NewProcessId,'x',2),'XXXX'), TO_NUMBER(split_part(MESSAGE_DETAILS:process_information:new_process_id,'x',2),'XXXX')))::NUMBER
+    process.tid: (RAW:thread_id)::NUMBER
+    process.user.account.name: (MESSAGE_DETAILS:creator_subject:account_name)::VARCHAR
+    process.user.domain: (COALESCE(MESSAGE_DETAILS:creator_subject:account_domain,
+      RAW:TargetDomainName))::VARCHAR
+    process.user.name: (RAW:TargetUserName)::VARCHAR
+    process.user.uid: (RAW:TargetUserSid)::VARCHAR
+    raw_data: NULL::VARCHAR
+    requested_permissions: NULL::NUMBER
+    severity: (CASE ((CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 WHEN RAW:Severity = 'WARNING' THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium'
+      WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    severity_id: (CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 WHEN RAW:Severity = 'WARNING' THEN 3 ELSE 99 END)::NUMBER
+    size: NULL::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN AUDIT_SUCCESS = FALSE THEN 2 WHEN AUDIT_SUCCESS = TRUE
+      THEN 1 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN AUDIT_SUCCESS = FALSE THEN 2 WHEN AUDIT_SUCCESS = TRUE THEN
+      1 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100400 + (CASE WHEN COALESCE(RAW:Message, RAW:message) IS
+      NULL THEN 0 WHEN COALESCE(RAW:Message, RAW:message) ILIKE ''%Read%memory%''
+      THEN 7 WHEN COALESCE(RAW:Message, RAW:message) ILIKE ''%Write%memory%'' THEN
+      8 ELSE 99 END))::NUMBER) WHEN 100400 THEN ''Memory Activity: Unknown'' WHEN
+      100401 THEN ''Memory Activity: Allocate Page'' WHEN 100402 THEN ''Memory Activity:
+      Modify Page'' WHEN 100403 THEN ''Memory Activity: Delete Page'' WHEN 100404
+      THEN ''Memory Activity: Buffer Overflow'' WHEN 100405 THEN ''Memory Activity:
+      Disable DEP'' WHEN 100406 THEN ''Memory Activity: Enable DEP'' WHEN 100407 THEN
+      ''Memory Activity: Read'' WHEN 100408 THEN ''Memory Activity: Write'' WHEN 100499
+      THEN ''Memory Activity: Other'' END)::VARCHAR'
+    type_uid: (100400 + (CASE WHEN COALESCE(RAW:Message, RAW:message) IS NULL THEN
+      0 WHEN COALESCE(RAW:Message, RAW:message) ILIKE '%Read%memory%' THEN 7 WHEN
+      COALESCE(RAW:Message, RAW:message) ILIKE '%Write%memory%' THEN 8 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: RAW:Message ILIKE '%memory%' OR RAW:message ILIKE '%memory%'

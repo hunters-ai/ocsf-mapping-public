@@ -1,0 +1,11 @@
+id: 1004_memory_activity_1.1.0
+version: '6'
+description: OCSF View For Class - 1004 Memory Activity
+source-table-ids:
+- sentinelone_raw_events_v2_1004_memory_activity_1.1.0
+- microsoft_365_defender_advanced_hunting_1004_memory_activity_1.1.0
+- crowdstrike_raw_events_1004_memory_activity_1.1.0
+- pan_edr_raw_logs_1004_memory_activity_1.1.0
+- cb_platform_events_1004_memory_activity_1.1.0
+- sysdig_activity_command_1004_memory_activity_1.1.0
+- universal_wel_1004_memory_activity_1.1.0

@@ -1,0 +1,184 @@
+type: mapping
+id: box_events_6006_file_hosting_1.1.0
+version: '9'
+name: Box Events to OCSF class File Hosting
+data-types:
+- box-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE ILIKE '%UPLOAD%' THEN 1 WHEN EVENT_TYPE ILIKE
+      '%DOWNLOAD%' THEN 2 WHEN EVENT_TYPE ILIKE '%UPDATE%' THEN 3 WHEN EVENT_TYPE
+      ILIKE '%DELET%' THEN 4 WHEN EVENT_TYPE ILIKE '%RENAME%' THEN 5 WHEN EVENT_TYPE
+      ILIKE '%COPY%' THEN 6 WHEN EVENT_TYPE ILIKE '%MOVE%' THEN 7 WHEN EVENT_TYPE
+      ILIKE '%RESTORE%' THEN 8 WHEN EVENT_TYPE ILIKE '%PREVIEW%' THEN 9 WHEN EVENT_TYPE
+      ILIKE '%LOCK%' THEN 10 WHEN EVENT_TYPE ILIKE '%UNLOCK%' THEN 11 WHEN EVENT_TYPE
+      ILIKE '%SHARE%' THEN 12 WHEN EVENT_TYPE ILIKE '%UNSHARE%' THEN 13 WHEN EVENT_TYPE
+      ILIKE '%OPEN%' THEN 14 WHEN EVENT_TYPE ILIKE '%SYNC%' THEN 15 WHEN EVENT_TYPE
+      ILIKE '%UNSYNC%' THEN 16 WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE ILIKE '%UPLOAD%' THEN 1 WHEN EVENT_TYPE
+      ILIKE '%DOWNLOAD%' THEN 2 WHEN EVENT_TYPE ILIKE '%UPDATE%' THEN 3 WHEN EVENT_TYPE
+      ILIKE '%DELET%' THEN 4 WHEN EVENT_TYPE ILIKE '%RENAME%' THEN 5 WHEN EVENT_TYPE
+      ILIKE '%COPY%' THEN 6 WHEN EVENT_TYPE ILIKE '%MOVE%' THEN 7 WHEN EVENT_TYPE
+      ILIKE '%RESTORE%' THEN 8 WHEN EVENT_TYPE ILIKE '%PREVIEW%' THEN 9 WHEN EVENT_TYPE
+      ILIKE '%LOCK%' THEN 10 WHEN EVENT_TYPE ILIKE '%UNLOCK%' THEN 11 WHEN EVENT_TYPE
+      ILIKE '%SHARE%' THEN 12 WHEN EVENT_TYPE ILIKE '%UNSHARE%' THEN 13 WHEN EVENT_TYPE
+      ILIKE '%OPEN%' THEN 14 WHEN EVENT_TYPE ILIKE '%SYNC%' THEN 15 WHEN EVENT_TYPE
+      ILIKE '%UNSYNC%' THEN 16 WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Upload' WHEN 10 THEN 'Lock' WHEN 11 THEN
+      'Unlock' WHEN 12 THEN 'Share' WHEN 13 THEN 'Unshare' WHEN 14 THEN 'Open' WHEN
+      15 THEN 'Sync' WHEN 16 THEN 'Unsync' WHEN 2 THEN 'Download' WHEN 3 THEN 'Update'
+      WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move'
+      WHEN 8 THEN 'Restore' WHEN 9 THEN 'Preview' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.session.uid: (SESSION_ID)::VARCHAR
+    actor.user.email_addr: (CREATED_BY_LOGIN)::VARCHAR
+    actor.user.name: (CREATED_BY_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN COALESCE(CREATED_BY_TYPE, SOURCE_TYPE)='user'
+      THEN 1 WHEN COALESCE(CREATED_BY_TYPE, SOURCE_TYPE) IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN COALESCE(CREATED_BY_TYPE, SOURCE_TYPE)='user' THEN
+      1 WHEN COALESCE(CREATED_BY_TYPE, SOURCE_TYPE) IS NULL THEN 0 ELSE 99 END)::NUMBER
+    actor.user.uid: (CREATED_BY_ID)::VARCHAR
+    api.service.name: (ADDITIONAL_DETAILS:service_name)::VARCHAR
+    api.service.uid: (ADDITIONAL_DETAILS:service_id)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.name: (COALESCE(SOURCE:folder_name, SOURCE:file_name, SOURCE_ITEM_NAME))::VARCHAR
+    file.owner.email_addr: (SOURCE_OWNED_BY:login)::VARCHAR
+    file.owner.name: (SOURCE_OWNED_BY:name)::VARCHAR
+    file.owner.type: (CASE ((CASE WHEN SOURCE_OWNED_BY:type='user' THEN 1 WHEN SOURCE_OWNED_BY:type
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    file.owner.type_id: (CASE WHEN SOURCE_OWNED_BY:type='user' THEN 1 WHEN SOURCE_OWNED_BY:type
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    file.owner.uid: (SOURCE_OWNED_BY:id)::VARCHAR
+    file.parent_folder: (SOURCE:parent:name)::VARCHAR
+    file.type: (CASE ((CASE WHEN SOURCE_ITEM_TYPE='file' THEN 1 WHEN SOURCE_ITEM_TYPE='folder'
+      THEN 2 WHEN SOURCE_ITEM_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Regular File' WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character
+      Device' WHEN 4 THEN 'Block Device' WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named
+      Pipe' WHEN 7 THEN 'Symbolic Link' WHEN 99 THEN 'Other' END)::VARCHAR
+    file.type_id: (CASE WHEN SOURCE_ITEM_TYPE='file' THEN 1 WHEN SOURCE_ITEM_TYPE='folder'
+      THEN 2 WHEN SOURCE_ITEM_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    file.uid: (COALESCE(SOURCE:folder_id, SOURCE:file_id, SOURCE_ITEM_ID))::VARCHAR
+    file.version: (SOURCE_FILE_VERSION)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('box-events')::VARCHAR
+    metadata.product.vendor_name: ('box')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CREATED_BY_LOGIN)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (CREATED_BY_NAME)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (COALESCE(SOURCE:folder_name, SOURCE:file_name, SOURCE_ITEM_NAME))::VARCHAR
+    - name: '''file.owner'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.owner.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SOURCE_OWNED_BY:login)::VARCHAR
+    - name: '''file.owner.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (SOURCE_OWNED_BY:name)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', created_at::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (created_at)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE ILIKE ''%UPLOAD%'' THEN 600601 WHEN EVENT_TYPE
+      ILIKE ''%DOWNLOAD%'' THEN 600602 WHEN EVENT_TYPE ILIKE ''%UPDATE%'' THEN 600603
+      WHEN EVENT_TYPE ILIKE ''%DELET%'' THEN 600604 WHEN EVENT_TYPE ILIKE ''%RENAME%''
+      THEN 600605 WHEN EVENT_TYPE ILIKE ''%COPY%'' THEN 600606 WHEN EVENT_TYPE ILIKE
+      ''%MOVE%'' THEN 600607 WHEN EVENT_TYPE ILIKE ''%RESTORE%'' THEN 600608 WHEN
+      EVENT_TYPE ILIKE ''%PREVIEW%'' THEN 600609 WHEN EVENT_TYPE ILIKE ''%LOCK%''
+      THEN 600610 WHEN EVENT_TYPE ILIKE ''%UNLOCK%'' THEN 600611 WHEN EVENT_TYPE ILIKE
+      ''%SHARE%'' THEN 600612 WHEN EVENT_TYPE ILIKE ''%UNSHARE%'' THEN 600613 WHEN
+      EVENT_TYPE ILIKE ''%OPEN%'' THEN 600614 WHEN EVENT_TYPE ILIKE ''%SYNC%'' THEN
+      600615 WHEN EVENT_TYPE ILIKE ''%UNSYNC%'' THEN 600616 WHEN EVENT_TYPE IS NULL
+      THEN 0 ELSE 99 END)::NUMBER) WHEN 600600 THEN ''File Hosting Activity: Unknown''
+      WHEN 600601 THEN ''File Hosting Activity: Upload'' WHEN 600602 THEN ''File Hosting
+      Activity: Download'' WHEN 600603 THEN ''File Hosting Activity: Update'' WHEN
+      600604 THEN ''File Hosting Activity: Delete'' WHEN 600605 THEN ''File Hosting
+      Activity: Rename'' WHEN 600606 THEN ''File Hosting Activity: Copy'' WHEN 600607
+      THEN ''File Hosting Activity: Move'' WHEN 600608 THEN ''File Hosting Activity:
+      Restore'' WHEN 600609 THEN ''File Hosting Activity: Preview'' WHEN 600610 THEN
+      ''File Hosting Activity: Lock'' WHEN 600611 THEN ''File Hosting Activity: Unlock''
+      WHEN 600612 THEN ''File Hosting Activity: Share'' WHEN 600613 THEN ''File Hosting
+      Activity: Unshare'' WHEN 600614 THEN ''File Hosting Activity: Open'' WHEN 600615
+      THEN ''File Hosting Activity: Sync'' WHEN 600616 THEN ''File Hosting Activity:
+      Unsync'' WHEN 600699 THEN ''File Hosting Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE ILIKE '%UPLOAD%' THEN 600601 WHEN EVENT_TYPE ILIKE
+      '%DOWNLOAD%' THEN 600602 WHEN EVENT_TYPE ILIKE '%UPDATE%' THEN 600603 WHEN EVENT_TYPE
+      ILIKE '%DELET%' THEN 600604 WHEN EVENT_TYPE ILIKE '%RENAME%' THEN 600605 WHEN
+      EVENT_TYPE ILIKE '%COPY%' THEN 600606 WHEN EVENT_TYPE ILIKE '%MOVE%' THEN 600607
+      WHEN EVENT_TYPE ILIKE '%RESTORE%' THEN 600608 WHEN EVENT_TYPE ILIKE '%PREVIEW%'
+      THEN 600609 WHEN EVENT_TYPE ILIKE '%LOCK%' THEN 600610 WHEN EVENT_TYPE ILIKE
+      '%UNLOCK%' THEN 600611 WHEN EVENT_TYPE ILIKE '%SHARE%' THEN 600612 WHEN EVENT_TYPE
+      ILIKE '%UNSHARE%' THEN 600613 WHEN EVENT_TYPE ILIKE '%OPEN%' THEN 600614 WHEN
+      EVENT_TYPE ILIKE '%SYNC%' THEN 600615 WHEN EVENT_TYPE ILIKE '%UNSYNC%' THEN
+      600616 WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TYPE NOT ILIKE '%LOGIN%' AND EVENT_TYPE NOT ILIKE '%USER%' AND
+    EVENT_TYPE NOT ILIKE '%ACCESS%'

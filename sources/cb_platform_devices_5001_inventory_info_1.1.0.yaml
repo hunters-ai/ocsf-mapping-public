@@ -1,0 +1,132 @@
+type: mapping
+id: cb_platform_devices_5001_inventory_info_1.1.0
+version: '12'
+name: Cb Platform Devices to OCSF class Inventory Info
+data-types:
+- cb-platform-devices
+mapping:
+  fields:
+    activity_id: (2)::NUMBER
+    activity_name: (CASE ((2)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Log' WHEN
+      2 THEN 'Collect' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (EMAIL)::VARCHAR
+    actor.user.name: (LOGIN_USER_NAME)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((5)::NUMBER) WHEN 5 THEN 'Discovery' END)::VARCHAR
+    category_uid: (5)::NUMBER
+    class_name: ('inventory_info')::VARCHAR
+    class_uid: ('5001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.created_time: (date_part('epoch_milliseconds', (REGISTERED_TIME)::TIMESTAMP_LTZ))::NUMBER
+    device.created_time_dt: (REGISTERED_TIME)::TIMESTAMP_LTZ
+    device.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('uid', AD_GROUP_ID::VARCHAR)))::ARRAY
+    device.hostname: (NAME)::VARCHAR
+    device.hypervisor: (VIRTUALIZATION_PROVIDER)::VARCHAR
+    device.instance_uid: (VM_UUID)::VARCHAR
+    device.ip: (LAST_EXTERNAL_IP_ADDRESS)::VARCHAR
+    device.last_seen_time: (date_part('epoch_milliseconds', (LAST_CONTACT_TIME)::TIMESTAMP_LTZ))::NUMBER
+    device.last_seen_time_dt: (LAST_CONTACT_TIME)::TIMESTAMP_LTZ
+    device.location.region: (LAST_LOCATION)::VARCHAR
+    device.mac: (MAC_ADDRESS)::VARCHAR
+    device.modified_time: (date_part('epoch_milliseconds', (COALESCE(LAST_DEVICE_POLICY_CHANGE_TIME,
+      LAST_POLICY_UPDATED_TIME))::TIMESTAMP_LTZ))::NUMBER
+    device.modified_time_dt: (COALESCE(LAST_DEVICE_POLICY_CHANGE_TIME, LAST_POLICY_UPDATED_TIME))::TIMESTAMP_LTZ
+    device.org.name: (ORGANIZATION_NAME)::VARCHAR
+    device.org.uid: (ORGANIZATION_ID)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN OS IS NULL THEN 0 WHEN OS = 'WINDOWS' THEN 100
+      WHEN OS = 'LINUX' THEN 200 WHEN OS = 'MAC' THEN 300 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN
+      200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN
+      'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN
+      402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN OS IS NULL THEN 0 WHEN OS = 'WINDOWS' THEN 100 WHEN
+      OS = 'LINUX' THEN 200 WHEN OS = 'MAC' THEN 300 ELSE 99 END)::NUMBER
+    device.os.version: (OS_VERSION)::VARCHAR
+    device.uid: (ID)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (SCAN_LAST_COMPLETE_TIME)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (SCAN_LAST_COMPLETE_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cb-platform-devices')::VARCHAR
+    metadata.product.vendor_name: ('cb-defense')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (EMAIL)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (LOGIN_USER_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (NAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (LAST_EXTERNAL_IP_ADDRESS)::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (MAC_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN VULNERABILITY_SEVERITY IS NULL THEN 0 WHEN VULNERABILITY_SEVERITY
+      = 'LOW' THEN 2 WHEN VULNERABILITY_SEVERITY = 'MODERATE' THEN 3 WHEN VULNERABILITY_SEVERITY
+      = 'IMPORTANT' THEN 4 WHEN VULNERABILITY_SEVERITY = 'CRITICAL' THEN 5 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN
+      'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6
+      THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN VULNERABILITY_SEVERITY IS NULL THEN 0 WHEN VULNERABILITY_SEVERITY
+      = 'LOW' THEN 2 WHEN VULNERABILITY_SEVERITY = 'MODERATE' THEN 3 WHEN VULNERABILITY_SEVERITY
+      = 'IMPORTANT' THEN 4 WHEN VULNERABILITY_SEVERITY = 'CRITICAL' THEN 5 ELSE 99
+      END)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (SCAN_LAST_ACTION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (SCAN_LAST_ACTION_TIME)::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS IN ('REGISTERED',
+      'DEREGISTERED', 'BYPASS') THEN 1 WHEN STATUS IN ('PENDING') THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS IN ('REGISTERED', 'DEREGISTERED',
+      'BYPASS') THEN 1 WHEN STATUS IN ('PENDING') THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', METADATA$INSERTION_TIME::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (METADATA$INSERTION_TIME)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((500102)::NUMBER) WHEN 500100 THEN ''Device Inventory Info:
+      Unknown'' WHEN 500101 THEN ''Device Inventory Info: Log'' WHEN 500102 THEN ''Device
+      Inventory Info: Collect'' WHEN 500199 THEN ''Device Inventory Info: Other''
+      END)::VARCHAR'
+    type_uid: (500102)::NUMBER
+    unmapped: NULL::VARIANT

@@ -1,0 +1,111 @@
+type: mapping
+id: gsuite_activity_6003_api_activity_1.1.0
+version: '10'
+name: Gsuite Activity to OCSF class Api Activity
+data-types:
+- gsuite-activity
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_PARAMETERS:method_name IS NULL THEN 0 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%list%' THEN 2 WHEN EVENT_PARAMETERS:method_name ILIKE '%get%' THEN 2
+      WHEN EVENT_PARAMETERS:method_name ILIKE '%update%' THEN 3 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%delete%' THEN 4 WHEN EVENT_PARAMETERS:method_name ILIKE '%patch%' THEN
+      3 WHEN EVENT_PARAMETERS:method_name ILIKE '%post%' THEN 1 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%watch%' THEN 2 WHEN EVENT_PARAMETERS:method_name ILIKE '%create%' THEN
+      1 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_PARAMETERS:method_name IS NULL THEN 0 WHEN
+      EVENT_PARAMETERS:method_name ILIKE '%list%' THEN 2 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%get%' THEN 2 WHEN EVENT_PARAMETERS:method_name ILIKE '%update%' THEN
+      3 WHEN EVENT_PARAMETERS:method_name ILIKE '%delete%' THEN 4 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%patch%' THEN 3 WHEN EVENT_PARAMETERS:method_name ILIKE '%post%' THEN
+      1 WHEN EVENT_PARAMETERS:method_name ILIKE '%watch%' THEN 2 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%create%' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    actor.user.credential_uid: (EVENT_PARAMETERS:client_id)::VARCHAR
+    actor.user.domain: (OWNER_DOMAIN)::VARCHAR
+    actor.user.email_addr: (ACTOR_EMAIL)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN ACTOR_CALLER_TYPE IS NULL THEN 0 WHEN ACTOR_CALLER_TYPE
+      ILIKE '%USER%' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN ACTOR_CALLER_TYPE IS NULL THEN 0 WHEN ACTOR_CALLER_TYPE
+      ILIKE '%USER%' THEN 1 ELSE 99 END)::NUMBER
+    actor.user.uid: (ACTOR_KEY)::VARCHAR
+    actor.user.uid_alt: (ACTOR_PROFILE_ID)::VARCHAR
+    api.operation: (EVENT_PARAMETERS:method_name)::VARCHAR
+    api.service.name: (coalesce(EVENT_PARAMETERS:app_name, ID_APPLICATION_NAME))::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: NULL::VARCHAR
+    metadata.event_code: (id_application_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('gsuite-activity')::VARCHAR
+    metadata.product.vendor_name: ('gsuite')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR_EMAIL)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: NULL::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', id_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (id_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600300 + (CASE WHEN EVENT_PARAMETERS:method_name IS NULL THEN
+      0 WHEN EVENT_PARAMETERS:method_name ILIKE ''%list%'' THEN 2 WHEN EVENT_PARAMETERS:method_name
+      ILIKE ''%get%'' THEN 2 WHEN EVENT_PARAMETERS:method_name ILIKE ''%update%''
+      THEN 3 WHEN EVENT_PARAMETERS:method_name ILIKE ''%delete%'' THEN 4 WHEN EVENT_PARAMETERS:method_name
+      ILIKE ''%patch%'' THEN 3 WHEN EVENT_PARAMETERS:method_name ILIKE ''%post%''
+      THEN 1 WHEN EVENT_PARAMETERS:method_name ILIKE ''%watch%'' THEN 2 WHEN EVENT_PARAMETERS:method_name
+      ILIKE ''%create%'' THEN 1 ELSE 99 END))::NUMBER) WHEN 600300 THEN ''API Activity:
+      Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity:
+      Read'' WHEN 600303 THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity:
+      Delete'' WHEN 600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (600300 + (CASE WHEN EVENT_PARAMETERS:method_name IS NULL THEN 0 WHEN
+      EVENT_PARAMETERS:method_name ILIKE '%list%' THEN 2 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%get%' THEN 2 WHEN EVENT_PARAMETERS:method_name ILIKE '%update%' THEN
+      3 WHEN EVENT_PARAMETERS:method_name ILIKE '%delete%' THEN 4 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%patch%' THEN 3 WHEN EVENT_PARAMETERS:method_name ILIKE '%post%' THEN
+      1 WHEN EVENT_PARAMETERS:method_name ILIKE '%watch%' THEN 2 WHEN EVENT_PARAMETERS:method_name
+      ILIKE '%create%' THEN 1 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_PARAMETERS:method_name is not null

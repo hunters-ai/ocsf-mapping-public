@@ -1,0 +1,10 @@
+id: 201003_win/resource_activity_1.1.0
+version: '6'
+description: OCSF View For Class - 201003 Win/resource Activity
+source-table-ids:
+- cb_platform_events_201003_win_resource_activity_1.1.0
+- pan_edr_raw_logs_201003_win_resource_activity_1.1.0
+- universal_wel_201003_win_resource_activity_1.1.0
+- microsoft_365_defender_advanced_hunting_201003_win_resource_activity_1.1.0
+- crowdstrike_raw_events_201003_win_resource_activity_1.1.0
+- sentinelone_raw_events_v2_201003_win_resource_activity_1.1.0

@@ -1,0 +1,163 @@
+type: mapping
+id: zeek_logs_4003_dns_activity_1.1.0
+version: '1'
+name: Zeek Logs to OCSF class Dns Activity
+data-types:
+- zeek-logs
+mapping:
+  fields:
+    action: (CASE (CASE WHEN RAW:rejected::VARCHAR = 'true' THEN 2 WHEN RAW:rejected::VARCHAR
+      = 'false' THEN 1 WHEN RAW:rejected::VARCHAR IS NULL THEN 0 ELSE 99 END::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    action_id: (CASE WHEN RAW:rejected::VARCHAR = 'true' THEN 2 WHEN RAW:rejected::VARCHAR
+      = 'false' THEN 1 WHEN RAW:rejected::VARCHAR IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (2)::NUMBER
+    activity_name: (CASE (2::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Query' WHEN
+      2 THEN 'Response' WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    answers: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('flag_ids', CASE WHEN RAW:AA::VARCHAR
+      = 'true' THEN 1 WHEN RAW:RA::VARCHAR = 'true' THEN 4 WHEN RAW:RD::VARCHAR =
+      'true' THEN 3 WHEN RAW:TC::VARCHAR = 'true' THEN 2 ELSE 99 END, 'flags', CASE
+      WHEN RAW:AA::VARCHAR = 'true' THEN 'Authoritative Answer' WHEN RAW:RA::VARCHAR
+      = 'true' THEN 'Recursion Available' WHEN RAW:RD::VARCHAR = 'true' THEN 'Recursion
+      Desired' WHEN RAW:TC::VARCHAR = 'true' THEN 'Truncated Response' ELSE 'Other'
+      END, 'rdata', RAW:answers[0]::VARCHAR, 'ttl', RAW:TTLs[0]::NUMBER, 'type', RAW:qtype_name::VARCHAR,
+      'class', RAW:qclass_name::VARCHAR)))::ARRAY
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('dns_activity')::VARCHAR
+    class_uid: ('4003')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.direction: (CASE (1::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.direction_id: (1)::NUMBER
+    connection_info.protocol_name: (PROTOCOL)::VARCHAR
+    connection_info.protocol_num: (CASE WHEN PROTOCOL = 'tcp' THEN 6 WHEN PROTOCOL
+      = 'udp' THEN 17 ELSE -1 END)::NUMBER
+    connection_info.protocol_ver: (CASE (PARSE_IP(ORIGINATOR_HOST, 'INET', 1):family::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(ORIGINATOR_HOST, 'INET', 1):family)::NUMBER
+    connection_info.uid: (UID)::VARCHAR
+    count: NULL::NUMBER
+    device.hostname: (HOST_NAME)::VARCHAR
+    disposition: (CASE (CASE WHEN RAW:rejected::VARCHAR = 'true' THEN 25 WHEN RAW:rejected::VARCHAR
+      = 'false' THEN 1 WHEN RAW:rejected IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated' WHEN 11 THEN
+      'Corrected' WHEN 12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected' WHEN
+      14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN 17 THEN
+      'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked' WHEN
+      20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN 'Challenge'
+      WHEN 24 THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized'
+      WHEN 27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5
+      THEN 'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN 8 THEN
+      'Approved' WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN RAW:rejected::VARCHAR = 'true' THEN 25 WHEN RAW:rejected::VARCHAR
+      = 'false' THEN 1 WHEN RAW:rejected IS NULL THEN 0 ELSE 99 END)::NUMBER
+    dst_endpoint.ip: (RESPONDER_HOST)::VARCHAR
+    dst_endpoint.port: (RESPONDER_PORT)::NUMBER
+    duration: (DURATION)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (log_type)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zeek-logs')::VARCHAR
+    metadata.product.vendor_name: ('zeek')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST_NAME)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RESPONDER_HOST)::VARCHAR
+    - name: '''query.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:query)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (ORIGINATOR_HOST)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    query.class: (RAW:qclass_name)::VARCHAR
+    query.hostname: (RAW:query)::VARCHAR
+    query.type: (RAW:qtype_name)::VARCHAR
+    query_time: NULL::NUMBER
+    query_time_dt: NULL::TIMESTAMP_LTZ
+    raw_data: NULL::VARCHAR
+    rcode: (CASE (RAW:rcode::NUMBER) WHEN 0 THEN 'NoError' WHEN 1 THEN 'FormError'
+      WHEN 10 THEN 'NotZone' WHEN 11 THEN 'DSOTYPENI' WHEN 16 THEN 'BADSIG_VERS' WHEN
+      17 THEN 'BADKEY' WHEN 18 THEN 'BADTIME' WHEN 19 THEN 'BADMODE' WHEN 2 THEN 'ServError'
+      WHEN 20 THEN 'BADNAME' WHEN 21 THEN 'BADALG' WHEN 22 THEN 'BADTRUNC' WHEN 23
+      THEN 'BADCOOKIE' WHEN 24 THEN 'Unassigned' WHEN 25 THEN 'Reserved' WHEN 3 THEN
+      'NXDomain' WHEN 4 THEN 'NotImp' WHEN 5 THEN 'Refused' WHEN 6 THEN 'YXDomain'
+      WHEN 7 THEN 'YXRRSet' WHEN 8 THEN 'NXRRSet' WHEN 9 THEN 'NotAuth' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    rcode_id: (RAW:rcode)::NUMBER
+    response_time: NULL::NUMBER
+    response_time_dt: NULL::TIMESTAMP_LTZ
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (ORIGINATOR_HOST)::VARCHAR
+    src_endpoint.port: (ORIGINATOR_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN
+      'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes: (ORIGINATOR_BYTES + RESPONDER_BYTES)::NUMBER
+    traffic.bytes_in: (RESPONDER_BYTES)::NUMBER
+    traffic.bytes_out: (ORIGINATOR_BYTES)::NUMBER
+    traffic.packets: (ORIGINATOR_PACKETS + RESPONDER_PACKETS)::NUMBER
+    traffic.packets_in: (RESPONDER_PACKETS)::NUMBER
+    traffic.packets_out: (ORIGINATOR_PACKETS)::NUMBER
+    type_name: '(CASE (400302::NUMBER) WHEN 400300 THEN ''DNS Activity: Unknown''
+      WHEN 400301 THEN ''DNS Activity: Query'' WHEN 400302 THEN ''DNS Activity: Response''
+      WHEN 400306 THEN ''DNS Activity: Traffic'' WHEN 400399 THEN ''DNS Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (400302)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: LOG_TYPE = 'dns.log'

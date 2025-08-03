@@ -1,0 +1,184 @@
+type: mapping
+id: sonicwall_event_logs_4001_network_activity_1.1.0
+version: '11'
+name: Sonicwall Event Logs to OCSF class Network Activity
+data-types:
+- sonicwall-event-logs
+mapping:
+  fields:
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (CASE WHEN MESSAGE IS NULL THEN 0 WHEN MESSAGE = 'Connection Opened'
+      OR MESSAGE ILIKE '%open connections%' THEN 1 WHEN MESSAGE = 'Connection Closed'
+      OR MESSAGE ILIKE '%connection dropped%' THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN MESSAGE IS NULL THEN 0 WHEN MESSAGE = 'Connection
+      Opened' OR MESSAGE ILIKE '%open connections%' THEN 1 WHEN MESSAGE = 'Connection
+      Closed' OR MESSAGE ILIKE '%connection dropped%' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN 2 THEN 'Close' WHEN 3 THEN 'Reset'
+      WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.session.is_vpn: (IFF(USER_SESSION ILIKE '%vpn%', TRUE, FALSE))::BOOLEAN
+    actor.user.email_addr: (IFF(USERNAME ILIKE '%@%', USERNAME, NULL))::VARCHAR
+    actor.user.name: (IFF(USERNAME NOT ILIKE '%@%', USERNAME, NULL))::VARCHAR
+    api.operation: (HTTP_OPERATION)::VARCHAR
+    api.response.code: (HTTP_RESULT_CODE)::NUMBER
+    app_name: (APPLICATION_NAME)::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_num: (CASE WHEN SPLIT_PART(PROTOCOL, '/', 1) ILIKE '%icmp%'
+      THEN 1 WHEN SPLIT_PART(PROTOCOL, '/', 1) = 'igmp' THEN 2 WHEN SPLIT_PART(PROTOCOL,
+      '/', 1) = 'IPv4' THEN 4 WHEN SPLIT_PART(PROTOCOL, '/', 1) = 'tcp' THEN 6 WHEN
+      SPLIT_PART(PROTOCOL, '/', 1) = 'egp' THEN 8 WHEN SPLIT_PART(PROTOCOL, '/', 1)
+      = 'udp' THEN 17 WHEN SPLIT_PART(PROTOCOL, '/', 1) = 'IPv6' THEN 41 WHEN SPLIT_PART(PROTOCOL,
+      '/', 1) = 'esp' THEN 50 WHEN SPLIT_PART(PROTOCOL, '/', 1) RLIKE '^[0-9]+$' AND
+      SPLIT_PART(PROTOCOL, '/', 1) <= 255 THEN SPLIT_PART(PROTOCOL, '/', 1) ELSE NULL
+      END)::NUMBER
+    count: (MESSAGE_COUNT)::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    dst_endpoint.hostname: (HTTP_DESTINATION_NAME)::VARCHAR
+    dst_endpoint.interface_uid: (INTERFACE_ID)::VARCHAR
+    dst_endpoint.intermediate_ips: (IFF(NAT_DESTINATION_IP IS NULL, ARRAY_CONSTRUCT(),
+      ARRAY_CONSTRUCT(NAT_DESTINATION_IP)))::ARRAY
+    dst_endpoint.ip: (DESTINATION_IP)::VARCHAR
+    dst_endpoint.mac: (DESTINATION_MAC)::VARCHAR
+    dst_endpoint.port: (DESTINATION_PORT)::NUMBER
+    dst_endpoint.zone: (DESTINATION_ZONE)::VARCHAR
+    duration: (CONNECTION_DURATION)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule.name: (RULE)::VARCHAR
+    firewall_rule.uid: (FIREWALL_IDENTIFIER)::VARCHAR
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (COALESCE(MESSAGE, NOTE))::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('sonicwall-event-logs')::VARCHAR
+    metadata.product.vendor_name: ('sonicwall')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(USERNAME ILIKE '%@%', USERNAME, NULL))::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(USERNAME NOT ILIKE '%@%', USERNAME, NULL))::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HTTP_DESTINATION_NAME)::VARCHAR
+    - name: '''dst_endpoint.intermediate_ips'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IFF(NAT_DESTINATION_IP IS NULL, ARRAY_CONSTRUCT(), ARRAY_CONSTRUCT(NAT_DESTINATION_IP)))::ARRAY
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DESTINATION_IP)::VARCHAR
+    - name: '''dst_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (DESTINATION_MAC)::VARCHAR
+    - name: '''src_endpoint.intermediate_ips'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IFF(NAT_SOURCE_IP IS NULL, ARRAY_CONSTRUCT(), ARRAY_CONSTRUCT(NAT_SOURCE_IP)))::ARRAY
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    - name: '''src_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (SOURCE_MAC)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN PRIORITY IS NULL THEN 0 WHEN PRIORITY IN (7,6) THEN
+      1 WHEN PRIORITY = 5 THEN 2 WHEN PRIORITY = 4 THEN 3 WHEN PRIORITY = 3 THEN 4
+      WHEN PRIORITY = 2 THEN 5 WHEN PRIORITY IN (0,1) THEN 6 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN
+      'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN PRIORITY IS NULL THEN 0 WHEN PRIORITY IN (7,6) THEN 1
+      WHEN PRIORITY = 5 THEN 2 WHEN PRIORITY = 4 THEN 3 WHEN PRIORITY = 3 THEN 4 WHEN
+      PRIORITY = 2 THEN 5 WHEN PRIORITY IN (0,1) THEN 6 ELSE 99 END)::NUMBER
+    src_endpoint.intermediate_ips: (IFF(NAT_SOURCE_IP IS NULL, ARRAY_CONSTRUCT(),
+      ARRAY_CONSTRUCT(NAT_SOURCE_IP)))::ARRAY
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.mac: (SOURCE_MAC)::VARCHAR
+    src_endpoint.port: (SOURCE_PORT)::NUMBER
+    src_endpoint.zone: (SOURCE_ZONE)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes: (BYTES_RECEIVED_CONNECTION + BYTES_SENT_CONNECTION)::NUMBER
+    traffic.bytes_in: (BYTES_RECEIVED_CONNECTION)::NUMBER
+    traffic.bytes_out: (BYTES_SENT_CONNECTION)::NUMBER
+    traffic.packets: (PACKETS_RECEIVED + PACKETS_SENT)::NUMBER
+    traffic.packets_in: (PACKETS_RECEIVED)::NUMBER
+    traffic.packets_out: (PACKETS_SENT)::NUMBER
+    type_name: '(CASE ((CASE WHEN MESSAGE IS NULL THEN 400100 WHEN MESSAGE = ''Connection
+      Opened'' OR MESSAGE ILIKE ''%open connections%'' THEN 400101 WHEN MESSAGE =
+      ''Connection Closed'' OR MESSAGE ILIKE ''%connection dropped%'' THEN 400102
+      ELSE 400199 END)::NUMBER) WHEN 400100 THEN ''Network Activity: Unknown'' WHEN
+      400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network Activity:
+      Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN ''Network
+      Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN 400106 THEN
+      ''Network Activity: Traffic'' WHEN 400199 THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN MESSAGE IS NULL THEN 400100 WHEN MESSAGE = 'Connection Opened'
+      OR MESSAGE ILIKE '%open connections%' THEN 400101 WHEN MESSAGE = 'Connection
+      Closed' OR MESSAGE ILIKE '%connection dropped%' THEN 400102 ELSE 400199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT

@@ -1,0 +1,94 @@
+type: mapping
+id: surf_applications_logs_6001_web_resources_activity_1.1.0
+version: '1'
+name: Surf Applications Logs to OCSF class Web Resources Activity
+data-types:
+- surf-applications-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (2)::NUMBER
+    activity_name: (CASE ((2)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Search'
+      WHEN 6 THEN 'Import' WHEN 7 THEN 'Export' WHEN 8 THEN 'Share' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.user.email_addr: (CLIENT_LOGIN)::VARCHAR
+    actor.user.full_name: (CLIENT_FIRST_NAME || ' ' || CLIENT_LAST_NAME)::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(object_construct('uid', GROUP_ID)))::ARRAY
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: NULL::VARCHAR
+    category_uid: NULL::NUMBER
+    class_name: ('web_resources_activity')::VARCHAR
+    class_uid: ('6001')::NUMBER
+    cloud.org.uid: (COMPANY_ID)::VARCHAR
+    count: (VISIT_COUNT)::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    http_request: NULL::VARIANT
+    http_response: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('surf-applications-logs')::VARCHAR
+    metadata.product.vendor_name: ('surf')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (CLIENT_LOGIN)::VARCHAR
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    src_endpoint: NULL::VARIANT
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', created_at::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (created_at)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    type_name: '(CASE ((600102)::NUMBER) WHEN 600100 THEN ''Web Resources Activity:
+      Unknown'' WHEN 600101 THEN ''Web Resources Activity: Create'' WHEN 600102 THEN
+      ''Web Resources Activity: Read'' WHEN 600103 THEN ''Web Resources Activity:
+      Update'' WHEN 600104 THEN ''Web Resources Activity: Delete'' WHEN 600105 THEN
+      ''Web Resources Activity: Search'' WHEN 600106 THEN ''Web Resources Activity:
+      Import'' WHEN 600107 THEN ''Web Resources Activity: Export'' WHEN 600108 THEN
+      ''Web Resources Activity: Share'' WHEN 600199 THEN ''Web Resources Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (600102)::NUMBER
+    unmapped: NULL::VARIANT
+    web_resources: (ARRAY_CONSTRUCT(object_construct('url_string', 'https://' || DOMAIN)))::ARRAY
+    web_resources_result: NULL::ARRAY

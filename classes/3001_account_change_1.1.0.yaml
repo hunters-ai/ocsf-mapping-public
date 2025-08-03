@@ -1,0 +1,20 @@
+id: 3001_account_change_1.1.0
+version: '16'
+description: OCSF View For Class - 3001 Account Change
+source-table-ids:
+- jumpcloud_directory_insights_3001_account_change_1.1.0
+- lastpass_user_activity_reports_3001_account_change_1.1.0
+- duo_administrator_logs_3001_account_change_1.1.0
+- o365_audit_logs_3001_account_change_1.1.0
+- okta_logs_3001_account_change_1.1.0
+- onepassword_audit_events_3001_account_change_1.1.0
+- sailpoint_identitynow_audit_reports_events_3001_account_change_1.1.0
+- teleport_audit_events_3001_account_change_1.1.0
+- cyberark_privileged_access_security_3001_account_change_1.1.0
+- jira_audit_logs_3001_account_change_1.1.0
+- thycotic_secret_server_3001_account_change_1.1.0
+- onelogin_events_3001_account_change_1.1.0
+- confluence_audit_logs_3001_account_change_1.1.0
+- azure_audit_3001_account_change_1.1.0
+- universal_wel_3001_account_change_1.1.0
+- surf_audit_logs_3001_account_change_1.1.0

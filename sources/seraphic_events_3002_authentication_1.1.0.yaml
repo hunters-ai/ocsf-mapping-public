@@ -1,0 +1,145 @@
+type: mapping
+id: seraphic_events_3002_authentication_1.1.0
+version: '10'
+name: Seraphic Events to OCSF class Authentication
+data-types:
+- seraphic-events
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    dst_endpoint.ip: (IP)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.url.hostname: (PAYLOAD_JSON_URL_HOST)::VARCHAR
+    http_request.url.path: (PAYLOAD_JSON_URL_PATH)::VARCHAR
+    http_request.url.port: (PAYLOAD_JSON_URL_PORT)::NUMBER
+    http_request.url.query_string: (PAYLOAD_JSON_URL_HASH)::VARCHAR
+    http_request.url.scheme: (PAYLOAD_JSON_URL_PROTOCOL)::VARCHAR
+    http_request.url.url_string: (URL)::VARCHAR
+    http_request.user_agent: (PAYLOAD_IMPLANT_DATA_USER_AGENT)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: (CASE WHEN IS_INTERNAL_HOST = TRUE THEN FALSE ELSE TRUE END)::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (PAYLOAD_JSON_TAB_DETAILS_TITLE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('seraphic-events')::VARCHAR
+    metadata.product.vendor_name: ('seraphic')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PAYLOAD_JSON_URL_HOST)::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (URL)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (COALESCE(HOSTNAME::VARCHAR, COMPUTER_NAME::VARCHAR))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(PAYLOAD_JSON_HOST_IP, PAYLOAD_JSON_SOURCE_IPS[0]))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.name: (SPLIT_PART(APPLICATION, '|', 1))::VARCHAR
+    session.uid: (SID)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.hostname: (COALESCE(HOSTNAME::VARCHAR, COMPUTER_NAME::VARCHAR))::VARCHAR
+    src_endpoint.hw_info.cpu_bits: (PARSE_JSON(PAYLOAD_IMPLANT_DATA):architecture)::NUMBER
+    src_endpoint.hw_info.cpu_count: (PARSE_JSON(PAYLOAD_IMPLANT_DATA):cpu_count)::NUMBER
+    src_endpoint.hw_info.ram_size: ((REPLACE(PARSE_JSON(PAYLOAD_IMPLANT_DATA):ram,
+      ' GB', '')::FLOAT)*1024)::NUMBER
+    src_endpoint.ip: (COALESCE(PAYLOAD_JSON_HOST_IP, PAYLOAD_JSON_SOURCE_IPS[0]))::VARCHAR
+    src_endpoint.os.name: (OS_NAME)::VARCHAR
+    src_endpoint.os.type: (CASE ((CASE WHEN PLATFORM IS NULL THEN 0 WHEN PLATFORM
+      = 'windows' THEN 100 WHEN PLATFORM = 'macOS' THEN 300 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile'
+      WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301
+      THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX'
+      WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    src_endpoint.os.type_id: (CASE WHEN PLATFORM IS NULL THEN 0 WHEN PLATFORM = 'windows'
+      THEN 100 WHEN PLATFORM = 'macOS' THEN 300 ELSE 99 END)::NUMBER
+    src_endpoint.os.version: (OS_VERSION)::VARCHAR
+    src_endpoint.type: (CASE ((CASE WHEN PARSE_JSON(RAW):payload:implant_data:browser_name
+      IS NOT NULL THEN 8 ELSE 0 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server'
+      WHEN 10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    src_endpoint.type_id: (CASE WHEN PARSE_JSON(RAW):payload:implant_data:browser_name
+      IS NOT NULL THEN 8 ELSE 0 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (PAYLOAD_JSON_TAB_DETAILS_STATUS)::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', client_ts::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (client_ts)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.uid: (PAYLOAD_IMPLANT_DATA_USER_SID)::VARCHAR
+    user.name: (USERNAME)::VARCHAR
+  predicate: PAYLOAD_JSON_EVENT_NAME = 'login'

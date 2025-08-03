@@ -1,0 +1,203 @@
+type: mapping
+id: okta_logs_3001_account_change_1.1.0
+version: '9'
+name: Okta Logs to OCSF class Account Change
+data-types:
+- okta-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE ILIKE '%create%' THEN 1 WHEN EVENT_TYPE ILIKE
+      '%enable%' THEN 2 WHEN EVENT_TYPE ILIKE '%change_password%' THEN 3 WHEN EVENT_TYPE
+      ILIKE ANY ('%password%reset%', '%reset%password%') THEN 4 WHEN EVENT_TYPE ILIKE
+      '%disable%' THEN 5 WHEN EVENT_TYPE ILIKE ANY ('%delete%', '%remove%') THEN 6
+      WHEN EVENT_TYPE ILIKE '%user.account.lock%' THEN 9 WHEN EVENT_TYPE ILIKE '%mfa.factor.activate%'
+      THEN 10 WHEN EVENT_TYPE ILIKE '%mfa.factor.deactivate%' THEN 11 WHEN EVENT_TYPE
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE ILIKE '%create%' THEN 1 WHEN EVENT_TYPE
+      ILIKE '%enable%' THEN 2 WHEN EVENT_TYPE ILIKE '%change_password%' THEN 3 WHEN
+      EVENT_TYPE ILIKE ANY ('%password%reset%', '%reset%password%') THEN 4 WHEN EVENT_TYPE
+      ILIKE '%disable%' THEN 5 WHEN EVENT_TYPE ILIKE ANY ('%delete%', '%remove%')
+      THEN 6 WHEN EVENT_TYPE ILIKE '%user.account.lock%' THEN 9 WHEN EVENT_TYPE ILIKE
+      '%mfa.factor.activate%' THEN 10 WHEN EVENT_TYPE ILIKE '%mfa.factor.deactivate%'
+      THEN 11 WHEN EVENT_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Create' WHEN 10 THEN 'MFA Factor Enable' WHEN 11 THEN 'MFA Factor
+      Disable' WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password Change' WHEN 4 THEN 'Password
+      Reset' WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete' WHEN 7 THEN 'Attach Policy'
+      WHEN 8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (ACTOR_ALTERNATE_ID)::VARCHAR
+    actor.user.name: (ACTOR_DISPLAY_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN ACTOR_TYPE='User' THEN 1 WHEN ACTOR_TYPE='Admin'
+      THEN 2 WHEN ACTOR_TYPE ILIKE '%System%' THEN 3 WHEN ACTOR_TYPE IS NULL THEN
+      0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN
+      'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN ACTOR_TYPE='User' THEN 1 WHEN ACTOR_TYPE='Admin'
+      THEN 2 WHEN ACTOR_TYPE ILIKE '%System%' THEN 3 WHEN ACTOR_TYPE IS NULL THEN
+      0 ELSE 99 END)::NUMBER
+    actor.user.uid: (ACTOR_ID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.os.name: (CLIENT_USER_AGENT_OS)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN CLIENT_USER_AGENT_OS ILIKE 'Windows%' AND CLIENT_USER_AGENT_OS
+      NOT ILIKE 'Windows Mobile' THEN 100 WHEN CLIENT_USER_AGENT_OS='Windows Mobile'
+      THEN 101 WHEN CLIENT_USER_AGENT_OS='Linux' THEN 200 WHEN CLIENT_USER_AGENT_OS
+      ILIKE 'Android%' THEN 201 WHEN CLIENT_USER_AGENT_OS ILIKE 'Mac OS%' AND CLIENT_USER_AGENT_OS
+      NOT ILIKE '%iPad%' THEN 300 WHEN CLIENT_USER_AGENT_OS='iOS' THEN 301 WHEN CLIENT_USER_AGENT_OS
+      ILIKE '%iPad%' THEN 302 WHEN CLIENT_USER_AGENT_OS IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile'
+      WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301
+      THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX'
+      WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN CLIENT_USER_AGENT_OS ILIKE 'Windows%' AND CLIENT_USER_AGENT_OS
+      NOT ILIKE 'Windows Mobile' THEN 100 WHEN CLIENT_USER_AGENT_OS='Windows Mobile'
+      THEN 101 WHEN CLIENT_USER_AGENT_OS='Linux' THEN 200 WHEN CLIENT_USER_AGENT_OS
+      ILIKE 'Android%' THEN 201 WHEN CLIENT_USER_AGENT_OS ILIKE 'Mac OS%' AND CLIENT_USER_AGENT_OS
+      NOT ILIKE '%iPad%' THEN 300 WHEN CLIENT_USER_AGENT_OS='iOS' THEN 301 WHEN CLIENT_USER_AGENT_OS
+      ILIKE '%iPad%' THEN 302 WHEN CLIENT_USER_AGENT_OS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    device.type: (CASE ((CASE WHEN CLIENT_DEVICE='Computer' THEN 2 WHEN CLIENT_DEVICE='Tablet'
+      THEN 4 WHEN CLIENT_DEVICE='Mobile' THEN 5 WHEN CLIENT_DEVICE IS NULL THEN 0
+      ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN 10 THEN
+      'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop' WHEN
+      4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN 'IOT'
+      WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (CASE WHEN CLIENT_DEVICE='Computer' THEN 2 WHEN CLIENT_DEVICE='Tablet'
+      THEN 4 WHEN CLIENT_DEVICE='Mobile' THEN 5 WHEN CLIENT_DEVICE IS NULL THEN 0
+      ELSE 99 END)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.uid: (DEBUG_CONTEXT:debugData:requestId)::VARCHAR
+    http_request.url.path: (DEBUG_CONTEXT:debugData:requestUri)::VARCHAR
+    http_request.url.url_string: (DEBUG_CONTEXT:debugData:url)::VARCHAR
+    http_request.user_agent: (CLIENT_USER_AGENT_RAW_USER_AGENT)::VARCHAR
+    message: (DISPLAY_MESSAGE)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('okta-logs')::VARCHAR
+    metadata.product.vendor_name: ('okta')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR_ALTERNATE_ID)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACTOR_DISPLAY_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (DEBUG_CONTEXT:debugData:url)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP_ADDRESS)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(TARGET_USER_ALTERNATE_ID, TARGET_APP_USER_ALTERNATE_ID))::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(TARGET_USER_DISPLAY_NAME, TARGET_APP_USER_DISPLAY_NAME))::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN SEVERITY='INFO' THEN 1 WHEN SEVERITY='DEBUG' THEN
+      2 WHEN SEVERITY='WARN' THEN 3 WHEN SEVERITY='ERROR' THEN 4 WHEN SEVERITY IS
+      NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY='INFO' THEN 1 WHEN SEVERITY='DEBUG' THEN 2 WHEN
+      SEVERITY='WARN' THEN 3 WHEN SEVERITY='ERROR' THEN 4 WHEN SEVERITY IS NULL THEN
+      0 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (CLIENT_IP_ADDRESS)::VARCHAR
+    src_endpoint.location.city: (CLIENT_GEOGRAPHICAL_CONTEXT_CITY)::VARCHAR
+    src_endpoint.location.coordinates: (ARRAY_CONSTRUCT(CLIENT_GEOGRAPHICAL_CONTEXT_GEOLOCATION:lon,
+      CLIENT_GEOGRAPHICAL_CONTEXT_GEOLOCATION:lat))::ARRAY
+    src_endpoint.location.country: (CLIENT_GEOGRAPHICAL_CONTEXT_COUNTRY)::VARCHAR
+    src_endpoint.location.isp: (SECURITY_CONTEXT:isp)::VARCHAR
+    src_endpoint.location.postal_code: (CLIENT_GEOGRAPHICAL_CONTEXT_POSTAL_CODE)::VARCHAR
+    src_endpoint.uid: (CLIENT_ID)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN OUTCOME_RESULT='SUCCESS' THEN 1 WHEN OUTCOME_RESULT='FAILURE'
+      THEN 2 WHEN OUTCOME_RESULT IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (OUTCOME_RESULT)::VARCHAR
+    status_id: (CASE WHEN OUTCOME_RESULT='SUCCESS' THEN 1 WHEN OUTCOME_RESULT='FAILURE'
+      THEN 2 WHEN OUTCOME_RESULT IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', published::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (published)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE ILIKE ''%create%'' THEN 300101 WHEN EVENT_TYPE
+      ILIKE ''%enable%'' THEN 300102 WHEN EVENT_TYPE ILIKE ''%change_password%'' THEN
+      300103 WHEN EVENT_TYPE ILIKE ANY (''%password%reset%'', ''%reset%password%'')
+      THEN 300104 WHEN EVENT_TYPE ILIKE ''%disable%'' THEN 300105 WHEN EVENT_TYPE
+      ILIKE ANY (''%delete%'', ''%remove%'') THEN 300106 WHEN EVENT_TYPE ILIKE ''%user.account.lock%''
+      THEN 300109 WHEN EVENT_TYPE ILIKE ''%mfa.factor.activate%'' THEN 300110 WHEN
+      EVENT_TYPE ILIKE ''%mfa.factor.deactivate%'' THEN 300111 WHEN EVENT_TYPE IS
+      NULL THEN 300100 ELSE 300199 END)::NUMBER) WHEN 300100 THEN ''Account Change:
+      Unknown'' WHEN 300101 THEN ''Account Change: Create'' WHEN 300102 THEN ''Account
+      Change: Enable'' WHEN 300103 THEN ''Account Change: Password Change'' WHEN 300104
+      THEN ''Account Change: Password Reset'' WHEN 300105 THEN ''Account Change: Disable''
+      WHEN 300106 THEN ''Account Change: Delete'' WHEN 300107 THEN ''Account Change:
+      Attach Policy'' WHEN 300108 THEN ''Account Change: Detach Policy'' WHEN 300109
+      THEN ''Account Change: Lock'' WHEN 300110 THEN ''Account Change: MFA Factor
+      Enable'' WHEN 300111 THEN ''Account Change: MFA Factor Disable'' WHEN 300199
+      THEN ''Account Change: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE ILIKE '%create%' THEN 300101 WHEN EVENT_TYPE ILIKE
+      '%enable%' THEN 300102 WHEN EVENT_TYPE ILIKE '%change_password%' THEN 300103
+      WHEN EVENT_TYPE ILIKE ANY ('%password%reset%', '%reset%password%') THEN 300104
+      WHEN EVENT_TYPE ILIKE '%disable%' THEN 300105 WHEN EVENT_TYPE ILIKE ANY ('%delete%',
+      '%remove%') THEN 300106 WHEN EVENT_TYPE ILIKE '%user.account.lock%' THEN 300109
+      WHEN EVENT_TYPE ILIKE '%mfa.factor.activate%' THEN 300110 WHEN EVENT_TYPE ILIKE
+      '%mfa.factor.deactivate%' THEN 300111 WHEN EVENT_TYPE IS NULL THEN 300100 ELSE
+      300199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (COALESCE(TARGET_USER_ALTERNATE_ID, TARGET_APP_USER_ALTERNATE_ID))::VARCHAR
+    user.name: (COALESCE(TARGET_USER_DISPLAY_NAME, TARGET_APP_USER_DISPLAY_NAME))::VARCHAR
+    user.uid: (COALESCE(TARGET_USER_ID, TARGET_APP_USER_ID))::VARCHAR
+    user_result: NULL::VARIANT
+  predicate: EVENT_TYPE ILIKE ANY ('%user.lifecycle%', '%user.mfa.factor%', '%user.account.%',
+    'system.agent.ad.unlock_user_account', '%device.user.%', '%directory.app_user_profile.%',
+    '%app.realtimesync.import.details.%')

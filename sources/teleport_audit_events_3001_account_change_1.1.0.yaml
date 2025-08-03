@@ -1,0 +1,116 @@
+type: mapping
+id: teleport_audit_events_3001_account_change_1.1.0
+version: '9'
+name: Teleport Audit Events to OCSF class Account Change
+data-types:
+- teleport-audit-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT ILIKE ANY ('%user%create%', '%role%create%') THEN
+      1 WHEN EVENT ILIKE ANY ('%user%deleted%', '%role%deleted%') THEN 6 WHEN EVENT
+      ILIKE '%lock%created%' THEN 9 WHEN EVENT ILIKE ANY ('%mfa%add%', '%mfa%create%')
+      THEN 10 WHEN EVENT IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT ILIKE ANY ('%user%create%', '%role%create%')
+      THEN 1 WHEN EVENT ILIKE ANY ('%user%deleted%', '%role%deleted%') THEN 6 WHEN
+      EVENT ILIKE '%lock%created%' THEN 9 WHEN EVENT ILIKE ANY ('%mfa%add%', '%mfa%create%')
+      THEN 10 WHEN EVENT IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Create' WHEN 10 THEN 'MFA Factor Enable' WHEN 11 THEN 'MFA Factor
+      Disable' WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password Change' WHEN 4 THEN 'Password
+      Reset' WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete' WHEN 7 THEN 'Attach Policy'
+      WHEN 8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (REGEXP_SUBSTR(ADDR_REMOTE, '\d+.\d+.\d+.\d+'))::VARCHAR
+    device.name: (MFA_DEVICE:mfa_device_name)::VARCHAR
+    device.uid: (MFA_DEVICE:mfa_device_uuid)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('teleport-audit-events')::VARCHAR
+    metadata.product.vendor_name: ('Teleport')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(ADDR_REMOTE, '\d+.\d+.\d+.\d+'))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(IFF(NAME ILIKE '%@%', NAME, NULL), IFF(RAW:user ILIKE '%@%',
+        RAW:user, NULL)))::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(NAME NOT ILIKE '%@%', NAME, NULL))::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint: NULL::VARIANT
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', header_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (header_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT ILIKE ANY (''%user%create%'', ''%role%create%'')
+      THEN 300101 WHEN EVENT ILIKE ANY (''%user%deleted%'', ''%role%deleted%'') THEN
+      300106 WHEN EVENT ILIKE ''%lock%created%'' THEN 300109 WHEN EVENT ILIKE ANY
+      (''%mfa%add%'', ''%mfa%create%'') THEN 300110 WHEN EVENT IS NULL THEN 300100
+      ELSE 300199 END)::NUMBER) WHEN 300100 THEN ''Account Change: Unknown'' WHEN
+      300101 THEN ''Account Change: Create'' WHEN 300102 THEN ''Account Change: Enable''
+      WHEN 300103 THEN ''Account Change: Password Change'' WHEN 300104 THEN ''Account
+      Change: Password Reset'' WHEN 300105 THEN ''Account Change: Disable'' WHEN 300106
+      THEN ''Account Change: Delete'' WHEN 300107 THEN ''Account Change: Attach Policy''
+      WHEN 300108 THEN ''Account Change: Detach Policy'' WHEN 300109 THEN ''Account
+      Change: Lock'' WHEN 300110 THEN ''Account Change: MFA Factor Enable'' WHEN 300111
+      THEN ''Account Change: MFA Factor Disable'' WHEN 300199 THEN ''Account Change:
+      Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT ILIKE ANY ('%user%create%', '%role%create%') THEN 300101
+      WHEN EVENT ILIKE ANY ('%user%deleted%', '%role%deleted%') THEN 300106 WHEN EVENT
+      ILIKE '%lock%created%' THEN 300109 WHEN EVENT ILIKE ANY ('%mfa%add%', '%mfa%create%')
+      THEN 300110 WHEN EVENT IS NULL THEN 300100 ELSE 300199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (COALESCE(IFF(NAME ILIKE '%@%', NAME, NULL), IFF(RAW:user ILIKE
+      '%@%', RAW:user, NULL)))::VARCHAR
+    user.name: (IFF(NAME NOT ILIKE '%@%', NAME, NULL))::VARCHAR
+    user.uid: (IFF(RAW:user NOT ILIKE '%@%', RAW:user, NULL))::VARCHAR
+    user_result: NULL::VARIANT
+  predicate: EVENT ILIKE ANY ('user.create', 'user.update', 'user.deleted', '%role%',
+    '%lock%', '%mfa%')

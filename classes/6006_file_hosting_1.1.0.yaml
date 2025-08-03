@@ -1,0 +1,13 @@
+id: 6006_file_hosting_1.1.0
+version: '10'
+description: OCSF View For Class - 6006 File Hosting
+source-table-ids:
+- moveit_logs_6006_file_hosting_1.1.0
+- netskope_application_events_6006_file_hosting_1.1.0
+- slack_audit_logs_6006_file_hosting_1.1.0
+- prisma_saas_log_events_6006_file_hosting_1.1.0
+- o365_audit_logs_6006_file_hosting_1.1.0
+- box_events_6006_file_hosting_1.1.0
+- gsuite_activity_6006_file_hosting_1.1.0
+- code42_file_events_6006_file_hosting_1.1.0
+- netskope_v2_application_events_6006_file_hosting_1.1.0

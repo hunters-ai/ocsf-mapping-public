@@ -1,0 +1,132 @@
+type: mapping
+id: kaspersky_security_cloud_logs_1006_scheduled_job_activity_1.1.0
+version: '1'
+name: Kaspersky Security Cloud Logs to OCSF class Scheduled Job Activity
+data-types:
+- kaspersky-security-cloud-logs
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE = 'TaskStateChanged'
+      THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE = 'TaskStateChanged'
+      THEN 2 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN
+      2 THEN 'Update' WHEN 3 THEN 'Delete' WHEN 4 THEN 'Enable' WHEN 5 THEN 'Disable'
+      WHEN 6 THEN 'Start' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (1::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('scheduled_job_activity')::VARCHAR
+    class_uid: ('1006')::NUMBER
+    cloud.provider: ('Kaspersky')::VARCHAR
+    count: NULL::NUMBER
+    device.domain: (KSC_FQDN)::VARCHAR
+    device.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('name', GROUP_NAME)))::ARRAY
+    device.hostname: (HOST_NAME)::VARCHAR
+    device.ip: (HOST_IP)::VARCHAR
+    device.type: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN
+      10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (0)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    job.desc: (COALESCE(EVENT_TASK_DISPLAY_NAME, TASK_TYPE))::VARCHAR
+    job.file.type: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File'
+      WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device'
+      WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    job.file.type_id: (0)::NUMBER
+    job.name: (TASK_DISPLAY_NAME)::VARCHAR
+    job.run_state: (CASE (CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE = 'Starting'
+      THEN 2 WHEN TASK_STATE = 'Started' THEN 3 WHEN TASK_STATE = 'Stopping' THEN
+      3 WHEN TASK_STATE = 'Stopped' THEN 4 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Ready' WHEN 2 THEN 'Queued' WHEN 3 THEN 'Running' WHEN 4 THEN 'Stopped'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    job.run_state_id: (CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE = 'Starting'
+      THEN 2 WHEN TASK_STATE = 'Started' THEN 3 WHEN TASK_STATE = 'Stopping' THEN
+      3 WHEN TASK_STATE = 'Stopped' THEN 4 ELSE 99 END)::NUMBER
+    job.user.name: (INITIATOR)::VARCHAR
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('kaspersky-security-cloud-logs')::VARCHAR
+    metadata.product.vendor_name: ('kaspersky')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST_NAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (HOST_IP)::VARCHAR
+    - name: '''job.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''job.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''job.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (INITIATOR)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN EVENT_TASK_DISPLAY_NAME IS NULL THEN 0 WHEN EVENT_TASK_DISPLAY_NAME
+      ILIKE '%fail%' THEN 2 WHEN EVENT_TASK_DISPLAY_NAME ILIKE '%Success%' THEN 1
+      ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN
+      'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN EVENT_TASK_DISPLAY_NAME IS NULL THEN 0 WHEN EVENT_TASK_DISPLAY_NAME
+      ILIKE '%fail%' THEN 2 WHEN EVENT_TASK_DISPLAY_NAME ILIKE '%Success%' THEN 1
+      ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100600 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE
+      = ''TaskStateChanged'' THEN 2 ELSE 99 END))::NUMBER) WHEN 100600 THEN ''Scheduled
+      Job Activity: Unknown'' WHEN 100601 THEN ''Scheduled Job Activity: Create''
+      WHEN 100602 THEN ''Scheduled Job Activity: Update'' WHEN 100603 THEN ''Scheduled
+      Job Activity: Delete'' WHEN 100604 THEN ''Scheduled Job Activity: Enable'' WHEN
+      100605 THEN ''Scheduled Job Activity: Disable'' WHEN 100606 THEN ''Scheduled
+      Job Activity: Start'' WHEN 100699 THEN ''Scheduled Job Activity: Other'' END)::VARCHAR'
+    type_uid: (100600 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE = 'TaskStateChanged'
+      THEN 2 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TYPE ILIKE '%Task%'

@@ -1,0 +1,179 @@
+type: mapping
+id: zscaler_custom_transformer_logs_4001_network_activity_1.1.0
+version: '1'
+name: Zscaler Custom Transformer Logs to OCSF class Network Activity
+data-types:
+- zscaler-custom-transformer-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ZSCALER_ACTION = 'Allowed' THEN 1 WHEN ZSCALER_ACTION
+      = 'Blocked' THEN 2 WHEN ZSCALER_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    action_id: (CASE WHEN ZSCALER_ACTION = 'Allowed' THEN 1 WHEN ZSCALER_ACTION =
+      'Blocked' THEN 2 WHEN ZSCALER_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (6)::NUMBER
+    activity_name: (CASE ((6)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN
+      2 THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN
+      6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (SRC_USER)::VARCHAR
+    api: NULL::VARIANT
+    app_name: (APP_NAME)::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((CASE WHEN ZSCALER_ACTION = 'Allowed' THEN 1 WHEN ZSCALER_ACTION
+      = 'Blocked' THEN 2 WHEN ZSCALER_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated' WHEN 11
+      THEN 'Corrected' WHEN 12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected'
+      WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN
+      17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked'
+      WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN
+      'Challenge' WHEN 24 THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN
+      'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated'
+      WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN
+      8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN ZSCALER_ACTION = 'Allowed' THEN 1 WHEN ZSCALER_ACTION
+      = 'Blocked' THEN 2 WHEN ZSCALER_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    dst_endpoint.hostname: (DST_HOST)::VARCHAR
+    dst_endpoint.ip: (DST_IP)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zscaler-custom-transformer-logs')::VARCHAR
+    metadata.product.vendor_name: ('zscaler')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SRC_USER)::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (DST_HOST)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DST_IP)::VARCHAR
+    - name: '''proxy_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SRC_NAT_IP)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (SRC_HOSTNAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SRC_IP)::VARCHAR
+    - name: '''url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (parse_url(http_request,1):host)::VARCHAR
+    - name: '''url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (HTTP_REQUEST)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint.ip: (SRC_NAT_IP)::VARCHAR
+    proxy_http_request.http_method: (HTTP_METHOD)::VARCHAR
+    proxy_http_request.length: (HTTP_SIZE)::NUMBER
+    proxy_http_request.referrer: (HTTP_REFERRER)::VARCHAR
+    proxy_http_request.user_agent: (HTTP_UA)::VARCHAR
+    proxy_http_request.version: (HTTP_VERSION)::VARCHAR
+    proxy_http_response.code: (HTTP_CODE)::NUMBER
+    proxy_http_response.content_type: (HTTP_CONTENT_TYPE)::VARCHAR
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN severity = 1 THEN 1 WHEN severity = 2 THEN 2 WHEN
+      severity = 3 THEN 3 WHEN severity = 4 THEN 4 WHEN severity = 5 THEN 5 WHEN severity
+      = 6 THEN 6 WHEN severity IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN
+      'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN severity = 1 THEN 1 WHEN severity = 2 THEN 2 WHEN severity
+      = 3 THEN 3 WHEN severity = 4 THEN 4 WHEN severity = 5 THEN 5 WHEN severity =
+      6 THEN 6 WHEN severity IS NULL THEN 0 ELSE 99 END)::NUMBER
+    src_endpoint.hostname: (SRC_HOSTNAME)::VARCHAR
+    src_endpoint.ip: (SRC_IP)::VARCHAR
+    src_endpoint.os.type: (CASE ((CASE WHEN SRC_DEVICE_TYPE = 'Windows OS' THEN 100
+      WHEN SRC_DEVICE_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux'
+      WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN
+      'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    src_endpoint.os.type_id: (CASE WHEN SRC_DEVICE_TYPE = 'Windows OS' THEN 100 WHEN
+      SRC_DEVICE_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    src_endpoint.port: (SRC_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls.version: (SSL_VERSION)::VARCHAR
+    traffic.bytes: (bytes_in+bytes_out)::NUMBER
+    traffic.bytes_in: (BYTES_IN)::NUMBER
+    traffic.bytes_out: (BYTES_OUT)::NUMBER
+    type_name: '(CASE ((400106)::NUMBER) WHEN 400100 THEN ''Network Activity: Unknown''
+      WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network Activity:
+      Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN ''Network
+      Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN 400106 THEN
+      ''Network Activity: Traffic'' WHEN 400199 THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (400106)::NUMBER
+    unmapped: NULL::VARIANT
+    url.category_ids: (array_construct(CASE WHEN URL_CAT IN ('Corporate Marketing',
+      'Professional Services', 'Other Business and Economy') THEN 21 WHEN URL_CAT
+      = 'Classifieds' THEN 63 WHEN URL_CAT IN ('Internet Services', 'Other Information
+      Technology') THEN 38 WHEN URL_CAT = 'Online Shopping' THEN 58 WHEN URL_CAT =
+      'News and Media' THEN 46 WHEN URL_CAT = 'Web Search' THEN 40 WHEN URL_CAT =
+      'Advertising' THEN 88 WHEN URL_CAT = 'FileHost' THEN 56 WHEN URL_CAT IS NULL
+      THEN 0 ELSE 99 END))::ARRAY
+    url.hostname: (parse_url(http_request,1):host)::VARCHAR
+    url.path: (IFF(REGEXP_LIKE(parse_url(http_request,1):path, '^[0-9]+$'),null,parse_url(http_request,1):path))::VARCHAR
+    url.query_string: (parse_url(http_request,1):query)::VARCHAR
+    url.scheme: (SRC_PROTO)::VARCHAR
+    url.url_string: (HTTP_REQUEST)::VARCHAR

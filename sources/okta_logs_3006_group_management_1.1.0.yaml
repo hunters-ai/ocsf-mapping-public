@@ -1,0 +1,196 @@
+type: mapping
+id: okta_logs_3006_group_management_1.1.0
+version: '9'
+name: Okta Logs to OCSF class Group Management
+data-types:
+- okta-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE = 'group.privilege.grant'
+      THEN 1 WHEN EVENT_TYPE = 'group.privilege.revoke' THEN 2 WHEN EVENT_TYPE = 'group.user_membership.add'
+      THEN 3 WHEN EVENT_TYPE = 'group.user_membership.remove' THEN 4 WHEN EVENT_TYPE
+      = 'system.import.group.delete' OR EVENT_TYPE ILIKE '%lifecycle.delete%' OR EVENT_TYPE
+      ILIKE '%user_group_import.delete_success%' OR EVENT_TYPE ILIKE '%delete_appgroup%'
+      THEN 5 WHEN EVENT_TYPE ILIKE '%group.create' OR EVENT_TYPE ILIKE '%lifecycle.create'
+      THEN 6 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE = 'group.privilege.grant'
+      THEN 1 WHEN EVENT_TYPE = 'group.privilege.revoke' THEN 2 WHEN EVENT_TYPE = 'group.user_membership.add'
+      THEN 3 WHEN EVENT_TYPE = 'group.user_membership.remove' THEN 4 WHEN EVENT_TYPE
+      = 'system.import.group.delete' OR EVENT_TYPE ILIKE '%lifecycle.delete%' OR EVENT_TYPE
+      ILIKE '%user_group_import.delete_success%' OR EVENT_TYPE ILIKE '%delete_appgroup%'
+      THEN 5 WHEN EVENT_TYPE ILIKE '%group.create' OR EVENT_TYPE ILIKE '%lifecycle.create'
+      THEN 6 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Assign Privileges'
+      WHEN 2 THEN 'Revoke Privileges' WHEN 3 THEN 'Add User' WHEN 4 THEN 'Remove User'
+      WHEN 5 THEN 'Delete' WHEN 6 THEN 'Create' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.session.uid: (AUTHENTICATION_CONTEXT:externalSessionId)::VARCHAR
+    actor.user.email_addr: (ACTOR_ALTERNATE_ID)::VARCHAR
+    actor.user.name: (ACTOR_DISPLAY_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN ACTOR_TYPE IS NULL THEN 0 WHEN ACTOR_TYPE =
+      'User' THEN 1 WHEN ACTOR_TYPE = 'SystemPrincipal' THEN 3 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN ACTOR_TYPE IS NULL THEN 0 WHEN ACTOR_TYPE = 'User'
+      THEN 1 WHEN ACTOR_TYPE = 'SystemPrincipal' THEN 3 ELSE 99 END)::NUMBER
+    actor.user.uid: (ACTOR_ID)::VARCHAR
+    api.request.uid: (DEBUG_CONTEXT:debugData:requestId)::VARCHAR
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('group_management')::VARCHAR
+    class_uid: ('3006')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.domain: (SECURITY_CONTEXT:domain)::VARCHAR
+    device.ip: (CLIENT_IP_ADDRESS)::VARCHAR
+    device.location.city: (CLIENT_GEOGRAPHICAL_CONTEXT_CITY)::VARCHAR
+    device.location.coordinates: (IFF( CLIENT_GEOGRAPHICAL_CONTEXT_GEOLOCATION:lon
+      IS NOT NULL AND CLIENT_GEOGRAPHICAL_CONTEXT_GEOLOCATION:lat IS NOT NULL,    ARRAY_CONSTRUCT(CLIENT_GEOGRAPHICAL_CONTEXT_GEOLOCATION:lon,
+      CLIENT_GEOGRAPHICAL_CONTEXT_GEOLOCATION:lat),   ARRAY_CONSTRUCT()))::ARRAY
+    device.location.country: (CLIENT_GEOGRAPHICAL_CONTEXT_COUNTRY)::VARCHAR
+    device.location.isp: (SECURITY_CONTEXT:isp)::VARCHAR
+    device.location.postal_code: (CLIENT_GEOGRAPHICAL_CONTEXT_POSTAL_CODE)::VARCHAR
+    device.org.name: (SECURITY_CONTEXT:asOrg)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN CLIENT_USER_AGENT_OS ILIKE 'unknown' OR CLIENT_USER_AGENT_OS
+      IS NULL THEN 0 WHEN CLIENT_USER_AGENT_OS ILIKE 'Windows%' THEN 100 WHEN CLIENT_USER_AGENT_OS
+      IN ('Linux', 'Ubuntu') THEN 200 WHEN CLIENT_USER_AGENT_OS ILIKE 'Android%' THEN
+      201 WHEN CLIENT_USER_AGENT_OS ILIKE 'Mac%' THEN 300 WHEN CLIENT_USER_AGENT_OS
+      ILIKE 'iOS%ipad%' THEN 302 WHEN CLIENT_USER_AGENT_OS ILIKE 'iOS%' THEN 301 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN
+      'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN
+      'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN
+      401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN CLIENT_USER_AGENT_OS ILIKE 'unknown' OR CLIENT_USER_AGENT_OS
+      IS NULL THEN 0 WHEN CLIENT_USER_AGENT_OS ILIKE 'Windows%' THEN 100 WHEN CLIENT_USER_AGENT_OS
+      IN ('Linux', 'Ubuntu') THEN 200 WHEN CLIENT_USER_AGENT_OS ILIKE 'Android%' THEN
+      201 WHEN CLIENT_USER_AGENT_OS ILIKE 'Mac%' THEN 300 WHEN CLIENT_USER_AGENT_OS
+      ILIKE 'iOS%ipad%' THEN 302 WHEN CLIENT_USER_AGENT_OS ILIKE 'iOS%' THEN 301 ELSE
+      99 END)::NUMBER
+    device.type: (CASE ((CASE WHEN CLIENT_DEVICE ILIKE 'unknown' OR CLIENT_DEVICE
+      IS NULL THEN 0 WHEN CLIENT_DEVICE = 'Computer' THEN 2 WHEN CLIENT_DEVICE = 'Tablet'
+      THEN 4 WHEN CLIENT_DEVICE = 'Mobile' THEN 5 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Server' WHEN 10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN
+      2 THEN 'Desktop' WHEN 3 THEN 'Laptop' WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile'
+      WHEN 6 THEN 'Virtual' WHEN 7 THEN 'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (CASE WHEN CLIENT_DEVICE ILIKE 'unknown' OR CLIENT_DEVICE IS NULL
+      THEN 0 WHEN CLIENT_DEVICE = 'Computer' THEN 2 WHEN CLIENT_DEVICE = 'Tablet'
+      THEN 4 WHEN CLIENT_DEVICE = 'Mobile' THEN 5 ELSE 99 END)::NUMBER
+    device.uid: (CLIENT_ID)::VARCHAR
+    device.zone: (CLIENT_ZONE)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    group.name: (CASE WHEN EVENT_TYPE in ('group.privilege.grant','group.privilege.revoke')
+      THEN  target[0]:displayName ELSE target[1]:displayName END)::VARCHAR
+    group.type: (CASE WHEN EVENT_TYPE in ('group.privilege.grant','group.privilege.revoke')
+      THEN  target[0]:type ELSE  target[1]:type END)::VARCHAR
+    group.uid: (CASE WHEN EVENT_TYPE in ('group.privilege.grant','group.privilege.revoke')
+      THEN  target[0]:id ELSE target[1]:id END)::VARCHAR
+    message: (DISPLAY_MESSAGE)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('okta-logs')::VARCHAR
+    metadata.product.vendor_name: ('okta')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR_ALTERNATE_ID)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACTOR_DISPLAY_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP_ADDRESS)::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(TARGET_USER_ALTERNATE_ID, TARGET_APP_USER_ALTERNATE_ID))::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(TARGET_USER_DISPLAY_NAME, TARGET_APP_USER_DISPLAY_NAME))::VARCHAR
+    privileges: (IFF(DEBUG_CONTEXT:debugData:privilegeGranted IS NOT NULL,    ARRAY_CONSTRUCT(DEBUG_CONTEXT:debugData:privilegeGranted),    ARRAY_CONSTRUCT()))::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY = 'INFO' THEN
+      1 WHEN SEVERITY = 'DEBUG' THEN 2 WHEN SEVERITY = 'WARN' THEN 3 WHEN SEVERITY
+      = 'ERROR' THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY = 'INFO' THEN 1
+      WHEN SEVERITY = 'DEBUG' THEN 2 WHEN SEVERITY = 'WARN' THEN 3 WHEN SEVERITY =
+      'ERROR' THEN 4 ELSE 99 END)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (PUBLISHED)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (PUBLISHED)::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN OUTCOME_RESULT IS NULL THEN 0 WHEN OUTCOME_RESULT =
+      'SUCCESS' THEN 1 WHEN OUTCOME_RESULT = 'FAILURE' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (OUTCOME_REASON)::VARCHAR
+    status_id: (CASE WHEN OUTCOME_RESULT IS NULL THEN 0 WHEN OUTCOME_RESULT = 'SUCCESS'
+      THEN 1 WHEN OUTCOME_RESULT = 'FAILURE' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', published::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (published)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 300600 WHEN EVENT_TYPE ILIKE
+      ''%privilege%grant%'' THEN 300601 WHEN EVENT_TYPE ILIKE ''%privilege%revoke%''
+      THEN 300602 WHEN EVENT_TYPE ILIKE ''%user_membership.add%'' THEN 300603 WHEN
+      EVENT_TYPE ILIKE ''%user_membership%remove%'' THEN 300604 WHEN EVENT_TYPE ILIKE
+      ''%group.delete%'' OR EVENT_TYPE ILIKE ''%lifecycle.delete%'' OR EVENT_TYPE
+      ILIKE ''%user_group_import.delete_success%'' OR EVENT_TYPE ILIKE ''%delete_appgroup%''
+      THEN 300605 WHEN EVENT_TYPE ILIKE ''%group.create'' OR EVENT_TYPE ILIKE ''%lifecycle.create''
+      THEN 300606 ELSE 300699 END)::NUMBER) WHEN 300600 THEN ''Group Management: Unknown''
+      WHEN 300601 THEN ''Group Management: Assign Privileges'' WHEN 300602 THEN ''Group
+      Management: Revoke Privileges'' WHEN 300603 THEN ''Group Management: Add User''
+      WHEN 300604 THEN ''Group Management: Remove User'' WHEN 300605 THEN ''Group
+      Management: Delete'' WHEN 300606 THEN ''Group Management: Create'' WHEN 300699
+      THEN ''Group Management: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE IS NULL THEN 300600 WHEN EVENT_TYPE ILIKE '%privilege%grant%'
+      THEN 300601 WHEN EVENT_TYPE ILIKE '%privilege%revoke%' THEN 300602 WHEN EVENT_TYPE
+      ILIKE '%user_membership.add%' THEN 300603 WHEN EVENT_TYPE ILIKE '%user_membership%remove%'
+      THEN 300604 WHEN EVENT_TYPE ILIKE '%group.delete%' OR EVENT_TYPE ILIKE '%lifecycle.delete%'
+      OR EVENT_TYPE ILIKE '%user_group_import.delete_success%' OR EVENT_TYPE ILIKE
+      '%delete_appgroup%' THEN 300605 WHEN EVENT_TYPE ILIKE '%group.create' OR EVENT_TYPE
+      ILIKE '%lifecycle.create' THEN 300606 ELSE 300699 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (COALESCE(TARGET_USER_ALTERNATE_ID, TARGET_APP_USER_ALTERNATE_ID))::VARCHAR
+    user.name: (COALESCE(TARGET_USER_DISPLAY_NAME, TARGET_APP_USER_DISPLAY_NAME))::VARCHAR
+    user.uid: (COALESCE(TARGET_USER_ID, TARGET_APP_USER_ID))::VARCHAR
+  predicate: EVENT_TYPE in ('group.application_assignment.add','group.application_assignment.remove','group.privilege.grant','group.privilege.revoke','group.user_membership.add','group.user_membership.remove','system.import.group.create','system.import.group.delete')

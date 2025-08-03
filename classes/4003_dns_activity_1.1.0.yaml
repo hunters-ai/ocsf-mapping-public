@@ -1,0 +1,23 @@
+id: 4003_dns_activity_1.1.0
+version: '10'
+description: OCSF View For Class - 4003 Dns Activity
+source-table-ids:
+- vectra_metadata_logs_4003_dns_activity_1.1.0
+- universal_wel_4003_dns_activity_1.1.0
+- bind_dns_events_4003_dns_activity_1.1.0
+- infoblox_nios_dns_4003_dns_activity_1.1.0
+- infoblox_bloxone_dns_4003_dns_activity_1.1.0
+- cisco_umbrella_dns_logs_4003_dns_activity_1.1.0
+- bind_dns_logs_4003_dns_activity_1.1.0
+- zscaler_zia_dns_4003_dns_activity_1.1.0
+- cloudflare_dns_4003_dns_activity_1.1.0
+- windows_dns_debug_logs_4003_dns_activity_1.1.0
+- axis_activity_logs_4003_dns_activity_1.1.0
+- route53_resolver_query_logs_4003_dns_activity_1.1.0
+- crowdstrike_raw_events_4003_dns_activity_1.1.0
+- sentinelone_raw_events_v2_4003_dns_activity_1.1.0
+- microsoft_365_defender_identity_query_events_4003_dns_activity_1.1.0
+- cloudflare_gateway_dns_4003_dns_activity_1.1.0
+- barracuda_box_firewall_logs_4003_dns_activity_1.1.0
+- zeek_logs_4003_dns_activity_1.1.0
+- cato_networks_security_events_4003_dns_activity_1.1.0

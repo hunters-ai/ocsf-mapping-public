@@ -1,0 +1,154 @@
+type: mapping
+id: aws_cloudtrail_6005_datastore_activity_1.1.0
+version: '10'
+name: Aws Cloudtrail to OCSF class Datastore Activity
+data-types:
+- aws-cloudtrail
+mapping:
+  fields:
+    activity_id: (IFF(READ_ONLY = TRUE, 1, CASE WHEN EVENT_NAME IS NULL THEN 0 WHEN
+      EVENT_NAME ILIKE '%list%' OR EVENT_NAME ILIKE '%read%' OR EVENT_NAME ILIKE '%get%'
+      THEN 1 WHEN EVENT_NAME ILIKE '%modify%' OR EVENT_NAME ILIKE '%put%' OR EVENT_NAME
+      ILIKE '%update%' OR EVENT_NAME ILIKE '%change%' THEN 2 WHEN EVENT_NAME ILIKE
+      '%connect%' THEN 3 WHEN EVENT_NAME ILIKE '%query%' THEN 4 WHEN EVENT_NAME ILIKE
+      '%create%' THEN 6 WHEN EVENT_NAME ILIKE '%delete%' OR EVENT_NAME ILIKE '%deletion%'
+      OR EVENT_NAME ILIKE '%remove%' THEN 7 ELSE 99 END))::NUMBER
+    activity_name: (CASE ((IFF(READ_ONLY = TRUE, 1, CASE WHEN EVENT_NAME IS NULL THEN
+      0 WHEN EVENT_NAME ILIKE '%list%' OR EVENT_NAME ILIKE '%read%' OR EVENT_NAME
+      ILIKE '%get%' THEN 1 WHEN EVENT_NAME ILIKE '%modify%' OR EVENT_NAME ILIKE '%put%'
+      OR EVENT_NAME ILIKE '%update%' OR EVENT_NAME ILIKE '%change%' THEN 2 WHEN EVENT_NAME
+      ILIKE '%connect%' THEN 3 WHEN EVENT_NAME ILIKE '%query%' THEN 4 WHEN EVENT_NAME
+      ILIKE '%create%' THEN 6 WHEN EVENT_NAME ILIKE '%delete%' OR EVENT_NAME ILIKE
+      '%deletion%' OR EVENT_NAME ILIKE '%remove%' THEN 7 ELSE 99 END))::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Read' WHEN 2 THEN 'Update' WHEN 3 THEN 'Connect'
+      WHEN 4 THEN 'Query' WHEN 5 THEN 'Write' WHEN 6 THEN 'Create' WHEN 7 THEN 'Delete'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.idp.uid: (USER_IDENTITY:identityProvider)::VARCHAR
+    actor.invoked_by: (USER_IDENTITY_INVOKED_BY)::VARCHAR
+    actor.session.created_time: (date_part('epoch_milliseconds', (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_CREATION_DATE)::TIMESTAMP_LTZ))::NUMBER
+    actor.session.created_time_dt: (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_CREATION_DATE)::TIMESTAMP_LTZ
+    actor.session.is_mfa: (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_MFA_AUTHENTICATED)::BOOLEAN
+    actor.session.issuer: (USER_IDENTITY_SESSION_CONTEXT_SESSION_ISSUER_USER_NAME)::VARCHAR
+    actor.user.account.uid: (USER_IDENTITY_ACCOUNT_ID)::VARCHAR
+    actor.user.email_addr: (IFF(USER_IDENTITY_USER_NAME ILIKE '%@%', USER_IDENTITY_USER_NAME,
+      NULL))::VARCHAR
+    actor.user.name: (IFF(USER_IDENTITY_USER_NAME NOT ILIKE '%@%', USER_IDENTITY_USER_NAME,
+      NULL))::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN USER_IDENTITY_TYPE IS NULL OR USER_IDENTITY_TYPE
+      IN ('Unknown', 'FederatedUser') THEN 0 WHEN USER_IDENTITY_TYPE = 'Root' THEN
+      2 ELSE 1 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN
+      'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN USER_IDENTITY_TYPE IS NULL OR USER_IDENTITY_TYPE
+      IN ('Unknown', 'FederatedUser') THEN 0 WHEN USER_IDENTITY_TYPE = 'Root' THEN
+      2 ELSE 1 END)::NUMBER
+    actor.user.uid: (USER_IDENTITY_ARN)::VARCHAR
+    api.request.data: (REQUEST_PARAMETERS)::VARIANT
+    api.response.data: (RESPONSE_ELEMENTS)::VARIANT
+    api.response.error: (ERROR_CODE)::VARCHAR
+    api.response.error_message: (ERROR_MESSAGE)::VARCHAR
+    api.version: (API_VERSION)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('datastore_activity')::VARCHAR
+    class_uid: ('6005')::NUMBER
+    cloud.account.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    cloud.provider: ('AWS')::VARCHAR
+    cloud.region: (AWS_REGION)::VARCHAR
+    count: NULL::NUMBER
+    database: NULL::VARIANT
+    databucket.name: (REQUEST_PARAMETERS:bucketName)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.length: (ADDITIONAL_EVENT_DATA:bytesTransferredIn)::NUMBER
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.event_code: (event_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('aws-cloudtrail')::VARCHAR
+    metadata.product.vendor_name: ('aws')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(USER_IDENTITY_USER_NAME ILIKE '%@%', USER_IDENTITY_USER_NAME, NULL))::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(USER_IDENTITY_USER_NAME NOT ILIKE '%@%', USER_IDENTITY_USER_NAME,
+        NULL))::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (REQUEST_PARAMETERS:Host)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP_ADDRESS)::VARCHAR
+    query_info: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.hostname: (REQUEST_PARAMETERS:Host)::VARCHAR
+    src_endpoint.ip: (SOURCE_IP_ADDRESS)::VARCHAR
+    src_endpoint.svc_name: (SPLIT_PART(EVENT_SOURCE, '.amazonaws', 1))::VARCHAR
+    src_endpoint.uid: (REQUEST_ID)::VARCHAR
+    src_endpoint.vpc_uid: (VPC_ENDPOINT_ID)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((IFF(ERROR_CODE IS NULL, 1, 2))::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (IFF(ERROR_CODE IS NULL, 1, 2))::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type: (CASE ((IFF(REQUEST_PARAMETERS:bucketName IS NULL, 0, 2))::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Database' WHEN 2 THEN 'Databucket' WHEN 3 THEN
+      'Table' WHEN 99 THEN 'Other' END)::VARCHAR
+    type_id: (IFF(REQUEST_PARAMETERS:bucketName IS NULL, 0, 2))::NUMBER
+    type_name: '(CASE ((IFF(READ_ONLY = TRUE, 600501, CASE WHEN EVENT_NAME IS NULL
+      THEN 600500 WHEN EVENT_NAME ILIKE ''%list%'' OR EVENT_NAME ILIKE ''%read%''
+      OR EVENT_NAME ILIKE ''%get%'' THEN 600501 WHEN EVENT_NAME ILIKE ''%modify%''
+      OR EVENT_NAME ILIKE ''%put%'' OR EVENT_NAME ILIKE ''%update%'' OR EVENT_NAME
+      ILIKE ''%change%'' THEN 600502 WHEN EVENT_NAME ILIKE ''%connect%'' THEN 600503
+      WHEN EVENT_NAME ILIKE ''%query%'' THEN 600504 WHEN EVENT_NAME ILIKE ''%create%''
+      THEN 600506 WHEN EVENT_NAME ILIKE ''%delete%'' OR EVENT_NAME ILIKE ''%deletion%''
+      OR EVENT_NAME ILIKE ''%remove%'' THEN 600507 ELSE 600599 END))::NUMBER) WHEN
+      600500 THEN ''Datastore Activity: Unknown'' WHEN 600501 THEN ''Datastore Activity:
+      Read'' WHEN 600502 THEN ''Datastore Activity: Update'' WHEN 600503 THEN ''Datastore
+      Activity: Connect'' WHEN 600504 THEN ''Datastore Activity: Query'' WHEN 600505
+      THEN ''Datastore Activity: Write'' WHEN 600506 THEN ''Datastore Activity: Create''
+      WHEN 600507 THEN ''Datastore Activity: Delete'' WHEN 600599 THEN ''Datastore
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (IFF(READ_ONLY = TRUE, 600501, CASE WHEN EVENT_NAME IS NULL THEN 600500
+      WHEN EVENT_NAME ILIKE '%list%' OR EVENT_NAME ILIKE '%read%' OR EVENT_NAME ILIKE
+      '%get%' THEN 600501 WHEN EVENT_NAME ILIKE '%modify%' OR EVENT_NAME ILIKE '%put%'
+      OR EVENT_NAME ILIKE '%update%' OR EVENT_NAME ILIKE '%change%' THEN 600502 WHEN
+      EVENT_NAME ILIKE '%connect%' THEN 600503 WHEN EVENT_NAME ILIKE '%query%' THEN
+      600504 WHEN EVENT_NAME ILIKE '%create%' THEN 600506 WHEN EVENT_NAME ILIKE '%delete%'
+      OR EVENT_NAME ILIKE '%deletion%' OR EVENT_NAME ILIKE '%remove%' THEN 600507
+      ELSE 600599 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_SOURCE = 's3.amazonaws.com'

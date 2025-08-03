@@ -1,0 +1,164 @@
+type: mapping
+id: crowdstrike_raw_events_1001_file_activity_1.1.0
+version: '22'
+name: Crowdstrike Raw Events to OCSF class File Activity
+data-types:
+- crowdstrike-raw-events
+mapping:
+  fields:
+    access_mask: NULL::NUMBER
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (CASE WHEN EVENT_SIMPLE_NAME ILIKE '%Written' THEN 1 WHEN EVENT_SIMPLE_NAME
+      ILIKE '%Deleted' THEN 4 ELSE (CASE EVENT_SIMPLE_NAME WHEN 'RansomwareCreateFile'
+      THEN 1 WHEN 'RansomwareRenameFile' THEN 5 ELSE 99 END) END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_SIMPLE_NAME ILIKE '%Written' THEN 1 WHEN
+      EVENT_SIMPLE_NAME ILIKE '%Deleted' THEN 4 ELSE (CASE EVENT_SIMPLE_NAME WHEN
+      'RansomwareCreateFile' THEN 1 WHEN 'RansomwareRenameFile' THEN 5 ELSE 99 END)
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 10 THEN 'Encrypt'
+      WHEN 11 THEN 'Decrypt' WHEN 12 THEN 'Mount' WHEN 13 THEN 'Unmount' WHEN 14 THEN
+      'Open' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN
+      'Rename' WHEN 6 THEN 'Set Attributes' WHEN 7 THEN 'Set Security' WHEN 8 THEN
+      'Get Attributes' WHEN 9 THEN 'Get Security' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (COMMAND_LINE)::VARCHAR
+    actor.process.file.name: (RAW:"ContextBaseFileName")::VARCHAR
+    actor.process.uid: (RAW:ContextProcessId)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('file_activity')::VARCHAR
+    class_uid: ('1001')::NUMBER
+    cloud: NULL::VARIANT
+    component: NULL::VARCHAR
+    connection_uid: NULL::VARCHAR
+    count: NULL::NUMBER
+    create_mask: NULL::VARCHAR
+    device.domain: (DOMAIN_NAME)::VARCHAR
+    device.ip: (AIP)::VARCHAR
+    device.org.uid: (CID)::VARCHAR
+    device.os.name: (EVENT_PLATFORM)::VARCHAR
+    device.uid: (AID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256', 'algorithm_id',
+      3, 'value',RAW:SHA256HashData)))::ARRAY
+    file.name: (split_part(TARGET_FILE_NAME, '\\',-1))::VARCHAR
+    file.path: (TARGET_FILE_NAME)::VARCHAR
+    file_diff: NULL::VARCHAR
+    file_result: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_simple_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('crowdstrike-raw-events')::VARCHAR
+    metadata.product.vendor_name: ('crowdstrike')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (RAW:"ContextBaseFileName")::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (AIP)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256',
+        'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY) > 0, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY)[0]:"value",
+        NULL::ARRAY)
+    - name: '''file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256',
+        'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY) > 1, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY)[1]:"value",
+        NULL::ARRAY)
+    - name: '''file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'SHA-256',
+        'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY) > 2, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY)[2]:"value",
+        NULL::ARRAY)
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (split_part(TARGET_FILE_NAME, '\\',-1))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100100 + (CASE WHEN EVENT_SIMPLE_NAME ILIKE ''%Written'' THEN
+      1 WHEN EVENT_SIMPLE_NAME ILIKE ''%Deleted'' THEN 4 ELSE (CASE EVENT_SIMPLE_NAME
+      WHEN ''RansomwareCreateFile'' THEN 1 WHEN ''RansomwareRenameFile'' THEN 5 ELSE
+      99 END) END))::NUMBER) WHEN 100100 THEN ''File System Activity: Unknown'' WHEN
+      100101 THEN ''File System Activity: Create'' WHEN 100102 THEN ''File System
+      Activity: Read'' WHEN 100103 THEN ''File System Activity: Update'' WHEN 100104
+      THEN ''File System Activity: Delete'' WHEN 100105 THEN ''File System Activity:
+      Rename'' WHEN 100106 THEN ''File System Activity: Set Attributes'' WHEN 100107
+      THEN ''File System Activity: Set Security'' WHEN 100108 THEN ''File System Activity:
+      Get Attributes'' WHEN 100109 THEN ''File System Activity: Get Security'' WHEN
+      100110 THEN ''File System Activity: Encrypt'' WHEN 100111 THEN ''File System
+      Activity: Decrypt'' WHEN 100112 THEN ''File System Activity: Mount'' WHEN 100113
+      THEN ''File System Activity: Unmount'' WHEN 100114 THEN ''File System Activity:
+      Open'' WHEN 100199 THEN ''File System Activity: Other'' END)::VARCHAR'
+    type_uid: (100100 + (CASE WHEN EVENT_SIMPLE_NAME ILIKE '%Written' THEN 1 WHEN
+      EVENT_SIMPLE_NAME ILIKE '%Deleted' THEN 4 ELSE (CASE EVENT_SIMPLE_NAME WHEN
+      'RansomwareCreateFile' THEN 1 WHEN 'RansomwareRenameFile' THEN 5 ELSE 99 END)
+      END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_SIMPLE_NAME ILIKE ANY ('%Written', 'RansomwareCreateFile', 'RansomwareRenameFile',
+    '%Deleted')

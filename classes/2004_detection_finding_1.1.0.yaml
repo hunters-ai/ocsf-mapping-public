@@ -1,0 +1,22 @@
+id: 2004_detection_finding_1.1.0
+version: '14'
+description: OCSF View For Class - 2004 Detection Finding
+source-table-ids:
+- microsoft_365_defender_alert_info_2004_detection_finding_1.1.0
+- crowdstrike_detects_2004_detection_finding_1.1.0
+- opencti_logs_2004_detection_finding_1.1.0
+- crowdstrike_falcon_event_streams_2004_detection_finding_1.1.0
+- gsuite_alert_2004_detection_finding_1.1.0
+- o365_audit_logs_2004_detection_finding_1.1.0
+- sentinelone_threat_2004_detection_finding_1.1.0
+- microsoft_365_defender_alert_evidence_2004_detection_finding_1.1.0
+- aws_guard_duty_2004_detection_finding_1.1.0
+- okta_logs_2004_detection_finding_1.1.0
+- azure_ad_identity_protection_2004_detection_finding_1.1.0
+- fortinet_fortiedr_security_events_2004_detection_finding_1.1.0
+- zeek_logs_2004_detection_finding_1.1.0
+- slack_audit_logs_2004_detection_finding_1.1.0
+- abnormal_threats_2004_detection_finding_1.1.0
+- netskope_v2_alerts_2004_detection_finding_1.1.0
+- surf_alerts_logs_2004_detection_finding_1.1.0
+- kaspersky_security_cloud_logs_2004_detection_finding_1.1.0

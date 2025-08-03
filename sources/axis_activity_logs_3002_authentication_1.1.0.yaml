@@ -1,0 +1,131 @@
+type: mapping
+id: axis_activity_logs_3002_authentication_1.1.0
+version: '10'
+name: Axis Activity Logs to OCSF class Authentication
+data-types:
+- axis-activity-logs
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN
+      2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket
+      Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.location.country: (GEOLOCATION)::VARCHAR
+    device.os.name: (OPERATING_SYSTEM)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN OPERATION_SYSTEM='Windows' THEN 100 WHEN OPERATION_SYSTEM='Windows
+      Mobile' THEN 101 WHEN OPERATION_SYSTEM='Linux' THEN 200 WHEN OPERATION_SYSTEM='Android'
+      THEN 201 WHEN OPERATION_SYSTEM='Mac OS X' THEN 300 WHEN OPERATION_SYSTEM='iOS'
+      THEN 301 WHEN OPERATION_SYSTEM='iPadOS' THEN 302 WHEN OPERATION_SYSTEM='Solaris'
+      THEN 400 WHEN OPERATION_SYSTEM='AIX' THEN 401 WHEN OPERATION_SYSTEM='HP-UX'
+      THEN 402 WHEN OPERATION_SYSTEM IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN
+      'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN
+      302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN
+      'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN OPERATION_SYSTEM='Windows' THEN 100 WHEN OPERATION_SYSTEM='Windows
+      Mobile' THEN 101 WHEN OPERATION_SYSTEM='Linux' THEN 200 WHEN OPERATION_SYSTEM='Android'
+      THEN 201 WHEN OPERATION_SYSTEM='Mac OS X' THEN 300 WHEN OPERATION_SYSTEM='iOS'
+      THEN 301 WHEN OPERATION_SYSTEM='iPadOS' THEN 302 WHEN OPERATION_SYSTEM='Solaris'
+      THEN 400 WHEN OPERATION_SYSTEM='AIX' THEN 401 WHEN OPERATION_SYSTEM='HP-UX'
+      THEN 402 WHEN OPERATION_SYSTEM IS NULL THEN 0 ELSE 99 END)::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (EVENT_DESCRIPTION)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('axis-activity-logs')::VARCHAR
+    metadata.product.vendor_name: ('axis')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (USER_NAME)::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER_DISPLAY_NAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.uid: (IDENTITY_PROVIDER_ID)::VARCHAR
+    session.uid: (SESSION_ID)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN IS_BLOCKED='FALSE' THEN 1 WHEN IS_BLOCKED='TRUE' THEN
+      2 WHEN IS_BLOCKED IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN IS_BLOCKED='FALSE' THEN 1 WHEN IS_BLOCKED='TRUE' THEN 2
+      WHEN IS_BLOCKED IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300201)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300201)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (USER_NAME)::VARCHAR
+    user.groups: (GROUPS)::ARRAY
+    user.name: (USER_DISPLAY_NAME)::VARCHAR
+    user.org.name: (TENANT_NAME)::VARCHAR
+    user.org.uid: (TENANT_ID)::VARCHAR
+    user.uid: (USER_ID)::VARCHAR
+  predicate: EVENT_TYPE = 'Connect'

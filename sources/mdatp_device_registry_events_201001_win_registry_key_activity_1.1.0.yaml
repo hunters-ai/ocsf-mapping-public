@@ -1,0 +1,174 @@
+type: mapping
+id: mdatp_device_registry_events_201001_win_registry_key_activity_1.1.0
+version: '16'
+name: Mdatp Device Registry Events to OCSF class Win/registry Key Activity
+data-types:
+- mdatp-device-registry-events
+mapping:
+  fields:
+    access_mask: NULL::NUMBER
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE = 'RegistryKeyCreated'
+      THEN 1 WHEN ACTION_TYPE = 'RegistryKeyDeleted' THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE =
+      'RegistryKeyCreated' THEN 1 WHEN ACTION_TYPE = 'RegistryKeyDeleted' THEN 4 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read'
+      WHEN 3 THEN 'Modify' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Set
+      Security' WHEN 7 THEN 'Restore' WHEN 8 THEN 'Import' WHEN 9 THEN 'Export' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    actor.process.parent_process.cmd_line: (INITIATING_PROCESS_COMMAND_LINE)::VARCHAR
+    actor.process.parent_process.created_time: (date_part('epoch_milliseconds', (INITIATING_PROCESS_CREATION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.created_time_dt: (INITIATING_PROCESS_CREATION_TIME)::TIMESTAMP_LTZ
+    actor.process.parent_process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      CASE (CASE WHEN INITIATING_PROCESS_SHA1 IS NULL AND INITIATING_PROCESS_MD5 IS
+      NULL THEN 0 WHEN INITIATING_PROCESS_SHA1 IS NOT NULL THEN 2 WHEN INITIATING_PROCESS_MD5
+      IS NOT NULL THEN 1 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5'
+      WHEN 2 THEN 'SHA-1' WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN
+      'CTPH' WHEN 6 THEN 'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END,
+      'algorithm_id', CASE WHEN INITIATING_PROCESS_SHA1 IS NULL AND INITIATING_PROCESS_MD5
+      IS NULL THEN 0 WHEN INITIATING_PROCESS_SHA1 IS NOT NULL THEN 2 WHEN INITIATING_PROCESS_MD5
+      IS NOT NULL THEN 1 ELSE 99 END::NUMBER, 'value', COALESCE(INITIATING_PROCESS_SHA1,
+      INITIATING_PROCESS_MD5)::VARCHAR)))::ARRAY
+    actor.process.parent_process.file.name: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    actor.process.parent_process.file.parent_folder: (INITIATING_PROCESS_FOLDER_PATH)::VARCHAR
+    actor.process.parent_process.integrity: (CASE ((CASE WHEN INITIATING_PROCESS_INTEGRITY_LEVEL
+      IS NULL THEN 0 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL = 'System' THEN 5 WHEN
+      INITIATING_PROCESS_INTEGRITY_LEVEL = 'Medium' THEN 3 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL
+      = 'High' THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System'
+      WHEN 6 THEN 'Protected' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.parent_process.integrity_id: (CASE WHEN INITIATING_PROCESS_INTEGRITY_LEVEL
+      IS NULL THEN 0 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL = 'System' THEN 5 WHEN
+      INITIATING_PROCESS_INTEGRITY_LEVEL = 'Medium' THEN 3 WHEN INITIATING_PROCESS_INTEGRITY_LEVEL
+      = 'High' THEN 4 ELSE 99 END)::NUMBER
+    actor.process.parent_process.parent_process.created_time: (date_part('epoch_milliseconds',
+      (INITIATING_PROCESS_PARENT_CREATION_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.parent_process.created_time_dt: (INITIATING_PROCESS_PARENT_CREATION_TIME)::TIMESTAMP_LTZ
+    actor.process.parent_process.parent_process.file.name: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    actor.process.parent_process.parent_process.uid: (INITIATING_PROCESS_PARENT_ID)::VARCHAR
+    actor.process.parent_process.uid: (INITIATING_PROCESS_ID)::VARCHAR
+    actor.process.parent_process.user.account.name: (INITIATING_PROCESS_ACCOUNT_NAME)::VARCHAR
+    actor.process.parent_process.user.account.uid: (INITIATING_PROCESS_ACCOUNT_SID)::VARCHAR
+    actor.process.parent_process.user.domain: (INITIATING_PROCESS_ACCOUNT_DOMAIN)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: NULL::VARCHAR
+    category_uid: NULL::NUMBER
+    class_name: ('win/registry_key_activity')::VARCHAR
+    class_uid: ('201001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    create_mask: NULL::VARCHAR
+    device.container.uid: (APP_GUARD_CONTAINER_ID)::VARCHAR
+    device.hostname: (DEVICE_NAME)::VARCHAR
+    device.uid: (DEVICE_ID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('mdatp-device-registry-events')::VARCHAR
+    metadata.product.vendor_name: ('mdatp')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (INITIATING_PROCESS_PARENT_FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.container'''
+      type: '''Container'''
+      type_id: 27
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (DEVICE_NAME)::VARCHAR
+    open_mask: NULL::NUMBER
+    prev_reg_key: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    reg_key.path: (REGISTRY_KEY)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((20100100 + (CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE
+      = ''RegistryKeyCreated'' THEN 1 WHEN ACTION_TYPE = ''RegistryKeyDeleted'' THEN
+      4 ELSE 99 END))::NUMBER) WHEN 20100100 THEN ''Registry Key Activity: Unknown''
+      WHEN 20100101 THEN ''Registry Key Activity: Create'' WHEN 20100102 THEN ''Registry
+      Key Activity: Read'' WHEN 20100103 THEN ''Registry Key Activity: Modify'' WHEN
+      20100104 THEN ''Registry Key Activity: Delete'' WHEN 20100105 THEN ''Registry
+      Key Activity: Rename'' WHEN 20100106 THEN ''Registry Key Activity: Set Security''
+      WHEN 20100107 THEN ''Registry Key Activity: Restore'' WHEN 20100108 THEN ''Registry
+      Key Activity: Import'' WHEN 20100109 THEN ''Registry Key Activity: Export''
+      WHEN 20100199 THEN ''Registry Key Activity: Other'' END)::VARCHAR'
+    type_uid: (20100100 + (CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE =
+      'RegistryKeyCreated' THEN 1 WHEN ACTION_TYPE = 'RegistryKeyDeleted' THEN 4 ELSE
+      99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: ACTION_TYPE ILIKE '%RegistryKey%'

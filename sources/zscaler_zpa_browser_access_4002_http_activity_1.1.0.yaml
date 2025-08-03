@@ -1,0 +1,157 @@
+type: mapping
+id: zscaler_zpa_browser_access_4002_http_activity_1.1.0
+version: '9'
+name: Zscaler Zpa Browser Access to OCSF class Http Activity
+data-types:
+- zscaler-zpa-browser-access
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN METHOD = 'CONNECT' THEN 1 WHEN METHOD = 'DELETE' THEN
+      2 WHEN METHOD = 'GET' THEN 3 WHEN METHOD = 'HEAD' THEN 4 WHEN METHOD = 'OPTIONS'
+      THEN 5 WHEN METHOD = 'POST' THEN 6 WHEN METHOD = 'PUT' THEN 7 WHEN METHOD =
+      'TRACE' THEN 8 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN METHOD = 'CONNECT' THEN 1 WHEN METHOD = 'DELETE'
+      THEN 2 WHEN METHOD = 'GET' THEN 3 WHEN METHOD = 'HEAD' THEN 4 WHEN METHOD =
+      'OPTIONS' THEN 5 WHEN METHOD = 'POST' THEN 6 WHEN METHOD = 'PUT' THEN 7 WHEN
+      METHOD = 'TRACE' THEN 8 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Connect' WHEN 2 THEN 'Delete' WHEN 3 THEN 'Get' WHEN 4 THEN 'Head' WHEN 5 THEN
+      'Options' WHEN 6 THEN 'Post' WHEN 7 THEN 'Put' WHEN 8 THEN 'Trace' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    actor.user.email_addr: (NAME_ID)::VARCHAR
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.direction: (CASE ((2)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.direction_id: (2)::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(CLIENT_PUBLIC_IP, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(CLIENT_PUBLIC_IP, 'INET', 1):family)::NUMBER
+    connection_info.uid: (CONNECTION_ID)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.port: (APPLICATION_PORT)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    http_cookies: NULL::ARRAY
+    http_request.http_method: (METHOD)::VARCHAR
+    http_request.length: (REQUEST_SIZE)::NUMBER
+    http_request.url.hostname: (HOST)::VARCHAR
+    http_request.url.path: (URL)::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    http_request.x_forwarded_for: (XFF)::ARRAY
+    http_response.code: (STATUS_CODE)::NUMBER
+    http_response.length: (RESPONSE_SIZE)::NUMBER
+    http_status: NULL::NUMBER
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zscaler-zpa-browser-access')::VARCHAR
+    metadata.product.vendor_name: ('zscaler')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (NAME_ID)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST)::VARCHAR
+    - name: '''http_request.x_forwarded_for'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (XFF)::ARRAY
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_PUBLIC_IP)::VARCHAR
+    - name: '''src_endpoint.proxy_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_PRIVATE_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (CLIENT_PUBLIC_IP)::VARCHAR
+    src_endpoint.port: (CLIENT_PUBLIC_PORT)::NUMBER
+    src_endpoint.proxy_endpoint.ip: (CLIENT_PRIVATE_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN STATUS_CODE IS NULL THEN 0 WHEN STATUS_CODE ILIKE '2%'
+      THEN 1 WHEN STATUS_CODE ILIKE ANY ('4%', '5%') THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN STATUS_CODE IS NULL THEN 0 WHEN STATUS_CODE ILIKE '2%' THEN
+      1 WHEN STATUS_CODE ILIKE ANY ('4%', '5%') THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', log_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (log_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((CASE WHEN METHOD = ''CONNECT'' THEN 400201 WHEN METHOD = ''DELETE''
+      THEN 400202 WHEN METHOD = ''GET'' THEN 400203 WHEN METHOD = ''HEAD'' THEN 400204
+      WHEN METHOD = ''OPTIONS'' THEN 400205 WHEN METHOD = ''POST'' THEN 400206 WHEN
+      METHOD = ''PUT'' THEN 400207 WHEN METHOD = ''TRACE'' THEN 400208 ELSE 400299
+      END)::NUMBER) WHEN 400200 THEN ''HTTP Activity: Unknown'' WHEN 400201 THEN ''HTTP
+      Activity: Connect'' WHEN 400202 THEN ''HTTP Activity: Delete'' WHEN 400203 THEN
+      ''HTTP Activity: Get'' WHEN 400204 THEN ''HTTP Activity: Head'' WHEN 400205
+      THEN ''HTTP Activity: Options'' WHEN 400206 THEN ''HTTP Activity: Post'' WHEN
+      400207 THEN ''HTTP Activity: Put'' WHEN 400208 THEN ''HTTP Activity: Trace''
+      WHEN 400299 THEN ''HTTP Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN METHOD = 'CONNECT' THEN 400201 WHEN METHOD = 'DELETE' THEN
+      400202 WHEN METHOD = 'GET' THEN 400203 WHEN METHOD = 'HEAD' THEN 400204 WHEN
+      METHOD = 'OPTIONS' THEN 400205 WHEN METHOD = 'POST' THEN 400206 WHEN METHOD
+      = 'PUT' THEN 400207 WHEN METHOD = 'TRACE' THEN 400208 ELSE 400299 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: METHOD IN ('PUT', 'DELETE', 'GET', 'POST', 'HEAD', 'CONNECT', 'OPTIONS',
+    'TRACE', 'PATCH')

@@ -1,0 +1,8 @@
+id: 1003_kernel_activity_1.1.0
+version: '1'
+description: OCSF View For Class - 1003 Kernel Activity
+source-table-ids:
+- mdatp_device_process_events_1003_kernel_activity_1.1.0
+- crowdstrike_raw_events_1003_kernel_activity_1.1.0
+- pan_edr_raw_logs_1003_kernel_activity_1.1.0
+- sentinelone_raw_events_v2_1003_kernel_activity_1.1.0

@@ -1,0 +1,123 @@
+type: mapping
+id: alibaba_oss_6005_datastore_activity_1.1.0
+version: '10'
+name: Alibaba Oss to OCSF class Datastore Activity
+data-types:
+- alibaba-oss
+mapping:
+  fields:
+    activity_id: (CASE WHEN OPERATION = 'GetObject' THEN 1 WHEN OPERATION = 'GetBucketStat'
+      THEN 1 WHEN OPERATION = 'PutObject' THEN 2 WHEN OPERATION IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN OPERATION = 'GetObject' THEN 1 WHEN OPERATION
+      = 'GetBucketStat' THEN 1 WHEN OPERATION = 'PutObject' THEN 2 WHEN OPERATION
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Read'
+      WHEN 2 THEN 'Update' WHEN 3 THEN 'Connect' WHEN 4 THEN 'Query' WHEN 5 THEN 'Write'
+      WHEN 6 THEN 'Create' WHEN 7 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.uid: (REQUESTER_ID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('datastore_activity')::VARCHAR
+    class_uid: ('6005')::NUMBER
+    cloud.provider: ('Alibaba')::VARCHAR
+    cloud.region: (BUCKET_LOCATION)::VARCHAR
+    count: NULL::NUMBER
+    database: NULL::VARIANT
+    databucket.created_time: (date_part('epoch_milliseconds', (RECEIVED_TIME)::TIMESTAMP_LTZ))::NUMBER
+    databucket.created_time_dt: (RECEIVED_TIME)::TIMESTAMP_LTZ
+    databucket.name: (BUCKET)::VARCHAR
+    databucket.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'S3' WHEN
+      2 THEN 'Azure Blob' WHEN 3 THEN 'GCP Bucket' WHEN 99 THEN 'Other' END)::VARCHAR
+    databucket.type_id: (0)::NUMBER
+    dst_endpoint.hostname: (HOST)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.http_method: (CASE WHEN HTTP_METHOD = 'CONNECT' THEN 'CONNECT' WHEN
+      HTTP_METHOD = 'DELETE' THEN 'DELETE' WHEN HTTP_METHOD = 'GET' THEN 'GET' WHEN
+      HTTP_METHOD = 'HEAD' THEN 'HEAD' WHEN HTTP_METHOD = 'OPTIONS' THEN 'OPTIONS'
+      WHEN HTTP_METHOD = 'POST' THEN 'POST' WHEN HTTP_METHOD = 'PUT' THEN 'PUT' WHEN
+      HTTP_METHOD = 'TRACE' THEN 'TRACE' ELSE NULL END)::VARCHAR
+    http_request.length: (REQUEST_LENGTH)::NUMBER
+    http_request.referrer: (REFERER)::VARCHAR
+    http_request.uid: (REQUEST_ID)::VARCHAR
+    http_request.url.path: (IFF(REQUEST_URI ILIKE '%%?%%', SPLIT_PART(REQUEST_URI,
+      '?', 1), REGEXP_SUBSTR(REQUEST_URI, '(.+)\\sHTTP', 1,1,'e')))::VARCHAR
+    http_request.url.query_string: (REGEXP_SUBSTR(SPLIT_PART(REQUEST_URI, '?', 2),
+      '(.+)\\s', 1,1,'e'))::VARCHAR
+    http_request.url.scheme: (HTTP_TYPE)::VARCHAR
+    http_request.url.url_string: (REQUEST_URI)::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    http_request.version: (REGEXP_SUBSTR(REQUEST_URI, 'HTTP/(.+)',1,1,'e'))::VARCHAR
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('alibaba-oss')::VARCHAR
+    metadata.product.vendor_name: ('alibaba')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (REQUEST_URI)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    query_info: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (CLIENT_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((IFF(ERROR_CODE = 'AccessDenied', 2, 1))::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (ERROR_CODE)::VARCHAR
+    status_id: (IFF(ERROR_CODE = 'AccessDenied', 2, 1))::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type: (CASE ((2)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Database' WHEN 2
+      THEN 'Databucket' WHEN 3 THEN 'Table' WHEN 99 THEN 'Other' END)::VARCHAR
+    type_id: (2)::NUMBER
+    type_name: '(CASE ((CASE WHEN OPERATION = ''GetObject'' THEN 600501 WHEN OPERATION
+      = ''GetBucketStat'' THEN 600501 WHEN OPERATION = ''PutObject'' THEN 600502 WHEN
+      OPERATION IS NULL THEN 600500 ELSE 600599 END)::NUMBER) WHEN 600500 THEN ''Datastore
+      Activity: Unknown'' WHEN 600501 THEN ''Datastore Activity: Read'' WHEN 600502
+      THEN ''Datastore Activity: Update'' WHEN 600503 THEN ''Datastore Activity: Connect''
+      WHEN 600504 THEN ''Datastore Activity: Query'' WHEN 600505 THEN ''Datastore
+      Activity: Write'' WHEN 600506 THEN ''Datastore Activity: Create'' WHEN 600507
+      THEN ''Datastore Activity: Delete'' WHEN 600599 THEN ''Datastore Activity: Other''
+      END)::VARCHAR'
+    type_uid: (CASE WHEN OPERATION = 'GetObject' THEN 600501 WHEN OPERATION = 'GetBucketStat'
+      THEN 600501 WHEN OPERATION = 'PutObject' THEN 600502 WHEN OPERATION IS NULL
+      THEN 600500 ELSE 600599 END)::NUMBER
+    unmapped: NULL::VARIANT

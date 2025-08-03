@@ -1,0 +1,151 @@
+type: mapping
+id: fortinet_fortiedr_security_events_2004_detection_finding_1.1.0
+version: '1'
+name: Fortinet Fortiedr Security Events to OCSF class Detection Finding
+data-types:
+- fortinet-fortiedr-security-events
+mapping:
+  fields:
+    action: (CASE (CASE WHEN ACTION = 'logged' THEN 1 WHEN ACTION IN ('Block', 'SimulationBlock')
+      THEN 2 WHEN ACTION IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION = 'logged' THEN 1 WHEN ACTION IN ('Block', 'SimulationBlock')
+      THEN 2 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN THREAT_TYPE IN ('generic', 'pup', 'fileless') THEN 1 WHEN
+      THREAT_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE (CASE WHEN THREAT_TYPE IN ('generic', 'pup', 'fileless')
+      THEN 1 WHEN THREAT_TYPE IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Create' WHEN 2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.file.name: (PROCESS)::VARCHAR
+    actor.process.file.path: (PROCESS_PATH)::VARCHAR
+    actor.user.name: (LOGGED_USERS[0])::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (2::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud: NULL::VARIANT
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device.ip: (COLLECTORS_IP[0])::VARCHAR
+    device.mac: (COLLECTORS_MAC_ADDRESSES[0])::VARCHAR
+    device.name: (COLLECTORS_DEVICE[0])::VARCHAR
+    device.org.name: (ORGANIZATION)::VARCHAR
+    device.os.name: (COLLECTORS_OPERATING_SYSTEM[0])::VARCHAR
+    disposition: (CASE (CASE WHEN ACTION = 'logged' THEN 17 WHEN ACTION IN ('Block',
+      'SimulationBlock') THEN 2 WHEN ACTION IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated' WHEN 11 THEN
+      'Corrected' WHEN 12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected' WHEN
+      14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN 17 THEN
+      'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked' WHEN
+      20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN 'Challenge'
+      WHEN 24 THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized'
+      WHEN 27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5
+      THEN 'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN 8 THEN
+      'Approved' WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN ACTION = 'logged' THEN 17 WHEN ACTION IN ('Block',
+      'SimulationBlock') THEN 2 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: NULL::ARRAY
+    finding_info.first_seen_time: (date_part('epoch_milliseconds', FIRST_SEEN::TIMESTAMP_LTZ))::NUMBER
+    finding_info.first_seen_time_dt: (FIRST_SEEN)::TIMESTAMP_LTZ
+    finding_info.last_seen_time: (date_part('epoch_milliseconds', LAST_SEEN::TIMESTAMP_LTZ))::NUMBER
+    finding_info.last_seen_time_dt: (LAST_SEEN)::TIMESTAMP_LTZ
+    firewall_rule.name: (RULES[0])::VARCHAR
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: (COMMENT)::VARCHAR
+    metadata.event_code: (action)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('fortinet-fortiedr-security-events')::VARCHAR
+    metadata.product.vendor_name: ('fortinet')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (PROCESS)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (LOGGED_USERS[0])::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COLLECTORS_IP[0])::VARCHAR
+    - name: '''device.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (COLLECTORS_MAC_ADDRESSES[0])::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: NULL::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE (CASE WHEN SEVERITY = 'High' THEN 4 WHEN SEVERITY = 'Medium' THEN
+      3 WHEN SEVERITY = 'Critical' THEN 5 WHEN SEVERITY IS NULL THEN 0 ELSE 99 END::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN
+      'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY = 'High' THEN 4 WHEN SEVERITY = 'Medium' THEN
+      3 WHEN SEVERITY = 'Critical' THEN 5 WHEN SEVERITY IS NULL THEN 0 ELSE 99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', last_seen::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (last_seen)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (CASE WHEN THREAT_TYPE IN (''generic'', ''pup'', ''fileless'')
+      THEN 200401 WHEN THREAT_TYPE IS NULL THEN 200400 ELSE 200499 END::NUMBER) WHEN
+      200400 THEN ''Detection Finding: Unknown'' WHEN 200401 THEN ''Detection Finding:
+      Create'' WHEN 200402 THEN ''Detection Finding: Update'' WHEN 200403 THEN ''Detection
+      Finding: Close'' WHEN 200499 THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN THREAT_TYPE IN ('generic', 'pup', 'fileless') THEN 200401
+      WHEN THREAT_TYPE IS NULL THEN 200400 ELSE 200499 END)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY

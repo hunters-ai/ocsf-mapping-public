@@ -1,0 +1,123 @@
+type: mapping
+id: linux_mail_logs_4009_email_activity_1.1.0
+version: '10'
+name: Linux Mail Logs to OCSF class Email Activity
+data-types:
+- linux-mail-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'pass' THEN 1 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'pass' THEN 1 ELSE 99
+      END)::NUMBER
+    activity_id: (CASE WHEN PROCESS_NAME IS NULL THEN 0 WHEN PROCESS_NAME = 'sendmail'
+      THEN 1 WHEN PROCESS_NAME = 'MailScanner' THEN 3 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN PROCESS_NAME IS NULL THEN 0 WHEN PROCESS_NAME
+      = 'sendmail' THEN 1 WHEN PROCESS_NAME = 'MailScanner' THEN 3 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN 2 THEN 'Receive' WHEN 3 THEN 'Scan'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.pid: (PROCESS_ID)::NUMBER
+    actor.user.uid: (CONTROLLING_USER_ADDRESS)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN
+      2 THEN 'Outbound' WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (0)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.domain: (REGEXP_SUBSTR(RELAY, '[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+){1,}'))::VARCHAR
+    duration: NULL::NUMBER
+    email.from: (COALESCE(EMAIL_FROM, SENDER))::VARCHAR
+    email.message_uid: (MESSAGE_ID)::VARCHAR
+    email.size: (MESSAGE_SIZE)::NUMBER
+    email.to: (ARRAY_CONSTRUCT(COALESCE(EMAIL_TO, RECIPIENT)))::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (MESSAGE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('linux-mail-logs')::VARCHAR
+    metadata.product.vendor_name: ('linux')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(EMAIL_FROM, SENDER))::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ARRAY_CONSTRUCT(COALESCE(EMAIL_TO, RECIPIENT)))::ARRAY
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOSTNAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: NULL::VARCHAR
+    src_endpoint.hostname: (HOSTNAME)::VARCHAR
+    src_endpoint.ip: (CLIENT_IP_ADDRESS)::VARCHAR
+    src_endpoint.name: (CLIENT_NAME)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (REASON)::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((400900 + (CASE WHEN PROCESS_NAME IS NULL THEN 0 WHEN PROCESS_NAME
+      = ''sendmail'' THEN 1 WHEN PROCESS_NAME = ''MailScanner'' THEN 3 ELSE 99 END))::NUMBER)
+      WHEN 400900 THEN ''Email Activity: Unknown'' WHEN 400901 THEN ''Email Activity:
+      Send'' WHEN 400902 THEN ''Email Activity: Receive'' WHEN 400903 THEN ''Email
+      Activity: Scan'' WHEN 400999 THEN ''Email Activity: Other'' END)::VARCHAR'
+    type_uid: (400900 + (CASE WHEN PROCESS_NAME IS NULL THEN 0 WHEN PROCESS_NAME =
+      'sendmail' THEN 1 WHEN PROCESS_NAME = 'MailScanner' THEN 3 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

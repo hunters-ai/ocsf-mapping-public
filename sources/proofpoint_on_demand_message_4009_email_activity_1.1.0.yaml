@@ -1,0 +1,150 @@
+type: mapping
+id: proofpoint_on_demand_message_4009_email_activity_1.1.0
+version: '9'
+name: Proofpoint On Demand Message to OCSF class Email Activity
+data-types:
+- proofpoint-on-demand-message
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN FILTER:actions[0]:action IN ('accept', 'execute', 'continue')
+      THEN 1 WHEN FILTER:actions[0]:action IN ('quarantine', 'discard', 'reject')
+      THEN 2 WHEN FILTER:actions[0]:action IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    action_id: (CASE WHEN FILTER:actions[0]:action IN ('accept', 'execute', 'continue')
+      THEN 1 WHEN FILTER:actions[0]:action IN ('quarantine', 'discard', 'reject')
+      THEN 2 WHEN FILTER:actions[0]:action IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE ((CASE WHEN FILTER:routeDirection='inbound' THEN 1 WHEN FILTER:routeDirection='outbound'
+      THEN 2 WHEN FILTER:routeDirection='internal' THEN 3 WHEN FILTER:routeDirection
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound'
+      WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (CASE WHEN FILTER:routeDirection='inbound' THEN 1 WHEN FILTER:routeDirection='outbound'
+      THEN 2 WHEN FILTER:routeDirection='internal' THEN 3 WHEN FILTER:routeDirection
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    disposition: (CASE ((CASE WHEN MSGPARTS[0]:disposition IS NULL THEN 0 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated'
+      WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected'
+      WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN
+      17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked'
+      WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN
+      'Challenge' WHEN 24 THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN
+      'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated'
+      WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN
+      8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN MSGPARTS[0]:disposition IS NULL THEN 0 ELSE 99 END)::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    email.cc: (ARRAY_CONSTRUCT(MSG:parsedAddresses:cc))::ARRAY
+    email.from: (MSG:header:from)::VARCHAR
+    email.message_uid: (MSG_MESSAGE_ID)::VARCHAR
+    email.raw_header: (MSG:header)::VARCHAR
+    email.reply_to: (MSG:header:"reply-to"[0])::VARCHAR
+    email.size: (MSG_SIZE_BYTES)::NUMBER
+    email.smtp_from: (ENVELOPE_FROM)::VARCHAR
+    email.smtp_to: (ENVELOPE_RECIPIENTS)::ARRAY
+    email.subject: (MSG_MESSAGE_SUBJECT)::VARCHAR
+    email.to: (ARRAY_CONSTRUCT(MSG:parsedAddresses:to))::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('proofpoint-on-demand-message')::VARCHAR
+    metadata.product.vendor_name: ('proofpoint')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.cc'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ARRAY_CONSTRUCT(MSG:parsedAddresses:cc))::ARRAY
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (MSG:header:from)::VARCHAR
+    - name: '''email.reply_to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (MSG:header:"reply-to"[0])::VARCHAR
+    - name: '''email.smtp_from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ENVELOPE_FROM)::VARCHAR
+    - name: '''email.smtp_to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ENVELOPE_RECIPIENTS)::ARRAY
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ARRAY_CONSTRUCT(MSG:parsedAddresses:to))::ARRAY
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (CONNECTION:host)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CONNECTION:ip)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: (CONNECTION:helo)::VARCHAR
+    src_endpoint.hostname: (CONNECTION:host)::VARCHAR
+    src_endpoint.ip: (CONNECTION:ip)::VARCHAR
+    src_endpoint.location.country: (CONNECTION:country)::VARCHAR
+    src_endpoint.uid: (CONNECTION:sid)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((400900)::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400900)::NUMBER
+    unmapped: NULL::VARIANT

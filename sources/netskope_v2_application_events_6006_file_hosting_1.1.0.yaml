@@ -1,0 +1,123 @@
+type: mapping
+id: netskope_v2_application_events_6006_file_hosting_1.1.0
+version: '1'
+name: Netskope V2 Application Events to OCSF class File Hosting
+data-types:
+- netskope-v2-application-events
+mapping:
+  fields:
+    activity_id: (CASE ACTIVITY WHEN 'Download' THEN 2 WHEN 'Upload' THEN 1 WHEN 'Move'
+      THEN 7 WHEN NULL THEN 0 ELSE 99 END )::NUMBER
+    activity_name: (CASE (CASE ACTIVITY WHEN 'Download' THEN 2 WHEN 'Upload' THEN
+      1 WHEN 'Move' THEN 7 WHEN NULL THEN 0 ELSE 99 END ) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Upload' WHEN 10 THEN 'Lock' WHEN 11 THEN 'Unlock' WHEN 12 THEN 'Share'
+      WHEN 13 THEN 'Unshare' WHEN 14 THEN 'Open' WHEN 15 THEN 'Sync' WHEN 16 THEN
+      'Unsync' WHEN 2 THEN 'Download' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN
+      5 THEN 'Rename' WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move' WHEN 8 THEN 'Restore'
+      WHEN 9 THEN 'Preview' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.invoked_by: (APP_CATEGORY)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'MD5','algorithm_id', 1, 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-256', 'algorithm_id', 3, 'value', SHA256)))::ARRAY
+    actor.session.uid: (APP_SESSION_ID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE (6::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud.account.name: (SAM_ACCOUNT_NAME)::VARCHAR
+    cloud.org.name: (ORG)::VARCHAR
+    cloud.org.ou_name: (organization_unit)::VARCHAR
+    cloud.org.uid: (ORGANIZATION_ID)::VARCHAR
+    connection_info.uid: (CONNECTION_ID)::VARCHAR
+    count: (COUNT)::NUMBER
+    dst_endpoint.hostname: (HOSTNAME)::VARCHAR
+    dst_endpoint.ip: (DST_IP)::VARCHAR
+    dst_endpoint.location.coordinates: (ARRAY_CONSTRUCT(DST_LATITUDE, DST_LONGITUDE))::ARRAY
+    dst_endpoint.location.country: (DST_COUNTRY)::VARCHAR
+    dst_endpoint.location.postal_code: (DST_ZIPCODE)::VARCHAR
+    dst_endpoint.location.region: (DST_REGION)::VARCHAR
+    dst_endpoint.port: (DST_PORT)::NUMBER
+    duration: (CONN_DURATION)::NUMBER
+    end_time: (date_part('epoch_milliseconds', SUPPRESSION_END_TIME::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (SUPPRESSION_END_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.parent_folder: (ORIGNAL_FILE_PATH)::VARCHAR
+    file.path: (FILE_PATH)::VARCHAR
+    file.size: (FILE_SIZE)::NUMBER
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('netskope-v2-application-events')::VARCHAR
+    metadata.product.vendor_name: ('netskope-v2')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOSTNAME)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DST_IP)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SRC_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    src_endpoint.ip: (SRC_IP)::VARCHAR
+    src_endpoint.location.coordinates: (ARRAY_CONSTRUCT(SRC_LATITUDE, SRC_LONGITUDE))::ARRAY
+    start_time: (date_part('epoch_milliseconds', SUPPRESSION_START_TIME::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (SUPPRESSION_START_TIME)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (CASE ACTIVITY WHEN ''download'' THEN 600602 WHEN ''upload''
+      THEN 600601 when ''move'' THEN 600607 WHEN NULL THEN 0 ELSE 99 END::NUMBER)
+      WHEN 600600 THEN ''File Hosting Activity: Unknown'' WHEN 600601 THEN ''File
+      Hosting Activity: Upload'' WHEN 600602 THEN ''File Hosting Activity: Download''
+      WHEN 600603 THEN ''File Hosting Activity: Update'' WHEN 600604 THEN ''File Hosting
+      Activity: Delete'' WHEN 600605 THEN ''File Hosting Activity: Rename'' WHEN 600606
+      THEN ''File Hosting Activity: Copy'' WHEN 600607 THEN ''File Hosting Activity:
+      Move'' WHEN 600608 THEN ''File Hosting Activity: Restore'' WHEN 600609 THEN
+      ''File Hosting Activity: Preview'' WHEN 600610 THEN ''File Hosting Activity:
+      Lock'' WHEN 600611 THEN ''File Hosting Activity: Unlock'' WHEN 600612 THEN ''File
+      Hosting Activity: Share'' WHEN 600613 THEN ''File Hosting Activity: Unshare''
+      WHEN 600614 THEN ''File Hosting Activity: Open'' WHEN 600615 THEN ''File Hosting
+      Activity: Sync'' WHEN 600616 THEN ''File Hosting Activity: Unsync'' WHEN 600699
+      THEN ''File Hosting Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE ACTIVITY WHEN 'download' THEN 600602 WHEN 'upload' THEN 600601
+      when 'move' THEN 600607 WHEN NULL THEN 0 ELSE 99 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: ACTIVITY in ('Download', 'Move', 'Upload')

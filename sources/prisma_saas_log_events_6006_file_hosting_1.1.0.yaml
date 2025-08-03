@@ -1,0 +1,213 @@
+type: mapping
+id: prisma_saas_log_events_6006_file_hosting_1.1.0
+version: '8'
+name: Prisma Saas Log Events to OCSF class File Hosting
+data-types:
+- prisma-saas-log-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION = 'upload' THEN 1 WHEN ACTION = 'download' THEN
+      2 WHEN ACTION IN ('update', 'risk_email_format_update', 'scan_settings_update',
+      'edit') THEN 3 WHEN ACTION IN ('delete', 'delete_forever') THEN 4 WHEN ACTION
+      = 'copy' THEN 6 WHEN ACTION = 'copy_move' THEN 7 WHEN ACTION = 'recover' THEN
+      8 WHEN ACTION = 'preview' THEN 9 WHEN ACTION = 'share' THEN 12 WHEN ACTION =
+      'sync' THEN 15 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION = 'upload' THEN 1 WHEN ACTION = 'download'
+      THEN 2 WHEN ACTION IN ('update', 'risk_email_format_update', 'scan_settings_update',
+      'edit') THEN 3 WHEN ACTION IN ('delete', 'delete_forever') THEN 4 WHEN ACTION
+      = 'copy' THEN 6 WHEN ACTION = 'copy_move' THEN 7 WHEN ACTION = 'recover' THEN
+      8 WHEN ACTION = 'preview' THEN 9 WHEN ACTION = 'share' THEN 12 WHEN ACTION =
+      'sync' THEN 15 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Upload' WHEN 10 THEN 'Lock' WHEN 11 THEN 'Unlock' WHEN
+      12 THEN 'Share' WHEN 13 THEN 'Unshare' WHEN 14 THEN 'Open' WHEN 15 THEN 'Sync'
+      WHEN 16 THEN 'Unsync' WHEN 2 THEN 'Download' WHEN 3 THEN 'Update' WHEN 4 THEN
+      'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move' WHEN 8 THEN
+      'Restore' WHEN 9 THEN 'Preview' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.container.name: (CONTAINER_NAME)::VARCHAR
+    actor.user.email_addr: (USER)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud.account.name: (CLOUD_APP_INSTANCE)::VARCHAR
+    cloud.org.uid: (SERIAL)::VARCHAR
+    connection_info.boundary: (CASE ((CASE WHEN EXPOSURE = 'INTERNAL' THEN 2 WHEN
+      EXPOSURE = 'EXTERNAL' THEN 3 WHEN EXPOSURE IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Localhost' WHEN 10 THEN 'Gateway VPC' WHEN
+      11 THEN 'Internet Gateway' WHEN 2 THEN 'Internal' WHEN 3 THEN 'External' WHEN
+      4 THEN 'Same VPC' WHEN 5 THEN 'Internet/VPC Gateway' WHEN 6 THEN 'Virtual Private
+      Gateway' WHEN 7 THEN 'Intra-region VPC' WHEN 8 THEN 'Inter-region VPC' WHEN
+      9 THEN 'Local Gateway' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.boundary_id: (CASE WHEN EXPOSURE = 'INTERNAL' THEN 2 WHEN EXPOSURE
+      = 'EXTERNAL' THEN 3 WHEN EXPOSURE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(SOURCE_IP, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(SOURCE_IP, 'INET', 1):family)::NUMBER
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.accessor.ldap_person.email_addrs: (SPLIT(COLLABORATORS, ','))::ARRAY
+    file.creator.email_addr: (ITEM_CREATOR_EMAIL)::VARCHAR
+    file.creator.name: (ITEM_CREATOR)::VARCHAR
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('value', ITEM_SHA256,
+      'algorithm_id', IFF(ITEM_SHA256 IS NULL, NULL, 3), 'algorithm', IFF(ITEM_SHA256
+      IS NULL, NULL, 'SHA-256'))))::ARRAY
+    file.name: (ITEM_NAME)::VARCHAR
+    file.owner.email_addr: (ITEM_OWNER_EMAIL)::VARCHAR
+    file.owner.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', ITEM_OWNER_GROUP)))::ARRAY
+    file.owner.name: (ITEM_OWNER)::VARCHAR
+    file.product.url_string: (ITEM_CLOUD_URL)::VARCHAR
+    file.size: (ITEM_SIZE)::NUMBER
+    file.type: (CASE ((CASE WHEN TARGET_TYPE = 'file' THEN 1 WHEN TARGET_TYPE = 'folder'
+      THEN 2 WHEN TARGET_TYPE = 'link' THEN 7 WHEN TARGET_TYPE IS NULL THEN 0 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File' WHEN 2 THEN
+      'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device' WHEN 5 THEN
+      'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    file.type_id: (CASE WHEN TARGET_TYPE = 'file' THEN 1 WHEN TARGET_TYPE = 'folder'
+      THEN 2 WHEN TARGET_TYPE = 'link' THEN 7 WHEN TARGET_TYPE IS NULL THEN 0 ELSE
+      99 END)::NUMBER
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('prisma-saas-log-events')::VARCHAR
+    metadata.product.vendor_name: ('PrismaCloud')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.container'''
+      type: '''Container'''
+      type_id: 27
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (USER)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.accessor'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.accessor.ldap_person.email_addrs'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SPLIT(COLLABORATORS, ','))::ARRAY
+    - name: '''file.creator'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.creator.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ITEM_CREATOR_EMAIL)::VARCHAR
+    - name: '''file.creator.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ITEM_CREATOR)::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (ITEM_NAME)::VARCHAR
+    - name: '''file.owner'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.owner.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ITEM_OWNER_EMAIL)::VARCHAR
+    - name: '''file.owner.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ITEM_OWNER)::VARCHAR
+    - name: '''file.product.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (ITEM_CLOUD_URL)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((IFF(SEVERITY > 6 , 99, SPLIT_PART(SEVERITY, '.', 1)))::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN
+      'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    severity_id: (IFF(SEVERITY > 6 , 99, SPLIT_PART(SEVERITY, '.', 1)))::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.location.city: (SPLIT(LOCATION, ',')[0])::VARCHAR
+    src_endpoint.location.desc: (LOCATION)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (DATETIME_EDITED)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (DATETIME_EDITED)::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600600 + (CASE WHEN ACTION = ''upload'' THEN 1 WHEN ACTION
+      = ''download'' THEN 2 WHEN ACTION IN (''update'', ''risk_email_format_update'',
+      ''scan_settings_update'', ''edit'') THEN 3 WHEN ACTION IN (''delete'', ''delete_forever'')
+      THEN 4 WHEN ACTION = ''copy'' THEN 6 WHEN ACTION = ''copy_move'' THEN 7 WHEN
+      ACTION = ''recover'' THEN 8 WHEN ACTION = ''preview'' THEN 9 WHEN ACTION = ''share''
+      THEN 12 WHEN ACTION = ''sync'' THEN 15 WHEN ACTION IS NULL THEN 0 ELSE 99 END))::NUMBER)
+      WHEN 600600 THEN ''File Hosting Activity: Unknown'' WHEN 600601 THEN ''File
+      Hosting Activity: Upload'' WHEN 600602 THEN ''File Hosting Activity: Download''
+      WHEN 600603 THEN ''File Hosting Activity: Update'' WHEN 600604 THEN ''File Hosting
+      Activity: Delete'' WHEN 600605 THEN ''File Hosting Activity: Rename'' WHEN 600606
+      THEN ''File Hosting Activity: Copy'' WHEN 600607 THEN ''File Hosting Activity:
+      Move'' WHEN 600608 THEN ''File Hosting Activity: Restore'' WHEN 600609 THEN
+      ''File Hosting Activity: Preview'' WHEN 600610 THEN ''File Hosting Activity:
+      Lock'' WHEN 600611 THEN ''File Hosting Activity: Unlock'' WHEN 600612 THEN ''File
+      Hosting Activity: Share'' WHEN 600613 THEN ''File Hosting Activity: Unshare''
+      WHEN 600614 THEN ''File Hosting Activity: Open'' WHEN 600615 THEN ''File Hosting
+      Activity: Sync'' WHEN 600616 THEN ''File Hosting Activity: Unsync'' WHEN 600699
+      THEN ''File Hosting Activity: Other'' END)::VARCHAR'
+    type_uid: (600600 + (CASE WHEN ACTION = 'upload' THEN 1 WHEN ACTION = 'download'
+      THEN 2 WHEN ACTION IN ('update', 'risk_email_format_update', 'scan_settings_update',
+      'edit') THEN 3 WHEN ACTION IN ('delete', 'delete_forever') THEN 4 WHEN ACTION
+      = 'copy' THEN 6 WHEN ACTION = 'copy_move' THEN 7 WHEN ACTION = 'recover' THEN
+      8 WHEN ACTION = 'preview' THEN 9 WHEN ACTION = 'share' THEN 12 WHEN ACTION =
+      'sync' THEN 15 WHEN ACTION IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: ITEM_TYPE IN ('file', 'File')

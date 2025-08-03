@@ -1,0 +1,175 @@
+type: mapping
+id: meraki_airmarshal_logs_3002_authentication_1.1.0
+version: '11'
+name: Meraki Airmarshal Logs to OCSF class Authentication
+data-types:
+- meraki-airmarshal-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE IN ('wpa_auth', '8021x_auth', 'splash_auth',
+      'association', '8021x_eap_success') THEN 1::NUMBER WHEN EVENT_TYPE IN ('wpa_deauth',
+      '8021x_client_deauth', '8021x_deauth', 'disassociation', '8021x_eap_failure')
+      THEN 2::NUMBER ELSE 99::NUMBER END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IN ('wpa_auth', '8021x_auth', 'splash_auth',
+      'association', '8021x_eap_success') THEN 1::NUMBER WHEN EVENT_TYPE IN ('wpa_deauth',
+      '8021x_client_deauth', '8021x_deauth', 'disassociation', '8021x_eap_failure')
+      THEN 2::NUMBER ELSE 99::NUMBER END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Logon' WHEN 2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN
+      'Service Ticket Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: (CASE ((CASE WHEN EVENT_TYPE IN ('8021x_eap_success', '8021x_eap_failure')
+      THEN 9::NUMBER ELSE 99::NUMBER END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'NTLM' WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos' WHEN 3 THEN 'Digest' WHEN
+      4 THEN 'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH 2.0' WHEN 7 THEN 'PAP'
+      WHEN 8 THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other' END)::VARCHAR
+    auth_protocol_id: (CASE WHEN EVENT_TYPE IN ('8021x_eap_success', '8021x_eap_failure')
+      THEN 9::NUMBER ELSE 99::NUMBER END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud.provider: ('MERAKI')::VARCHAR
+    count: NULL::NUMBER
+    device.hostname: (RAW:identity)::VARCHAR
+    device.ip: (COALESCE(RAW:client_ip, RAW:arp_src, RAW:dhcp_ip, RAW:ip_src, RAW:last_known_client_ip))::VARCHAR
+    device.mac: (CASE WHEN EVENT_TYPE = 'splash_auth' THEN raw:mac::VARCHAR ELSE raw:client_mac::VARCHAR
+      END)::VARCHAR
+    device.name: (RAW:identity)::VARCHAR
+    dst_endpoint.mac: (ACCESS_POINT)::VARCHAR
+    dst_endpoint.name: (ACCESS_POINT)::VARCHAR
+    dst_endpoint.type: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server'
+      WHEN 10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    dst_endpoint.type_id: (99)::NUMBER
+    dst_endpoint.uid: (COALESCE(RAW:aid, NULL))::VARCHAR
+    dst_endpoint.vlan_uid: (VLAN_ID)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: (1)::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: (CASE ((3)::NUMBER) WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive'
+      WHEN 11 THEN 'Cached Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN
+      13 THEN 'Cached Unlock' WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN
+      4 THEN 'Batch' WHEN 5 THEN 'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network
+      Cleartext' WHEN 9 THEN 'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
+    logon_type_id: (3)::NUMBER
+    message: (event_type)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('meraki-airmarshal-logs')::VARCHAR
+    metadata.product.vendor_name: ('meraki')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:identity)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:client_ip, RAW:arp_src, RAW:dhcp_ip, RAW:ip_src, RAW:last_known_client_ip))::VARCHAR
+    - name: '''device.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (CASE WHEN EVENT_TYPE = 'splash_auth' THEN raw:mac::VARCHAR ELSE raw:client_mac::VARCHAR
+        END)::VARCHAR
+    - name: '''dst_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (ACCESS_POINT)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:identity)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:client_ip, RAW:arp_src, RAW:dhcp_ip, RAW:ip_src, RAW:last_known_client_ip))::VARCHAR
+    - name: '''src_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (CASE WHEN EVENT_TYPE = 'splash_auth' THEN raw:mac::VARCHAR ELSE raw:client_mac::VARCHAR
+        END)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:identity)::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.name: (ACCESS_POINT)::VARCHAR
+    session: NULL::VARIANT
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    src_endpoint.hostname: (RAW:identity)::VARCHAR
+    src_endpoint.ip: (COALESCE(RAW:client_ip, RAW:arp_src, RAW:dhcp_ip, RAW:ip_src,
+      RAW:last_known_client_ip))::VARCHAR
+    src_endpoint.mac: (CASE WHEN EVENT_TYPE = 'splash_auth' THEN raw:mac::VARCHAR
+      ELSE raw:client_mac::VARCHAR END)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EVENT_TYPE IN ('8021x_eap_success') THEN 1::NUMBER WHEN
+      (EVENT_TYPE IN ('8021x_eap_failure') OR RAW:AUTH_NEG_FAILED = '1') THEN 2::NUMBER
+      ELSE 0::NUMBER END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (RAW:reason)::VARCHAR
+    status_id: (CASE WHEN EVENT_TYPE IN ('8021x_eap_success') THEN 1::NUMBER WHEN
+      (EVENT_TYPE IN ('8021x_eap_failure') OR RAW:AUTH_NEG_FAILED = '1') THEN 2::NUMBER
+      ELSE 0::NUMBER END)::NUMBER
+    time: (date_part('epoch_milliseconds', log_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (log_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE IN (''wpa_auth'', ''8021x_auth'', ''splash_auth'',
+      ''association'', ''8021x_eap_success'') THEN 300201::NUMBER WHEN EVENT_TYPE
+      IN (''wpa_deauth'', ''8021x_client_deauth'', ''8021x_deauth'', ''disassociation'',
+      ''8021x_eap_failure'') THEN 300202::NUMBER ELSE 300299::NUMBER END)::NUMBER)
+      WHEN 300200 THEN ''Authentication: Unknown'' WHEN 300201 THEN ''Authentication:
+      Logon'' WHEN 300202 THEN ''Authentication: Logoff'' WHEN 300203 THEN ''Authentication:
+      Authentication Ticket'' WHEN 300204 THEN ''Authentication: Service Ticket Request''
+      WHEN 300205 THEN ''Authentication: Service Ticket Renew'' WHEN 300299 THEN ''Authentication:
+      Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE IN ('wpa_auth', '8021x_auth', 'splash_auth', 'association',
+      '8021x_eap_success') THEN 300201::NUMBER WHEN EVENT_TYPE IN ('wpa_deauth', '8021x_client_deauth',
+      '8021x_deauth', 'disassociation', '8021x_eap_failure') THEN 300202::NUMBER ELSE
+      300299::NUMBER END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.name: (RAW:identity)::VARCHAR
+    user.uid: (CASE WHEN EVENT_TYPE = 'splash_auth' THEN raw:mac::VARCHAR ELSE raw:client_mac::VARCHAR
+      END)::VARCHAR
+  predicate: EVENT_TYPE IN ('wpa_deauth', '8021x_client_deauth', '8021x_deauth', '8021x_auth',
+    '8021x_eap_success', '8021x_eap_failure', 'association', 'disassociation', 'splash_auth',
+    'wpa_auth')

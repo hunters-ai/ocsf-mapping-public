@@ -1,0 +1,136 @@
+type: mapping
+id: cato_networks_security_events_5001_inventory_info_1.1.0
+version: '1'
+name: Cato Networks Security Events to OCSF class Inventory Info
+data-types:
+- cato-networks-security-events
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Log' WHEN
+      2 THEN 'Collect' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('value',
+      RAW:file_hash, 'algorithm_id',IFF(RAW:file_hash IS NULL, NULL, 3), 'algorithm',
+      IFF(RAW:file_hash IS NULL, NULL, 'SHA-256'))))::ARRAY
+    actor.process.file.name: (RAW:file_name)::VARCHAR
+    actor.process.file.size: (RAW:file_size)::NUMBER
+    actor.user.uid: (RAW:user_reference_id)::VARCHAR
+    api.service.name: (APPLICATION)::VARCHAR
+    api.service.uid: (RAW:application_id)::VARCHAR
+    category_name: (CASE ((5)::NUMBER) WHEN 5 THEN 'Discovery' END)::VARCHAR
+    category_uid: (5)::NUMBER
+    class_name: ('inventory_info')::VARCHAR
+    class_uid: ('5001')::NUMBER
+    cloud.provider: ('Cato Networks')::VARCHAR
+    count: (EVENT_COUNT)::NUMBER
+    device.domain: (DOMAIN_NAME)::VARCHAR
+    device.ip: (COALESCE(RAW:host_ip, DEST_IP))::VARCHAR
+    device.location.country: (RAW:dest_country_code)::VARCHAR
+    device.location.isp: (ISP_NAME)::VARCHAR
+    device.location.region: (DEST_SITE)::VARCHAR
+    device.mac: (RAW:host_mac)::VARCHAR
+    device.name: (RAW:device_name)::VARCHAR
+    device.org.name: (RAW:account_name)::VARCHAR
+    device.org.uid: (RAW:account_id)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN OS_TYPE ILIKE 'OS_UNKNOWN' OR OS_TYPE IS NULL
+      THEN 0 WHEN OS_TYPE = 'OS_WINDOWS' THEN 100 WHEN OS_TYPE = 'OS_LINUX' THEN 200
+      WHEN OS_TYPE = 'OS_ANDROID' THEN 201 WHEN OS_TYPE = 'OS_MAC' THEN 300 WHEN OS_TYPE
+      = 'OS_IOS' THEN 301 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN
+      'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN
+      'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN
+      400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    device.os.type_id: (CASE WHEN OS_TYPE ILIKE 'OS_UNKNOWN' OR OS_TYPE IS NULL THEN
+      0 WHEN OS_TYPE = 'OS_WINDOWS' THEN 100 WHEN OS_TYPE = 'OS_LINUX' THEN 200 WHEN
+      OS_TYPE = 'OS_ANDROID' THEN 201 WHEN OS_TYPE = 'OS_MAC' THEN 300 WHEN OS_TYPE
+      = 'OS_IOS' THEN 301 ELSE 99 END)::NUMBER
+    device.risk_level: (CASE ((CASE WHEN RAW:risk_level IS NULL THEN 0 WHEN RAW:risk_level
+      = 'Medium' THEN 3 END)::NUMBER) WHEN 0 THEN 'Info' WHEN 1 THEN 'Low' WHEN 2
+      THEN 'Medium' WHEN 3 THEN 'High' WHEN 4 THEN 'Critical' END)::VARCHAR
+    device.risk_level_id: (CASE WHEN RAW:risk_level IS NULL THEN 0 WHEN RAW:risk_level
+      = 'Medium' THEN 3 END)::NUMBER
+    device.subnet: (SUBNET_NAME)::VARCHAR
+    device.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN
+      10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (0)::NUMBER
+    device.zone: (POINT_OF_PRESENCE_NAME)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_sub_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cato-networks-security-events')::VARCHAR
+    metadata.product.vendor_name: ('CatoNetworks')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (RAW:file_name)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:host_ip, DEST_IP))::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (RAW:host_mac)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((500101)::NUMBER) WHEN 500100 THEN ''Device Inventory Info:
+      Unknown'' WHEN 500101 THEN ''Device Inventory Info: Log'' WHEN 500102 THEN ''Device
+      Inventory Info: Collect'' WHEN 500199 THEN ''Device Inventory Info: Other''
+      END)::VARCHAR'
+    type_uid: (500101)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: RAW:device_name IS NOT NULL

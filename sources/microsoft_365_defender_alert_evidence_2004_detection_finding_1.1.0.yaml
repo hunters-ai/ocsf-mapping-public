@@ -1,0 +1,182 @@
+type: mapping
+id: microsoft_365_defender_alert_evidence_2004_detection_finding_1.1.0
+version: '1'
+name: Microsoft 365 Defender Alert Evidence to OCSF class Detection Finding
+data-types:
+- microsoft-365-defender-alert-evidence
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (PROCESS_COMMAND_LINE)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-1', 'algorithm_id', 1, 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-256', 'algorithm_id', 3, 'value', SHA256)))::ARRAY
+    actor.process.file.name: (FILE_NAME)::VARCHAR
+    actor.process.file.path: (FOLDER_PATH)::VARCHAR
+    actor.process.file.size: (FILE_SIZE)::NUMBER
+    actor.process.parent_process.cmd_line: (ADDITIONAL_FIELDS:ParentProcess:CommandLine)::VARCHAR
+    actor.process.parent_process.created_time: (date_part('epoch_milliseconds', (ADDITIONAL_FIELDS:ParentProcess:CreatedTimeUtc)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.created_time_dt: (ADDITIONAL_FIELDS:ParentProcess:CreatedTimeUtc)::TIMESTAMP_LTZ
+    actor.process.parent_process.pid: (ADDITIONAL_FIELDS:ParentProcess:ProcessId)::NUMBER
+    actor.process.pid: (ADDITIONAL_FIELDS:ProcessId)::NUMBER
+    actor.session.uid: (ADDITIONAL_FIELDS:SessionId)::VARCHAR
+    actor.user.domain: (ACCOUNT_DOMAIN)::VARCHAR
+    actor.user.email_addr: (COALESCE(ADDITIONAL_FIELDS:UserPrincipalName, ACCOUNT_UPN))::VARCHAR
+    actor.user.full_name: (ADDITIONAL_FIELDS:DisplayName)::VARCHAR
+    actor.user.name: (ACCOUNT_NAME)::VARCHAR
+    actor.user.org.uid: (TENANT_ID)::VARCHAR
+    actor.user.uid: (COALESCE(ACCOUNT_SID, ACCOUNT_OBJECT_ID))::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((2)::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud.provider: ('Microsoft Defender')::VARCHAR
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: (CASE WHEN ADDITIONAL_FIELDS:PhishConfidenceLevel IS NULL THEN
+      0WHEN ADDITIONAL_FIELDS:PhishConfidenceLevel = 'High' THEN 2 ELSE 99 END)::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device.groups: (ARRAY_CONSTRUCT(MACHINE_GROUP))::ARRAY
+    device.ip: (REMOTE_IP)::VARCHAR
+    device.location.city: (ADDITIONAL_FIELDS:Location:City)::VARCHAR
+    device.location.coordinates: (ARRAY_CONSTRUCT(ADDITIONAL_FIELDS:Location:Latitude,ADDITIONAL_FIELDS:Location:Longitude))::ARRAY
+    device.location.country: (ADDITIONAL_FIELDS:Location:CountryCode)::VARCHAR
+    device.name: (DEVICE_NAME)::VARCHAR
+    device.os.lang: (ADDITIONAL_FIELDS:Language)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN ADDITIONAL_FIELDS:OSFamily IS NULL THEN 0 WHEN
+      ADDITIONAL_FIELDS:OSFamily= 'Linux' THEN 200 WHEN ADDITIONAL_FIELDS:OSFamily
+      = 'Windows' THEN 100 ELSE 99 END::NUMBER)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN
+      201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS'
+      WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN ADDITIONAL_FIELDS:OSFamily IS NULL THEN 0 WHEN ADDITIONAL_FIELDS:OSFamily=
+      'Linux' THEN 200 WHEN ADDITIONAL_FIELDS:OSFamily = 'Windows' THEN 100 ELSE 99
+      END)::NUMBER
+    device.os.version: (ADDITIONAL_FIELDS:OSVersion)::VARCHAR
+    device.uid: (DEVICE_ID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (ADDITIONAL_FIELDS:EndTimeUtc)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (ADDITIONAL_FIELDS:EndTimeUtc)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: NULL::ARRAY
+    finding_info.analytic.category: (ADDITIONAL_FIELDS:ThreatDetectionMethods)::VARCHAR
+    finding_info.created_time: (date_part('epoch_milliseconds', (ADDITIONAL_FIELDS:CreatedTimeUtc)::TIMESTAMP_LTZ))::NUMBER
+    finding_info.created_time_dt: (ADDITIONAL_FIELDS:CreatedTimeUtc)::TIMESTAMP_LTZ
+    finding_info.modified_time: (date_part('epoch_milliseconds', (ADDITIONAL_FIELDS:LastWriteTimeUtc)::TIMESTAMP_LTZ))::NUMBER
+    finding_info.modified_time_dt: (ADDITIONAL_FIELDS:LastWriteTimeUtc)::TIMESTAMP_LTZ
+    finding_info.src_url: (ADDITIONAL_FIELDS:Url)::VARCHAR
+    finding_info.title: (ADDITIONAL_FIELDS:ThreatIntelligence[0]:ThreatName)::VARCHAR
+    finding_info.types: (ADDITIONAL_FIELDS:Threats)::ARRAY
+    finding_info.uid: (ALERT_ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('microsoft-365-defender-alert-evidence')::VARCHAR
+    metadata.product.vendor_name: ('microsoft-365-defender')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (FILE_NAME)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(ADDITIONAL_FIELDS:UserPrincipalName, ACCOUNT_UPN))::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACCOUNT_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REMOTE_IP)::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''finding_info.src_url'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (ADDITIONAL_FIELDS:Url)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: NULL::ARRAY
+    risk_level: (CASE ((CASE WHEN ADDITIONAL_FIELDS:RiskLevel = 'Low' THEN 1 END)::NUMBER)
+      WHEN 0 THEN 'Info' WHEN 1 THEN 'Low' WHEN 2 THEN 'Medium' WHEN 3 THEN 'High'
+      WHEN 4 THEN 'Critical' END)::VARCHAR
+    risk_level_id: (CASE WHEN ADDITIONAL_FIELDS:RiskLevel = 'Low' THEN 1 END)::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (ADDITIONAL_FIELDS:StartTimeUtc)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (ADDITIONAL_FIELDS:StartTimeUtc)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (ADDITIONAL_FIELDS:DetectionStatus)::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((200400)::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200400)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY

@@ -1,0 +1,129 @@
+type: mapping
+id: gsuite_alert_2004_detection_finding_1.1.0
+version: '2'
+name: Gsuite Alert to OCSF class Detection Finding
+data-types:
+- gsuite-alert
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.path: (METADATA:input_file)::VARCHAR
+    actor.user.domain: (DATA:domainId:customerPrimaryDomain)::VARCHAR
+    actor.user.email_addr: (DATA:messages[0]:recipient)::VARCHAR
+    actor.user.full_name: (RAW:userDisplayName)::VARCHAR
+    actor.user.uid: (RAW:userId)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((2)::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud: NULL::VARIANT
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device.hw_info.serial_number: (RAW:serialNumber)::VARCHAR
+    device.name: (RAW:deviceName)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN RAW:operatingSystem IS NULL THEN 0 WHEN RAW:operatingSystem
+      = 'Android' THEN 201 WHEN RAW:operatingSystem = 'Windows' THEN 100 WHEN RAW:operatingSystem
+      = 'iOS' THEN 301 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN RAW:operatingSystem IS NULL THEN 0 WHEN RAW:operatingSystem
+      = 'Android' THEN 201 WHEN RAW:operatingSystem = 'Windows' THEN 100 WHEN RAW:operatingSystem
+      = 'iOS' THEN 301 ELSE 99 END)::NUMBER
+    device.os.version: (RAW:osVersion)::VARCHAR
+    device.uid: (RAW:easDeviceId)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (END_TIME)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (END_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: NULL::ARRAY
+    finding_info.created_time: (date_part('epoch_milliseconds', (CREATE_TIME)::TIMESTAMP_LTZ))::NUMBER
+    finding_info.created_time_dt: (CREATE_TIME)::TIMESTAMP_LTZ
+    finding_info.modified_time: (date_part('epoch_milliseconds', (UPDATE_TIME)::TIMESTAMP_LTZ))::NUMBER
+    finding_info.modified_time_dt: (UPDATE_TIME)::TIMESTAMP_LTZ
+    finding_info.title: (TYPE)::VARCHAR
+    finding_info.uid: (ALERT_ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: (TYPE)::VARCHAR
+    metadata.event_code: (type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('gsuite-alert')::VARCHAR
+    metadata.product.vendor_name: ('gsuite')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (DATA:messages[0]:recipient)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: NULL::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE ((CASE WHEN METADATA:severity IS NULL THEN 0 WHEN METADATA:severity
+      = 'HIGH' THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN METADATA:severity IS NULL THEN 0 WHEN METADATA:severity
+      = 'HIGH' THEN 4 ELSE 99 END)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (START_TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (START_TIME)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (METADATA:status)::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', create_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (create_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((200400)::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200400)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY

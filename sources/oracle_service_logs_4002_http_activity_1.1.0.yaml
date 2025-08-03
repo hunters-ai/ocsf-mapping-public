@@ -1,0 +1,191 @@
+type: mapping
+id: oracle_service_logs_4002_http_activity_1.1.0
+version: '17'
+name: Oracle Service Logs to OCSF class Http Activity
+data-types:
+- oracle-service-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'block' THEN 2
+      WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'block' THEN 2 WHEN
+      ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN RAW:data:request:method = 'CONNECT' THEN 1 WHEN RAW:data:request:method
+      = 'DELETE' THEN 2 WHEN RAW:data:request:method = 'GET' THEN 3 WHEN RAW:data:request:method
+      = 'HEAD' THEN 4 WHEN RAW:data:request:method = 'OPTIONS' THEN 5 WHEN RAW:data:request:method
+      = 'POST' THEN 6 WHEN RAW:data:request:method = 'PUT' THEN 7 WHEN RAW:data:request:method
+      = 'TRACE' THEN 8 WHEN RAW:data:request:method IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:data:request:method = 'CONNECT' THEN 1 WHEN
+      RAW:data:request:method = 'DELETE' THEN 2 WHEN RAW:data:request:method = 'GET'
+      THEN 3 WHEN RAW:data:request:method = 'HEAD' THEN 4 WHEN RAW:data:request:method
+      = 'OPTIONS' THEN 5 WHEN RAW:data:request:method = 'POST' THEN 6 WHEN RAW:data:request:method
+      = 'PUT' THEN 7 WHEN RAW:data:request:method = 'TRACE' THEN 8 WHEN RAW:data:request:method
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Connect'
+      WHEN 2 THEN 'Delete' WHEN 3 THEN 'Get' WHEN 4 THEN 'Head' WHEN 5 THEN 'Options'
+      WHEN 6 THEN 'Post' WHEN 7 THEN 'Put' WHEN 8 THEN 'Trace' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud.account.uid: (TENANT_ID)::VARCHAR
+    cloud.org.name: ('Oracle')::VARCHAR
+    connection_info.direction: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.direction_id: (1)::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(RAW:data:clientAddr, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(RAW:data:clientAddr, 'INET', 1):family)::NUMBER
+    connection_info.uid: (ID)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'block' THEN
+      2 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Allowed' WHEN 10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12
+      THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed'
+      WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN
+      18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count'
+      WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24
+      THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN
+      27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN
+      'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved'
+      WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN ACTION = 'allow' THEN 1 WHEN ACTION = 'block' THEN
+      2 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    dst_endpoint.hostname: (RAW:data:responseProvider)::VARCHAR
+    dst_endpoint.ip: (IFF(RAW:data:responseProvider ILIKE '%%:%%', SPLIT_PART(RAW:data:responseProvider,
+      ':', 1), NULL))::VARCHAR
+    dst_endpoint.port: (IFF(RAW:data:responseProvider ILIKE '%%:%%', SPLIT_PART(RAW:data:responseProvider,
+      ':', 2), NULL))::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule.match_details: (RAW:data:requestProtection:matchedRules)::ARRAY
+    firewall_rule.uid: (RAW:data:requestProtection:matchedIds)::VARCHAR
+    http_cookies: NULL::ARRAY
+    http_request.http_method: (CASE WHEN RAW:data:request:method = 'CONNECT' THEN
+      'CONNECT' WHEN RAW:data:request:method = 'DELETE' THEN 'DELETE' WHEN RAW:data:request:method
+      = 'GET' THEN 'GET' WHEN RAW:data:request:method = 'HEAD' THEN 'HEAD' WHEN RAW:data:request:method
+      = 'OPTIONS' THEN 'OPTIONS' WHEN RAW:data:request:method = 'POST' THEN 'POST'
+      WHEN RAW:data:request:method = 'PUT' THEN 'PUT' WHEN RAW:data:request:method
+      = 'TRACE' THEN 'TRACE' ELSE NULL END)::VARCHAR
+    http_request.uid: (RAW:data:request:id)::VARCHAR
+    http_request.url.path: (SPLIT_PART(RAW:data:request:path, '?', 1))::VARCHAR
+    http_request.url.port: (RAW:data:listenerPort)::NUMBER
+    http_request.url.query_string: (SPLIT_PART(RAW:data:request:path, '?', 2))::VARCHAR
+    http_request.url.scheme: (REGEXP_SUBSTR(RAW:data:request:httpVersion, '^([a-zA-Z]+)'))::VARCHAR
+    http_request.url.url_string: (RAW:data:request:path)::VARCHAR
+    http_request.user_agent: (RAW:data:request:agent)::VARCHAR
+    http_request.version: (REGEXP_SUBSTR(RAW:data:request:httpVersion, '([0-9\.]+)'))::VARCHAR
+    http_response.code: (RAW:data:response:code)::NUMBER
+    http_response.content_type: (RAW:data:response:contentType)::VARCHAR
+    http_response.length: (RAW:data:response:size)::NUMBER
+    http_status: (RAW:data:response:code)::NUMBER
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (EVENT_TYPE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.log_version: (SPEC_VERSION)::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('oracle-service-logs')::VARCHAR
+    metadata.product.vendor_name: ('oracle')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:data:responseProvider)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IFF(RAW:data:responseProvider ILIKE '%%:%%', SPLIT_PART(RAW:data:responseProvider,
+        ':', 1), NULL))::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (RAW:data:request:path)::VARCHAR
+    - name: '''proxy_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:data:host)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:data:clientAddr)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint.hostname: (RAW:data:host)::VARCHAR
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (RAW:data:clientAddr)::VARCHAR
+    src_endpoint.location.country: (RAW:data:countryCode)::VARCHAR
+    src_endpoint.name: (SOURCE)::VARCHAR
+    src_endpoint.port: (RAW:data:listenerPort)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (INGESTED_TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (INGESTED_TIME)::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RAW:data:response:code ILIKE '2%%' THEN 1 WHEN RAW:data:response:code
+      ILIKE '4%%' THEN 2 WHEN RAW:data:response:code ILIKE '5%%' THEN 2 WHEN RAW:data:response:code
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success'
+      WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RAW:data:response:code ILIKE '2%%' THEN 1 WHEN RAW:data:response:code
+      ILIKE '4%%' THEN 2 WHEN RAW:data:response:code ILIKE '5%%' THEN 2 WHEN RAW:data:response:code
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes_in: (RAW:data:response:size)::NUMBER
+    type_name: '(CASE ((CASE WHEN RAW:data:request:method = ''CONNECT'' THEN 400201
+      WHEN RAW:data:request:method = ''DELETE'' THEN 400202 WHEN RAW:data:request:method
+      = ''GET'' THEN 400203 WHEN RAW:data:request:method = ''HEAD'' THEN 400204 WHEN
+      RAW:data:request:method = ''OPTIONS'' THEN 400205 WHEN RAW:data:request:method
+      = ''POST'' THEN 400206 WHEN RAW:data:request:method = ''PUT'' THEN 400207 WHEN
+      RAW:data:request:method = ''TRACE'' THEN 400208 WHEN RAW:data:request:method
+      IS NULL THEN 400200 ELSE 400299 END)::NUMBER) WHEN 400200 THEN ''HTTP Activity:
+      Unknown'' WHEN 400201 THEN ''HTTP Activity: Connect'' WHEN 400202 THEN ''HTTP
+      Activity: Delete'' WHEN 400203 THEN ''HTTP Activity: Get'' WHEN 400204 THEN
+      ''HTTP Activity: Head'' WHEN 400205 THEN ''HTTP Activity: Options'' WHEN 400206
+      THEN ''HTTP Activity: Post'' WHEN 400207 THEN ''HTTP Activity: Put'' WHEN 400208
+      THEN ''HTTP Activity: Trace'' WHEN 400299 THEN ''HTTP Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN RAW:data:request:method = 'CONNECT' THEN 400201 WHEN RAW:data:request:method
+      = 'DELETE' THEN 400202 WHEN RAW:data:request:method = 'GET' THEN 400203 WHEN
+      RAW:data:request:method = 'HEAD' THEN 400204 WHEN RAW:data:request:method =
+      'OPTIONS' THEN 400205 WHEN RAW:data:request:method = 'POST' THEN 400206 WHEN
+      RAW:data:request:method = 'PUT' THEN 400207 WHEN RAW:data:request:method = 'TRACE'
+      THEN 400208 WHEN RAW:data:request:method IS NULL THEN 400200 ELSE 400299 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: event_type = 'com.oraclecloud.loadbalancer.waf'

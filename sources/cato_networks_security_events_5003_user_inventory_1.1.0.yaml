@@ -1,0 +1,62 @@
+type: mapping
+id: cato_networks_security_events_5003_user_inventory_1.1.0
+version: '1'
+name: Cato Networks Security Events to OCSF class User Inventory
+data-types:
+- cato-networks-security-events
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE (1::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Log' WHEN
+      2 THEN 'Collect' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((5)::NUMBER) WHEN 5 THEN 'Discovery' END)::VARCHAR
+    category_uid: (5)::NUMBER
+    class_name: ('user_inventory')::VARCHAR
+    class_uid: ('5003')::NUMBER
+    cloud.provider: ( 'Cato Networks')::VARCHAR
+    count: (EVENT_COUNT)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_sub_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cato-networks-security-events')::VARCHAR
+    metadata.product.vendor_name: ('CatoNetworks')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (EVENT_TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (EVENT_TIME)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (500301::NUMBER) WHEN 500300 THEN ''User Inventory Info: Unknown''
+      WHEN 500301 THEN ''User Inventory Info: Log'' WHEN 500302 THEN ''User Inventory
+      Info: Collect'' WHEN 500399 THEN ''User Inventory Info: Other'' END)::VARCHAR'
+    type_uid: (500301)::NUMBER
+    unmapped: NULL::VARIANT
+    user.domain: (DOMAIN_NAME)::VARCHAR
+    user.uid: (RAW:user_reference_id)::VARCHAR

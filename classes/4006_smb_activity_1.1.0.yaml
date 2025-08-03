@@ -1,0 +1,5 @@
+id: 4006_smb_activity_1.1.0
+version: '1'
+description: OCSF View For Class - 4006 Smb Activity
+source-table-ids:
+- zeek_logs_4006_smb_activity_1.1.0

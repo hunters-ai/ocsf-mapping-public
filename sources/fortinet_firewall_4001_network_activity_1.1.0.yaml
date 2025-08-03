@@ -1,0 +1,153 @@
+type: mapping
+id: fortinet_firewall_4001_network_activity_1.1.0
+version: '16'
+name: Fortinet Firewall to OCSF class Network Activity
+data-types:
+- fortinet-firewall
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ACTION='start' THEN 1 WHEN ACTION='accept' THEN 1 WHEN
+      ACTION='permit' THEN 1 WHEN ACTION='close' THEN 2 WHEN ACTION='Reject' THEN
+      2 WHEN ACTION='block' THEN 2 WHEN ACTION='deny' THEN 2 WHEN ACTION IS NULL THEN
+      0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION='start' THEN 1 WHEN ACTION='accept' THEN 1 WHEN ACTION='permit'
+      THEN 1 WHEN ACTION='close' THEN 2 WHEN ACTION='Reject' THEN 2 WHEN ACTION='block'
+      THEN 2 WHEN ACTION='deny' THEN 2 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN TYPE is null then 0 WHEN TYPE = 'traffic' then 6 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN TYPE is null then 0 WHEN TYPE = 'traffic' then
+      6 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN 2 THEN
+      'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN 6 THEN
+      'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: (OBJECT_CONSTRUCT_KEEP_NULL('policy', OBJECT_CONSTRUCT_KEEP_NULL('uid',
+      POLICY_ID::VARCHAR)))::ARRAY
+    category_name: NULL::VARCHAR
+    category_uid: NULL::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_name: (SERVICE)::VARCHAR
+    connection_info.protocol_num: (PROTO)::NUMBER
+    connection_info.session.count: (TOTAL_SESSION)::NUMBER
+    connection_info.session.uid: (SESSION_ID)::VARCHAR
+    count: NULL::NUMBER
+    device.name: (DEV_NAME)::VARCHAR
+    device.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN
+      10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (0)::NUMBER
+    device.uid: (DEV_ID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.interface_name: (DST_INTF)::VARCHAR
+    dst_endpoint.ip: (DST_IP)::VARCHAR
+    dst_endpoint.location.country: (DST_COUNTRY)::VARCHAR
+    dst_endpoint.port: (DST_PORT)::NUMBER
+    duration: (DURATION)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (MSG)::VARCHAR
+    metadata.event_code: (type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('fortinet-firewall')::VARCHAR
+    metadata.product.vendor_name: ('fortinet')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DST_IP)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SRC_IP)::VARCHAR
+    - name: '''url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PARSE_URL(RAW:url,1):host)::VARCHAR
+    - name: '''url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (iff(RAW:url ilike 'http%', RAW:url,null))::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN LEVEL='information' THEN 1 WHEN LEVEL='info' THEN
+      1 WHEN LEVEL='notice' THEN 2 WHEN LEVEL='warning' THEN 3 WHEN LEVEL='alert'
+      THEN 4 WHEN LEVEL='critical' THEN 5 WHEN LEVEL='error' THEN 6 WHEN LEVEL IS
+      NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN LEVEL='information' THEN 1 WHEN LEVEL='info' THEN 1 WHEN
+      LEVEL='notice' THEN 2 WHEN LEVEL='warning' THEN 3 WHEN LEVEL='alert' THEN 4
+      WHEN LEVEL='critical' THEN 5 WHEN LEVEL='error' THEN 6 WHEN LEVEL IS NULL THEN
+      0 ELSE 99 END)::NUMBER
+    src_endpoint.interface_name: (SRC_INTF)::VARCHAR
+    src_endpoint.ip: (SRC_IP)::VARCHAR
+    src_endpoint.location.country: (SRC_COUNTRY)::VARCHAR
+    src_endpoint.port: (SRC_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes_in: (RCVD_BYTE)::NUMBER
+    traffic.bytes_out: (SENT_BYTE)::NUMBER
+    traffic.packets_in: (RCVD_PKT)::NUMBER
+    traffic.packets_out: (SENT_PKT)::NUMBER
+    type_name: '(CASE ((400100 + (CASE WHEN TYPE is null then 0 WHEN TYPE = ''traffic''
+      then 6 ELSE 99 END))::NUMBER) WHEN 400100 THEN ''Network Activity: Unknown''
+      WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network Activity:
+      Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN ''Network
+      Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN 400106 THEN
+      ''Network Activity: Traffic'' WHEN 400199 THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (400100 + (CASE WHEN TYPE is null then 0 WHEN TYPE = 'traffic' then
+      6 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    url.hostname: (PARSE_URL(RAW:url,1):host)::VARCHAR
+    url.path: (IFF(RAW:url ilike 'http%', PARSE_URL(RAW:url,1):path, SPLIT_PART(RAW:url,
+      '?', 1)))::VARCHAR
+    url.query_string: (IFF(RAW:url ilike 'http%', PARSE_URL(RAW:url,1):query, SPLIT_PART(RAW:url,
+      '?', 2)))::VARCHAR
+    url.scheme: (PARSE_URL(RAW:url,1):scheme)::VARCHAR
+    url.url_string: (iff(RAW:url ilike 'http%', RAW:url,null))::VARCHAR

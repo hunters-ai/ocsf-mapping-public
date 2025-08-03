@@ -1,0 +1,157 @@
+type: mapping
+id: slack_audit_logs_2004_detection_finding_1.1.0
+version: '1'
+name: Slack Audit Logs to OCSF class Detection Finding
+data-types:
+- slack-audit-logs
+mapping:
+  fields:
+    action: (CASE (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%approve%' OR
+      ACTION ILIKE '%accepted%' OR ACTION ILIKE '%connected%' OR ACTION ILIKE '%changed%'
+      OR ACTION ILIKE '%joined%' OR ACTION ILIKE '%created%' OR ACTION ILIKE '%allow%'
+      THEN 1 WHEN ACTION ILIKE 'file_deleted' OR ACTION ILIKE '%dropped%' OR ACTION
+      ILIKE '%failed%' THEN 2 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%approve%' OR ACTION
+      ILIKE '%accepted%' OR ACTION ILIKE '%connected%' OR ACTION ILIKE '%changed%'
+      OR ACTION ILIKE '%joined%' OR ACTION ILIKE '%created%' OR ACTION ILIKE '%allow%'
+      THEN 1 WHEN ACTION ILIKE 'file_deleted' OR ACTION ILIKE '%dropped%' OR ACTION
+      ILIKE '%failed%' THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (1)::NUMBER
+    activity_name: (CASE (1::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN
+      2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.name: (ENTITY_FILE_NAME)::VARCHAR
+    actor.process.file.uid: (ENTITY_FILE_ID)::VARCHAR
+    actor.process.user.domain: (CONTEXT_LOCATION_DOMAIN)::VARCHAR
+    actor.session.uid: (CONTEXT_SESSION_ID)::VARCHAR
+    actor.user.email_addr: (ACTOR_USER_EMAIL)::VARCHAR
+    actor.user.name: (ACTOR_USER_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE ACTOR_TYPE WHEN NULL THEN 0 WHEN 'user' THEN 1 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin'
+      WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE ACTOR_TYPE WHEN NULL THEN 0 WHEN 'user' THEN 1 ELSE
+      99 END)::NUMBER
+    actor.user.uid: (ACTOR_USER_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((2)::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud: NULL::VARIANT
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%allow%'
+      THEN 1 WHEN ACTION ILIKE '%deleted%' THEN 5 WHEN ACTION ILIKE '%dropped%' OR
+      ACTION ILIKE '%failed%' THEN 6 WHEN ACTION ILIKE '%approve%' THEN 8 ELSE 99
+      END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated'
+      WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected'
+      WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN
+      17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked'
+      WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN
+      'Challenge' WHEN 24 THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN
+      'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated'
+      WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN
+      8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%allow%' THEN
+      1 WHEN ACTION ILIKE '%deleted%' THEN 5 WHEN ACTION ILIKE '%dropped%' OR ACTION
+      ILIKE '%failed%' THEN 6 WHEN ACTION ILIKE '%approve%' THEN 8 ELSE 99 END)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('src_endpoint', OBJECT_CONSTRUCT_KEEP_NULL('ip',
+      IFF(CONTEXT_IP_ADDRESS = '' OR CONTEXT_IP_ADDRESS IS NULL, NULL, CONTEXT_IP_ADDRESS))),
+      OBJECT_CONSTRUCT_KEEP_NULL('actor', OBJECT_CONSTRUCT_KEEP_NULL('user', OBJECT_CONSTRUCT_KEEP_NULL(
+      'domain', IFF(DETAILS:url_private ILIKE 'https%', SPLIT_PART(DETAILS:url_private,
+      '/', 3), DETAILS:url_private), 'name', IFF(DETAILS:inviter:email ILIKE '%@%',SPLIT_PART(DETAILS:inviter:email,'@',1),
+      DETAILS:inviter:email), 'email_addr', DETAILS:inviter:email))), OBJECT_CONSTRUCT_KEEP_NULL('file',
+      OBJECT_CONSTRUCT_KEEP_NULL('name', IFF(ENTITY_FILE_NAME = '' OR ENTITY_FILE_NAME
+      IS NULL, NULL, ENTITY_FILE_NAME), 'uid',IFF(ENTITY_FILE_ID = '' OR ENTITY_FILE_ID
+      IS NULL, NULL, ENTITY_FILE_ID)))))::ARRAY
+    finding_info.uid: (ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('slack-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('slack')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (ENTITY_FILE_NAME)::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR_USER_EMAIL)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACTOR_USER_NAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('type', IFF(ENTITY_TYPE
+      = '' OR ENTITY_TYPE IS NULL, NULL, ENTITY_TYPE))))::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (DATE_CREATE)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (DATE_CREATE)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', date_create::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (date_create)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (200401::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200401)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY
+  predicate: ID IS NOT NULL

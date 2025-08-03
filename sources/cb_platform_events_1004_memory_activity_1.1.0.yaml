@@ -1,0 +1,179 @@
+type: mapping
+id: cb_platform_events_1004_memory_activity_1.1.0
+version: '2'
+name: Cb Platform Events to OCSF class Memory Activity
+data-types:
+- cb-platform-events
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN SENSOR_ACTION = 'ACTION_ALLOW' THEN 1 WHEN SENSOR_ACTION
+      = 'ACTION_BLOCK' THEN 2 WHEN SENSOR_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    action_id: (CASE WHEN SENSOR_ACTION = 'ACTION_ALLOW' THEN 1 WHEN SENSOR_ACTION
+      = 'ACTION_BLOCK' THEN 2 WHEN SENSOR_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN ACTION IN ('ACTION_LOAD_FILELESS_SCRIPT', 'ACTION_LOAD_SCRIPT',
+      'ACTION_LOAD_MODULE') THEN 8 WHEN ACTION = 'ACTION_CREATE_REMOTE_THREAD' THEN
+      1 WHEN ACTION = 'ACTION_OPEN_THREAD_HANDLE' THEN 2 WHEN ACTION IN ('ACTION_DUP_THREAD_HANDLE',
+      'ACTION_OPEN_PROCESS_HANDLE', 'ACTION_AMSI_CONTENT_SCAN', 'ACTION_DUP_PROCESS_HANDLE',
+      'ACTION_LOADED_MODULE_DISCOVERED') THEN 7 WHEN ACTION IS NULL THEN 0 ELSE 99
+      END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION IN ('ACTION_LOAD_FILELESS_SCRIPT', 'ACTION_LOAD_SCRIPT',
+      'ACTION_LOAD_MODULE') THEN 8 WHEN ACTION = 'ACTION_CREATE_REMOTE_THREAD' THEN
+      1 WHEN ACTION = 'ACTION_OPEN_THREAD_HANDLE' THEN 2 WHEN ACTION IN ('ACTION_DUP_THREAD_HANDLE',
+      'ACTION_OPEN_PROCESS_HANDLE', 'ACTION_AMSI_CONTENT_SCAN', 'ACTION_DUP_PROCESS_HANDLE',
+      'ACTION_LOADED_MODULE_DISCOVERED') THEN 7 WHEN ACTION IS NULL THEN 0 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allocate Page' WHEN 2 THEN
+      'Modify Page' WHEN 3 THEN 'Delete Page' WHEN 4 THEN 'Buffer Overflow' WHEN 5
+      THEN 'Disable DEP' WHEN 6 THEN 'Enable DEP' WHEN 7 THEN 'Read' WHEN 8 THEN 'Write'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    actual_permissions: NULL::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    base_address: NULL::VARCHAR
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('memory_activity')::VARCHAR
+    class_uid: ('1004')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (DEVICE_EXTERNAL_IP)::VARCHAR
+    device.name: (DEVICE_NAME)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN DEVICE_OS = 'WINDOWS' THEN 100 WHEN DEVICE_OS
+      = 'LINUX' THEN 200 WHEN DEVICE_OS = 'MAC' THEN 300 WHEN DEVICE_OS IS NULL THEN
+      0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101
+      THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300
+      THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris'
+      WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN DEVICE_OS = 'WINDOWS' THEN 100 WHEN DEVICE_OS =
+      'LINUX' THEN 200 WHEN DEVICE_OS = 'MAC' THEN 300 WHEN DEVICE_OS IS NULL THEN
+      0 ELSE 99 END)::NUMBER
+    device.uid: (DEVICE_ID)::VARCHAR
+    disposition: (CASE ((CASE WHEN SENSOR_ACTION = 'ACTION_ALLOW' THEN 1 WHEN SENSOR_ACTION
+      = 'ACTION_BLOCK' THEN 2 WHEN SENSOR_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated' WHEN 11
+      THEN 'Corrected' WHEN 12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected'
+      WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN
+      17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked'
+      WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN
+      'Challenge' WHEN 24 THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN
+      'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated'
+      WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN
+      8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN SENSOR_ACTION = 'ACTION_ALLOW' THEN 1 WHEN SENSOR_ACTION
+      = 'ACTION_BLOCK' THEN 2 WHEN SENSOR_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (EVENT_DESCRIPTION)::VARCHAR
+    metadata.event_code: (type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cb-platform-events')::VARCHAR
+    metadata.product.vendor_name: ('cb-defense')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DEVICE_EXTERNAL_IP)::VARCHAR
+    - name: '''process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (PROCESS_USERNAME)::VARCHAR
+    process.cmd_line: (PROCESS_CMDLINE)::VARCHAR
+    process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('value', COALESCE(PROCESS_HASH_SHA256,
+      PROCESS_HASH_MD5), 'algorithm_id', CASE WHEN PROCESS_HASH_SHA256 IS NOT NULL
+      THEN 3 WHEN PROCESS_HASH_MD5 IS NOT NULL THEN 1 ELSE NULL END, 'algorithm',
+      CASE WHEN PROCESS_HASH_SHA256 IS NOT NULL THEN 'SHA-256' WHEN PROCESS_HASH_MD5
+      IS NOT NULL THEN 'MD5' ELSE NULL END)))::ARRAY
+    process.file.path: (PROCESS_PATH)::VARCHAR
+    process.parent_process.cmd_line: (PARENT_CMDLINE)::VARCHAR
+    process.parent_process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('value',
+      COALESCE(PARENT_HASH_SHA256, PARENT_HASH_MD5), 'algorithm_id', CASE WHEN PARENT_HASH_SHA256
+      IS NOT NULL THEN 3 WHEN PARENT_HASH_MD5 IS NOT NULL THEN 1 ELSE NULL END, 'algorithm',
+      CASE WHEN PARENT_HASH_SHA256 IS NOT NULL THEN 'SHA-256' WHEN PARENT_HASH_MD5
+      IS NOT NULL THEN 'MD5' ELSE NULL END)))::ARRAY
+    process.parent_process.file.path: (PARENT_PATH)::VARCHAR
+    process.parent_process.pid: (PARENT_PID)::NUMBER
+    process.pid: (PROCESS_PID)::NUMBER
+    process.user.name: (PROCESS_USERNAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    requested_permissions: NULL::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    size: NULL::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', backend_timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (backend_timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN ACTION IN (''ACTION_LOAD_FILELESS_SCRIPT'', ''ACTION_LOAD_SCRIPT'',
+      ''ACTION_LOAD_MODULE'') THEN 100408 WHEN ACTION = ''ACTION_CREATE_REMOTE_THREAD''
+      THEN 100401 WHEN ACTION = ''ACTION_OPEN_THREAD_HANDLE'' THEN 100402 WHEN ACTION
+      IN (''ACTION_DUP_THREAD_HANDLE'', ''ACTION_OPEN_PROCESS_HANDLE'', ''ACTION_AMSI_CONTENT_SCAN'',
+      ''ACTION_DUP_PROCESS_HANDLE'', ''ACTION_LOADED_MODULE_DISCOVERED'') THEN 100407
+      WHEN ACTION IS NULL THEN 100400 ELSE 100499 END)::NUMBER) WHEN 100400 THEN ''Memory
+      Activity: Unknown'' WHEN 100401 THEN ''Memory Activity: Allocate Page'' WHEN
+      100402 THEN ''Memory Activity: Modify Page'' WHEN 100403 THEN ''Memory Activity:
+      Delete Page'' WHEN 100404 THEN ''Memory Activity: Buffer Overflow'' WHEN 100405
+      THEN ''Memory Activity: Disable DEP'' WHEN 100406 THEN ''Memory Activity: Enable
+      DEP'' WHEN 100407 THEN ''Memory Activity: Read'' WHEN 100408 THEN ''Memory Activity:
+      Write'' WHEN 100499 THEN ''Memory Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN ACTION IN ('ACTION_LOAD_FILELESS_SCRIPT', 'ACTION_LOAD_SCRIPT',
+      'ACTION_LOAD_MODULE') THEN 100408 WHEN ACTION = 'ACTION_CREATE_REMOTE_THREAD'
+      THEN 100401 WHEN ACTION = 'ACTION_OPEN_THREAD_HANDLE' THEN 100402 WHEN ACTION
+      IN ('ACTION_DUP_THREAD_HANDLE', 'ACTION_OPEN_PROCESS_HANDLE', 'ACTION_AMSI_CONTENT_SCAN',
+      'ACTION_DUP_PROCESS_HANDLE', 'ACTION_LOADED_MODULE_DISCOVERED') THEN 100407
+      WHEN ACTION IS NULL THEN 100400 ELSE 100499 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: type in ('endpoint.event.crossproc', 'endpoint.event.fileless_scriptload',
+    'endpoint.event.scriptload', 'endpoint.event.moduleload')

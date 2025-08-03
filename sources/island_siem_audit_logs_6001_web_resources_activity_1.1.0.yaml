@@ -1,0 +1,151 @@
+type: mapping
+id: island_siem_audit_logs_6001_web_resources_activity_1.1.0
+version: '1'
+name: Island Siem Audit Logs to OCSF class Web Resources Activity
+data-types:
+- island-siem-audit-logs
+mapping:
+  fields:
+    action: (CASE ((CASE VERDICT WHEN NULL THEN 0 WHEN 'Allowed' THEN 1 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    action_id: (CASE VERDICT WHEN NULL THEN 0 WHEN 'Allowed' THEN 1 ELSE 99 END)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Search'
+      WHEN 6 THEN 'Import' WHEN 7 THEN 'Export' WHEN 8 THEN 'Share' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.user.email_addr: (EMAIL)::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', IFF(MATCHED_USER_GROUP
+      IS NULL, NULL, MATCHED_USER_GROUP))))::ARRAY
+    actor.user.name: (USER_NAME)::VARCHAR
+    actor.user.uid: (USER_ID)::VARCHAR
+    actor.user.uid_alt: (CLIENT_EVENT_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((6:NUMBER)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6:NUMBER)::NUMBER
+    class_name: ('web_resources_activity')::VARCHAR
+    class_uid: ('6001')::NUMBER
+    cloud.org.uid: (TENANT_ID)::VARCHAR
+    cloud.provider: ('Island')::VARCHAR
+    count: NULL::NUMBER
+    device.domain: (MATCHED_DEVICE_POSTURE_DOMAIN)::VARCHAR
+    device.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', IFF(MATCHED_DEVICE_POSTURE_WORKGROUP
+      IS NULL, NULL, MATCHED_DEVICE_POSTURE_WORKGROUP))))::ARRAY
+    device.name: (MACHINE_NAME)::VARCHAR
+    device.os.name: (OS_PLATFORM)::VARCHAR
+    device.os.type: (CASE ((CASE OS_PLATFORM WHEN NULL THEN 0 WHEN 'Windows' THEN
+      100 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN
+      101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN
+      300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris'
+      WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE OS_PLATFORM WHEN NULL THEN 0 WHEN 'Windows' THEN 100
+      ELSE 99 END)::NUMBER
+    device.uid: (DEVICE_ID)::VARCHAR
+    device.uid_alt: (MACHINE_ID)::VARCHAR
+    disposition: (CASE (CASE WHEN VERDICT IS NULL THEN 0 WHEN VERDICT = 'Allowed'
+      THEN 1 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN VERDICT IS NULL THEN 0 WHEN VERDICT = 'Allowed' THEN
+      1 ELSE 99 END)::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule.name: (RULE_NAME)::VARCHAR
+    firewall_rule.uid: (RULE_ID)::VARCHAR
+    http_request: NULL::VARIANT
+    http_response: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('island-siem-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('island-io')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (EMAIL)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    - name: '''src_endpoint.proxy_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (PUBLIC_IP)::VARCHAR
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.location.country: (COUNTRY_CODE)::VARCHAR
+    src_endpoint.name: (SOURCE)::VARCHAR
+    src_endpoint.proxy_endpoint.ip: (PUBLIC_IP)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (PROCESSED_DATE)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (PROCESSED_DATE)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    type_name: '(CASE ((600100)::NUMBER) WHEN 600100 THEN ''Web Resources Activity:
+      Unknown'' WHEN 600101 THEN ''Web Resources Activity: Create'' WHEN 600102 THEN
+      ''Web Resources Activity: Read'' WHEN 600103 THEN ''Web Resources Activity:
+      Update'' WHEN 600104 THEN ''Web Resources Activity: Delete'' WHEN 600105 THEN
+      ''Web Resources Activity: Search'' WHEN 600106 THEN ''Web Resources Activity:
+      Import'' WHEN 600107 THEN ''Web Resources Activity: Export'' WHEN 600108 THEN
+      ''Web Resources Activity: Share'' WHEN 600199 THEN ''Web Resources Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (600100)::NUMBER
+    unmapped: NULL::VARIANT
+    web_resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('desc', SAAS_APPLICATION_CATEGORY,
+      'name', SAAS_APPLICATION_NAME, 'type', TYPE, 'uid', SAAS_APPLICATION_ID, 'url_string',
+      COALESCE(TOP_LEVEL_URL, FRAME_URL))))::ARRAY
+    web_resources_result: NULL::ARRAY

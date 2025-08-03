@@ -1,0 +1,133 @@
+type: mapping
+id: universal_wel_1006_scheduled_job_activity_1.1.0
+version: '9'
+name: Universal Wel to OCSF class Scheduled Job Activity
+data-types:
+- universal-wel
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID = '4698' THEN 1
+      WHEN EVENT_ID = '4702' THEN 2 WHEN EVENT_ID = '4699' THEN 3 WHEN EVENT_ID =
+      '4700' THEN 4 WHEN EVENT_ID = '4701' THEN 5 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID = '4698'
+      THEN 1 WHEN EVENT_ID = '4702' THEN 2 WHEN EVENT_ID = '4699' THEN 3 WHEN EVENT_ID
+      = '4700' THEN 4 WHEN EVENT_ID = '4701' THEN 5 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Update' WHEN 3 THEN 'Delete' WHEN
+      4 THEN 'Enable' WHEN 5 THEN 'Disable' WHEN 6 THEN 'Start' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.idp.name: (PROVIDER)::VARCHAR
+    actor.idp.uid: (REGEXP_SUBSTR(RAW:ProviderGuid, '^{(.+)}', 1, 1, 'e'))::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (MESSAGE_DETAILS:other_information:processcreationtime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (MESSAGE_DETAILS:other_information:processcreationtime)::TIMESTAMP_LTZ
+    actor.process.parent_process.pid: (MESSAGE_DETAILS:other_information:parentprocessid)::NUMBER
+    actor.process.pid: (MESSAGE_DETAILS:other_information:clientprocessid)::NUMBER
+    actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('scheduled_job_activity')::VARCHAR
+    class_uid: ('1006')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.name: (MACHINE_NAME)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    job.file.name: (MESSAGE_DETAILS:task_information:task_name)::VARCHAR
+    job.file.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular
+      File' WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block
+      Device' WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic
+      Link' WHEN 99 THEN 'Other' END)::VARCHAR
+    job.file.type_id: (0)::NUMBER
+    job.name: (MESSAGE_DETAILS:task_information:task_name)::VARCHAR
+    job.user.account.name: (MESSAGE_DETAILS:subject:account_name)::VARCHAR
+    job.user.domain: (MESSAGE_DETAILS:subject:account_domain)::VARCHAR
+    job.user.name: (RAW:SubjectUserName)::VARCHAR
+    malware: NULL::ARRAY
+    message: (RAW:Message)::VARCHAR
+    metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('universal-wel')::VARCHAR
+    metadata.product.vendor_name: ('windows-event-log')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''job.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''job.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (MESSAGE_DETAILS:task_information:task_name)::VARCHAR
+    - name: '''job.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''job.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:SubjectUserName)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (1)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_ID IS NULL THEN 100600 WHEN EVENT_ID = ''4698''
+      THEN 100601 WHEN EVENT_ID = ''4702'' THEN 100602 WHEN EVENT_ID = ''4699'' THEN
+      100603 WHEN EVENT_ID = ''4700'' THEN 100604 WHEN EVENT_ID = ''4701'' THEN 100605
+      ELSE 100699 END)::NUMBER) WHEN 100600 THEN ''Scheduled Job Activity: Unknown''
+      WHEN 100601 THEN ''Scheduled Job Activity: Create'' WHEN 100602 THEN ''Scheduled
+      Job Activity: Update'' WHEN 100603 THEN ''Scheduled Job Activity: Delete'' WHEN
+      100604 THEN ''Scheduled Job Activity: Enable'' WHEN 100605 THEN ''Scheduled
+      Job Activity: Disable'' WHEN 100606 THEN ''Scheduled Job Activity: Start'' WHEN
+      100699 THEN ''Scheduled Job Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_ID IS NULL THEN 100600 WHEN EVENT_ID = '4698' THEN
+      100601 WHEN EVENT_ID = '4702' THEN 100602 WHEN EVENT_ID = '4699' THEN 100603
+      WHEN EVENT_ID = '4700' THEN 100604 WHEN EVENT_ID = '4701' THEN 100605 ELSE 100699
+      END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_ID IN (4698, 4699, 4700, 4701, 4702)

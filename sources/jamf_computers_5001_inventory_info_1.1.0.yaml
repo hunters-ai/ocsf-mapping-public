@@ -1,0 +1,126 @@
+type: mapping
+id: jamf_computers_5001_inventory_info_1.1.0
+version: '13'
+name: Jamf Computers to OCSF class Inventory Info
+data-types:
+- jamf-computers
+mapping:
+  fields:
+    activity_id: (99)::NUMBER
+    activity_name: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Log' WHEN
+      2 THEN 'Collect' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((5)::NUMBER) WHEN 5 THEN 'Discovery' END)::VARCHAR
+    category_uid: (5)::NUMBER
+    class_name: ('inventory_info')::VARCHAR
+    class_uid: ('5001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.first_seen_time: (date_part('epoch_milliseconds', (GENERAL_INITIAL_ENTRY_DATE_UTC)::TIMESTAMP_LTZ))::NUMBER
+    device.first_seen_time_dt: (GENERAL_INITIAL_ENTRY_DATE_UTC)::TIMESTAMP_LTZ
+    device.hostname: (GENERAL_NAME)::VARCHAR
+    device.hw_info.bios_manufacturer: (HARDWARE_MAKE)::VARCHAR
+    device.hw_info.cpu_cores: (HARDWARE:number_cores)::NUMBER
+    device.hw_info.cpu_count: (HARDWARE:number_processors)::NUMBER
+    device.hw_info.cpu_speed: (COALESCE(HARDWARE:processor_speed::NUMBER, HARDWARE:processor_speed_mhz::NUMBER))::NUMBER
+    device.hw_info.cpu_type: (HARDWARE:processor_type)::VARCHAR
+    device.hw_info.ram_size: (COALESCE(HARDWARE:total_ram::NUMBER, HARDWARE:total_ram_mb::NUMBER))::NUMBER
+    device.hw_info.serial_number: (GENERAL_SERIAL_NUMBER)::VARCHAR
+    device.ip: (COALESCE(GENERAL_IP_ADDRESS::VARCHAR, GENERAL_LAST_REPORTED_IP::VARCHAR))::VARCHAR
+    device.is_managed: (GENERAL_REMOTE_MANAGEMENT:manage)::BOOLEAN
+    device.last_seen_time: (date_part('epoch_milliseconds', (GENERAL_LAST_ENROLLED_DATE_UTC)::TIMESTAMP_LTZ))::NUMBER
+    device.last_seen_time_dt: (GENERAL_LAST_ENROLLED_DATE_UTC)::TIMESTAMP_LTZ
+    device.location.city: (LOCATION:building)::VARCHAR
+    device.location.provider: (LOCATION:department)::VARCHAR
+    device.mac: (COALESCE(GENERAL_MAC_ADDRESS::VARCHAR, GENERAL_ALT_MAC_ADDRESS::VARCHAR))::VARCHAR
+    device.modified_time: (date_part('epoch_milliseconds', (GENERAL_LAST_CONTACT_TIME_UTC)::TIMESTAMP_LTZ))::NUMBER
+    device.modified_time_dt: (GENERAL_LAST_CONTACT_TIME_UTC)::TIMESTAMP_LTZ
+    device.name: (GENERAL_NAME)::VARCHAR
+    device.network_interfaces: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('type',
+      CASE (CASE WHEN GENERAL_NETWORK_ADAPTER_TYPE IS NULL THEN 0 WHEN GENERAL_NETWORK_ADAPTER_TYPE
+      = 'Ethernet' THEN 1 WHEN GENERAL_NETWORK_ADAPTER_TYPE = 'IEEE80211' THEN 2 ELSE
+      99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Wired' WHEN 2 THEN 'Wireless'
+      WHEN 3 THEN 'Mobile' WHEN 4 THEN 'Tunnel' WHEN 99 THEN 'Other' END, 'type_id',
+      CASE WHEN GENERAL_NETWORK_ADAPTER_TYPE IS NULL THEN 0 WHEN GENERAL_NETWORK_ADAPTER_TYPE
+      = 'Ethernet' THEN 1 WHEN GENERAL_NETWORK_ADAPTER_TYPE = 'IEEE80211' THEN 2 ELSE
+      99 END::NUMBER)))::ARRAY
+    device.os.build: (HARDWARE_OS_BUILD)::VARCHAR
+    device.os.name: (GENERAL_PLATFORM)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN HARDWARE_OS_NAME IS NULL THEN 0 WHEN HARDWARE_OS_NAME
+      = 'macOS' THEN 300 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN
+      'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN
+      'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN
+      400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    device.os.type_id: (CASE WHEN HARDWARE_OS_NAME IS NULL THEN 0 WHEN HARDWARE_OS_NAME
+      = 'macOS' THEN 300 ELSE 99 END)::NUMBER
+    device.os.version: (HARDWARE_OS_VERSION)::VARCHAR
+    device.region: (GENERAL_SITE:name)::VARCHAR
+    device.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Server' WHEN
+      10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN 2 THEN 'Desktop' WHEN 3 THEN 'Laptop'
+      WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile' WHEN 6 THEN 'Virtual' WHEN 7 THEN
+      'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (0)::NUMBER
+    device.uid: (GENERAL_UDID)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('jamf-computers')::VARCHAR
+    metadata.product.vendor_name: ('jamf')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (GENERAL_NAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(GENERAL_IP_ADDRESS::VARCHAR, GENERAL_LAST_REPORTED_IP::VARCHAR))::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (COALESCE(GENERAL_MAC_ADDRESS::VARCHAR, GENERAL_ALT_MAC_ADDRESS::VARCHAR))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', sample_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (sample_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((500199)::NUMBER) WHEN 500100 THEN ''Device Inventory Info:
+      Unknown'' WHEN 500101 THEN ''Device Inventory Info: Log'' WHEN 500102 THEN ''Device
+      Inventory Info: Collect'' WHEN 500199 THEN ''Device Inventory Info: Other''
+      END)::VARCHAR'
+    type_uid: (500199)::NUMBER
+    unmapped: NULL::VARIANT

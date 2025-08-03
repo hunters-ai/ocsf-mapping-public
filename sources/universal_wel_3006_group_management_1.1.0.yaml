@@ -1,0 +1,129 @@
+type: mapping
+id: universal_wel_3006_group_management_1.1.0
+version: '1'
+name: Universal Wel to OCSF class Group Management
+data-types:
+- universal-wel
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID IN (4732, 4756,
+      4761) THEN 3 WHEN EVENT_ID = 4733 THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID IN (4732,
+      4756, 4761) THEN 3 WHEN EVENT_ID = 4733 THEN 4 ELSE 99 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Assign Privileges' WHEN 2 THEN 'Revoke Privileges'
+      WHEN 3 THEN 'Add User' WHEN 4 THEN 'Remove User' WHEN 5 THEN 'Delete' WHEN 6
+      THEN 'Create' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.path: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.pid: (RAW:ExecutionProcessID)::NUMBER
+    actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
+    actor.process.uid: (MESSAGE_DETAILS:process_information:process_id)::VARCHAR
+    actor.user.account.name: (MESSAGE_DETAILS:subject:account_name)::VARCHAR
+    actor.user.domain: (MESSAGE_DETAILS:subject:account_domain)::VARCHAR
+    actor.user.name: (RAW:SubjectUserName)::VARCHAR
+    actor.user.uid: (MESSAGE_DETAILS:subject:security_id)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('group_management')::VARCHAR
+    class_uid: ('3006')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.ip: (RAW:MessageSourceAddress)::VARCHAR
+    device.name: (MACHINE_NAME)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (RAW:EventReceivedTime)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (RAW:EventReceivedTime)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    group.domain: (MESSAGE_DETAILS:group:group_domain)::VARCHAR
+    group.name: (MESSAGE_DETAILS:group:group_name)::VARCHAR
+    group.privileges: (ARRAY_CONSTRUCT(RAW:PrivilegeList))::ARRAY
+    group.uid: (MESSAGE_DETAILS:group:security_id)::VARCHAR
+    message: (RAW:Message)::VARCHAR
+    metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('universal-wel')::VARCHAR
+    metadata.product.vendor_name: ('windows-event-log')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:SubjectUserName)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:MessageSourceAddress)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:TargetUserName)::VARCHAR
+    privileges: NULL::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 ELSE 99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN AUDIT_SUCCESS = 'TRUE' THEN 1 WHEN AUDIT_SUCCESS = 'FALSE'
+      THEN 2 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN AUDIT_SUCCESS = 'TRUE' THEN 1 WHEN AUDIT_SUCCESS = 'FALSE'
+      THEN 2 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300600 + (CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID
+      IN (4732, 4756, 4761) THEN 3 WHEN EVENT_ID = 4733 THEN 4 ELSE 99 END))::NUMBER)
+      WHEN 300600 THEN ''Group Management: Unknown'' WHEN 300601 THEN ''Group Management:
+      Assign Privileges'' WHEN 300602 THEN ''Group Management: Revoke Privileges''
+      WHEN 300603 THEN ''Group Management: Add User'' WHEN 300604 THEN ''Group Management:
+      Remove User'' WHEN 300605 THEN ''Group Management: Delete'' WHEN 300606 THEN
+      ''Group Management: Create'' WHEN 300699 THEN ''Group Management: Other'' END)::VARCHAR'
+    type_uid: (300600 + (CASE WHEN EVENT_ID IS NULL THEN 0 WHEN EVENT_ID IN (4732,
+      4756, 4761) THEN 3 WHEN EVENT_ID = 4733 THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.domain: (RAW:TargetDomainName)::VARCHAR
+    user.name: (RAW:TargetUserName)::VARCHAR
+    user.uid: (RAW:TargetSid)::VARCHAR
+  predicate: EVENT_ID IN (4732, 4733, 4735, 4755, 4756, 4760, 4761, 4799)

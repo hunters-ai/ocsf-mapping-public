@@ -1,0 +1,146 @@
+type: mapping
+id: cofense_reports_4009_email_activity_1.1.0
+version: '11'
+name: Cofense Reports to OCSF class Email Activity
+data-types:
+- cofense-reports
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (3)::NUMBER
+    activity_name: (CASE ((3)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.container.tag: (COALESCE(TAGS[0], CATEGORIZATION_TAGS[0]))::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN
+      2 THEN 'Outbound' WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (1)::NUMBER
+    disposition: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    email.from: (FROM_ADDRESS)::VARCHAR
+    email.message_uid: '(REGEXP_SUBSTR(RAW_HEADERS, ''(Message-ID: <.+>)''))::VARCHAR'
+    email.raw_header: (RAW_HEADERS)::VARCHAR
+    email.smtp_from: (REGEXP_SUBSTR(REGEXP_SUBSTR(RAW_HEADERS, '(smtp\\.mailfrom=[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,};)'),
+      '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'))::VARCHAR
+    email.subject: (SUBJECT)::VARCHAR
+    email.to: '(ARRAY_CONSTRUCT_COMPACT(REGEXP_SUBSTR(REGEXP_SUBSTR(RAW_HEADERS, ''(To:
+      .+)''), ''(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}))'')))::ARRAY'
+    email.uid: (ID)::VARCHAR
+    email.x_originating_ip: '(ARRAY_CONSTRUCT_COMPACT(REGEXP_SUBSTR(REGEXP_SUBSTR(RAW_HEADERS,
+      ''(X-Originating-IP: .+)''), ''(\\d{1,3}\.\\d{1,3}\.\\d{1,3}\.\\d{1,3})'')))::ARRAY'
+    email_auth.dkim: (REGEXP_SUBSTR(RAW_HEADERS, 'dkim=.*\\)'))::VARCHAR
+    email_auth.dkim_domain: (REGEXP_SUBSTR(SPLIT_PART(REGEXP_SUBSTR(RAW_HEADERS, '(header.d=.*;)'),
+      '=', 2), '.+;$'))::VARCHAR
+    email_auth.dkim_signature: (SPLIT_PART(REGEXP_SUBSTR(REGEXP_SUBSTR(RAW_HEADERS,
+      'DKIM-Signature:(.*?==)', 1, 1, 's'), 'b=.*?==$', 1, 1, 's'), '==', 1))::VARCHAR
+    email_auth.dmarc: (REGEXP_SUBSTR(RAW_HEADERS, '(dmarc=\\w+)'))::VARCHAR
+    email_auth.spf: (REGEXP_SUBSTR(RAW_HEADERS, 'spf=\\w+'))::VARCHAR
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (TEXT_BODY)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cofense-reports')::VARCHAR
+    metadata.product.vendor_name: ('cofense')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.container'''
+      type: '''Container'''
+      type_id: 27
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (FROM_ADDRESS)::VARCHAR
+    - name: '''email.smtp_from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(REGEXP_SUBSTR(RAW_HEADERS, '(smtp\\.mailfrom=[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,};)'),
+        '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'))::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: '(ARRAY_CONSTRUCT_COMPACT(REGEXP_SUBSTR(REGEXP_SUBSTR(RAW_HEADERS, ''(To:
+        .+)''), ''(([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}))'')))::ARRAY'
+    - name: '''email.x_originating_ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: '(ARRAY_CONSTRUCT_COMPACT(REGEXP_SUBSTR(REGEXP_SUBSTR(RAW_HEADERS, ''(X-Originating-IP:
+        .+)''), ''(\\d{1,3}\.\\d{1,3}\.\\d{1,3}\.\\d{1,3})'')))::ARRAY'
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SPLIT_PART(REGEXP_SUBSTR(RAW_HEADERS, 'client-ip=\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'),
+        '=', 2))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: (REGEXP_SUBSTR(RAW_HEADERS, 'smtp.helo=.+;'))::VARCHAR
+    src_endpoint.ip: (SPLIT_PART(REGEXP_SUBSTR(RAW_HEADERS, 'client-ip=\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'),
+      '=', 2))::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', reported_at::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (reported_at)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((400903)::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400903)::NUMBER
+    unmapped: NULL::VARIANT

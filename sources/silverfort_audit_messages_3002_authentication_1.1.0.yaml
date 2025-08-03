@@ -1,0 +1,143 @@
+type: mapping
+id: silverfort_audit_messages_3002_authentication_1.1.0
+version: '10'
+name: Silverfort Audit Messages to OCSF class Authentication
+data-types:
+- silverfort-audit-messages
+mapping:
+  fields:
+    activity_id: (CASE WHEN NAME IS NULL THEN 0 WHEN NAME = 'MFA request' THEN 1 WHEN
+      NAME = 'Authentication request' THEN 3 WHEN NAME = 'ServiceAccount request'
+      THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN NAME IS NULL THEN 0 WHEN NAME = 'MFA request'
+      THEN 1 WHEN NAME = 'Authentication request' THEN 3 WHEN NAME = 'ServiceAccount
+      request' THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon'
+      WHEN 2 THEN 'Logoff' WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service
+      Ticket Request' WHEN 5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.authorizations: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('policy', SILVERFORT_POLICY_NAME,
+      'decision', SILVERFORT_POLICY_ACTION)))::ARRAY
+    api: NULL::VARIANT
+    auth_protocol: (CASE ((CASE WHEN APP IS NULL THEN 0 WHEN APP = 'NTLM' THEN 1 WHEN
+      APP = 'Kerberos' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'NTLM' WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos' WHEN 3 THEN 'Digest' WHEN
+      4 THEN 'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH 2.0' WHEN 7 THEN 'PAP'
+      WHEN 8 THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other' END)::VARCHAR
+    auth_protocol_id: (CASE WHEN APP IS NULL THEN 0 WHEN APP = 'NTLM' THEN 1 WHEN
+      APP = 'Kerberos' THEN 2 ELSE 99 END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.risk_level: (CASE ((CASE WHEN SILVERFORT_REQ_RISK = 'Info' THEN 0 WHEN
+      SILVERFORT_REQ_RISK = 'Low' THEN 1 WHEN SILVERFORT_REQ_RISK = 'Medium' THEN
+      2 WHEN SILVERFORT_REQ_RISK = 'High' THEN 3 WHEN SILVERFORT_REQ_RISK = 'Critical'
+      THEN 4 END)::NUMBER) WHEN 0 THEN 'Info' WHEN 1 THEN 'Low' WHEN 2 THEN 'Medium'
+      WHEN 3 THEN 'High' WHEN 4 THEN 'Critical' END)::VARCHAR
+    device.risk_level_id: (CASE WHEN SILVERFORT_REQ_RISK = 'Info' THEN 0 WHEN SILVERFORT_REQ_RISK
+      = 'Low' THEN 1 WHEN SILVERFORT_REQ_RISK = 'Medium' THEN 2 WHEN SILVERFORT_REQ_RISK
+      = 'High' THEN 3 WHEN SILVERFORT_REQ_RISK = 'Critical' THEN 4 END)::NUMBER
+    dst_endpoint.domain: (IFF(DESTINATION_USER_DOMAIN = 'n/a', NULL, DESTINATION_USER_DOMAIN))::VARCHAR
+    dst_endpoint.hostname: (IFF(DESTINATION_HOST_NAME = REGEXP_SUBSTR(DESTINATION_HOST_NAME,
+      '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'), NULL, DESTINATION_HOST_NAME))::VARCHAR
+    dst_endpoint.ip: (REGEXP_SUBSTR(DESTINATION_HOST_NAME, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'))::VARCHAR
+    duration: (IFF(SILVERFORT_MFA_RESPONSE_TIME ILIKE 'n/a%', NULL, SPLIT_PART(SILVERFORT_MFA_RESPONSE_TIME,
+      's', 1)))::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: (IFF(SILVERFORT_MFA_RESPONSE = 'n/a' OR SILVERFORT_MFA_RESPONSE IS NULL,
+      NULL, 1))::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (SILVERFORT_REQ_RISK_INDICATORS)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('silverfort-audit-messages')::VARCHAR
+    metadata.product.vendor_name: ('Silverfort')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (IFF(DESTINATION_HOST_NAME = REGEXP_SUBSTR(DESTINATION_HOST_NAME, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'),
+        NULL, DESTINATION_HOST_NAME))::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(DESTINATION_HOST_NAME, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'))::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (IFF(SOURCE_HOST_NAME = 'n/a', NULL, SOURCE_HOST_NAME))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IFF(SOURCE_IP_ADDRESS = 'undefined' , NULL, SOURCE_IP_ADDRESS))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    service.name: (DESTINATION_SERVICE_NAME)::VARCHAR
+    session: NULL::VARIANT
+    severity: (CASE ((CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY > 6 THEN 99
+      ELSE SEVERITY END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY IS NULL THEN 0 WHEN SEVERITY > 6 THEN 99 ELSE
+      SEVERITY END)::NUMBER
+    src_endpoint.domain: (SOURCE_USER_DOMAIN)::VARCHAR
+    src_endpoint.hostname: (IFF(SOURCE_HOST_NAME = 'n/a', NULL, SOURCE_HOST_NAME))::VARCHAR
+    src_endpoint.ip: (IFF(SOURCE_IP_ADDRESS = 'undefined' , NULL, SOURCE_IP_ADDRESS))::VARCHAR
+    src_endpoint.name: (SOURCE_USER_NAME)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN SILVERFORT_REQ_RESULT IS NULL THEN 0 WHEN SILVERFORT_REQ_RESULT
+      = 'Allowed' THEN 1 WHEN SILVERFORT_REQ_RESULT ILIKE 'Denied%%' THEN 2 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (SILVERFORT_REQ_RESULT)::VARCHAR
+    status_id: (CASE WHEN SILVERFORT_REQ_RESULT IS NULL THEN 0 WHEN SILVERFORT_REQ_RESULT
+      = 'Allowed' THEN 1 WHEN SILVERFORT_REQ_RESULT ILIKE 'Denied%%' THEN 2 ELSE 99
+      END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300200 + (CASE WHEN NAME IS NULL THEN 0 WHEN NAME = ''MFA
+      request'' THEN 1 WHEN NAME = ''Authentication request'' THEN 3 WHEN NAME = ''ServiceAccount
+      request'' THEN 4 ELSE 99 END))::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300200 + (CASE WHEN NAME IS NULL THEN 0 WHEN NAME = 'MFA request' THEN
+      1 WHEN NAME = 'Authentication request' THEN 3 WHEN NAME = 'ServiceAccount request'
+      THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.name: (SERVICE_ACCOUNT)::VARCHAR
+  predicate: DEVICE_EVENT_CLASS_ID IN('ServiceAccount', 'MFA', 'Authentication')

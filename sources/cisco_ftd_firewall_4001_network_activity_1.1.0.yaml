@@ -1,0 +1,111 @@
+type: mapping
+id: cisco_ftd_firewall_4001_network_activity_1.1.0
+version: '17'
+name: Cisco Ftd Firewall to OCSF class Network Activity
+data-types:
+- cisco-ftd-firewall
+mapping:
+  fields:
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (99)::NUMBER
+    activity_name: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN
+      2 THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN
+      6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', EXTRACTED_FIELDS:group::VARCHAR)))::ARRAY
+    actor.user.name: (SOURCE_USERNAME)::VARCHAR
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (COALESCE(DESTINATION_IP, EXTRACTED_FIELDS:target_ip))::VARCHAR
+    dst_endpoint.port: (DESTINATION_PORT)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (RAW_LOG_MESSAGE)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('cisco-ftd-firewall')::VARCHAR
+    metadata.product.vendor_name: ('cisco-firewall')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (SOURCE_USERNAME)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(DESTINATION_IP, EXTRACTED_FIELDS:target_ip))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN SEVERITY = 1 THEN 6 WHEN SEVERITY = 2 THEN 5 WHEN
+      SEVERITY = 3 THEN 4 WHEN SEVERITY = 4 THEN 3 WHEN SEVERITY = 5 THEN 2 WHEN SEVERITY
+      = 6 THEN 1 ELSE 0 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY = 1 THEN 6 WHEN SEVERITY = 2 THEN 5 WHEN SEVERITY
+      = 3 THEN 4 WHEN SEVERITY = 4 THEN 3 WHEN SEVERITY = 5 THEN 2 WHEN SEVERITY =
+      6 THEN 1 ELSE 0 END)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.port: (SOURCE_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((4001*100+99)::NUMBER) WHEN 400100 THEN ''Network Activity:
+      Unknown'' WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network
+      Activity: Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN
+      ''Network Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN
+      400106 THEN ''Network Activity: Traffic'' WHEN 400199 THEN ''Network Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (4001*100+99)::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT

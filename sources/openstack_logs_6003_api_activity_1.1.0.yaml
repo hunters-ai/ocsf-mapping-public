@@ -1,0 +1,111 @@
+type: mapping
+id: openstack_logs_6003_api_activity_1.1.0
+version: '4'
+name: Openstack Logs to OCSF class Api Activity
+data-types:
+- openstack-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION ILIKE '%read%' THEN 2 WHEN ACTION ILIKE '%delete%'
+      THEN 4 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION ILIKE '%read%' THEN 2 WHEN ACTION ILIKE
+      '%delete%' THEN 4 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN
+      4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (USERNAME)::VARCHAR
+    api.operation: (ACTION)::VARCHAR
+    api.service.name: (SOURCE)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.project_uid: (REQ_INITIATOR_PROJECT_ID)::VARCHAR
+    cloud.provider: ('Openstack')::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.url.hostname: (PARSE_URL(TARGET_URL_ADDRESSES_URL[0]):host)::VARCHAR
+    http_request.url.path: (PARSE_URL(TARGET_URL_ADDRESSES_URL[0]):path)::VARCHAR
+    http_request.url.port: (PARSE_URL(TARGET_URL_ADDRESSES_URL[0]):port)::NUMBER
+    http_request.url.scheme: (PARSE_URL(TARGET_URL_ADDRESSES_URL[0]):scheme)::VARCHAR
+    http_request.url.url_string: (TARGET_URL_ADDRESSES_URL[0])::VARCHAR
+    http_request.user_agent: (REQ_INITIATOR_HOST_AGENT)::VARCHAR
+    message: (EVENT_DATASET)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('openstack-logs')::VARCHAR
+    metadata.product.vendor_name: ('openstack')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PARSE_URL(TARGET_URL_ADDRESSES_URL[0]):host)::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (TARGET_URL_ADDRESSES_URL[0])::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REQ_INITIATOR_HOST_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: NULL::ARRAY
+    severity: (CASE ((CASE WHEN SEVERITY_LABEL IN ('INFO', 'DEBUG') THEN 1 WHEN SEVERITY_LABEL='WARNING'
+      THEN 2 WHEN SEVERITY_LABEL='ERROR' THEN 3 WHEN SEVERITY_LABEL='CRITICAL' THEN
+      5 WHEN SEVERITY_LABEL IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN
+      'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY_LABEL IN ('INFO', 'DEBUG') THEN 1 WHEN SEVERITY_LABEL='WARNING'
+      THEN 2 WHEN SEVERITY_LABEL='ERROR' THEN 3 WHEN SEVERITY_LABEL='CRITICAL' THEN
+      5 WHEN SEVERITY_LABEL IS NULL THEN 0 ELSE 99 END)::NUMBER
+    src_endpoint.ip: (REQ_INITIATOR_HOST_ADDRESS)::VARCHAR
+    src_endpoint.name: (REQ_INITIATOR_NAME)::VARCHAR
+    src_endpoint.svc_name: (SOURCE)::VARCHAR
+    src_endpoint.uid: (REQ_INITIATOR_ID)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE OUTCOME WHEN 'success' THEN 1 WHEN NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (OUTCOME)::VARCHAR
+    status_id: (CASE OUTCOME WHEN 'success' THEN 1 WHEN NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600300 + (CASE WHEN ACTION ILIKE ''%read%'' THEN 2 WHEN ACTION
+      ILIKE ''%delete%'' THEN 4 WHEN ACTION IS NULL THEN 0 ELSE 99 END))::NUMBER)
+      WHEN 600300 THEN ''API Activity: Unknown'' WHEN 600301 THEN ''API Activity:
+      Create'' WHEN 600302 THEN ''API Activity: Read'' WHEN 600303 THEN ''API Activity:
+      Update'' WHEN 600304 THEN ''API Activity: Delete'' WHEN 600399 THEN ''API Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (600300 + (CASE WHEN ACTION ILIKE '%read%' THEN 2 WHEN ACTION ILIKE
+      '%delete%' THEN 4 WHEN ACTION IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

@@ -1,0 +1,17 @@
+id: 5003_user_inventory_1.1.0
+version: '13'
+description: OCSF View For Class - 5003 User Inventory
+source-table-ids:
+- jumpcloud_users_5003_user_inventory_1.1.0
+- box_users_5003_user_inventory_1.1.0
+- onelogin_users_5003_user_inventory_1.1.0
+- okta_users_5003_user_inventory_1.1.0
+- azure_active_directory_users_5003_user_inventory_1.1.0
+- duo_users_5003_user_inventory_1.1.0
+- jamf_users_5003_user_inventory_1.1.0
+- strongdm_audit_users_5003_user_inventory_1.1.0
+- active_directory_users_5003_user_inventory_1.1.0
+- slack_users_5003_user_inventory_1.1.0
+- gsuite_directory_users_5003_user_inventory_1.1.0
+- meraki_auth_users_5003_user_inventory_1.1.0
+- cato_networks_security_events_5003_user_inventory_1.1.0

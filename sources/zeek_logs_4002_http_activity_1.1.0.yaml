@@ -1,0 +1,161 @@
+type: mapping
+id: zeek_logs_4002_http_activity_1.1.0
+version: '1'
+name: Zeek Logs to OCSF class Http Activity
+data-types:
+- zeek-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN RAW:method IS NULL THEN 0 WHEN RAW:method = 'CONNECT'
+      THEN 1 WHEN RAW:method = 'HEAD' THEN 4 WHEN RAW:method = 'OPTIONS' THEN 5 WHEN
+      RAW:method = 'POST' THEN 6 WHEN RAW:method = 'GET' THEN 3 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:method IS NULL THEN 0 WHEN RAW:method = 'CONNECT'
+      THEN 1 WHEN RAW:method = 'HEAD' THEN 4 WHEN RAW:method = 'OPTIONS' THEN 5 WHEN
+      RAW:method = 'POST' THEN 6 WHEN RAW:method = 'GET' THEN 3 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Connect' WHEN 2 THEN 'Delete' WHEN 3 THEN
+      'Get' WHEN 4 THEN 'Head' WHEN 5 THEN 'Options' WHEN 6 THEN 'Post' WHEN 7 THEN
+      'Put' WHEN 8 THEN 'Trace' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (USER_NAME)::VARCHAR
+    api.service.name: (SERVICE)::VARCHAR
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_name: (PROTOCOL)::VARCHAR
+    connection_info.protocol_num: (CASE WHEN LOWER(PROTOCOL) IS NULL THEN 0 WHEN LOWER(PROTOCOL)
+      = 'icmp' THEN 1 WHEN LOWER(PROTOCOL) = 'udp' THEN 17 WHEN LOWER(PROTOCOL) =
+      'tcp' THEN 6 ELSE 99 END)::NUMBER
+    count: NULL::NUMBER
+    device.name: (HOST_NAME)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (RESPONDER_HOST)::VARCHAR
+    dst_endpoint.port: (RESPONDER_PORT)::NUMBER
+    duration: (DURATION*1000)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    http_cookies: NULL::ARRAY
+    http_request.length: (RAW:request_body_len)::NUMBER
+    http_request.referrer: (RAW:referrer)::VARCHAR
+    http_request.url.path: (SPLIT_PART(RAW:uri, '?', 1))::VARCHAR
+    http_request.url.query_string: (SPLIT_PART(RAW:uri, '?', 2))::VARCHAR
+    http_request.url.url_string: (RAW:uri)::VARCHAR
+    http_request.user_agent: (RAW:user_agent)::VARCHAR
+    http_response.code: (RAW:status_code)::NUMBER
+    http_response.length: (RAW:response_body_len)::NUMBER
+    http_response.message: (RAW:status_msg)::VARCHAR
+    http_status: NULL::NUMBER
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (log_type)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zeek-logs')::VARCHAR
+    metadata.product.vendor_name: ('zeek')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RESPONDER_HOST)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (RAW:uri)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:origin)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (ORIGINATOR_HOST)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.hostname: (RAW:origin)::VARCHAR
+    src_endpoint.ip: (ORIGINATOR_HOST)::VARCHAR
+    src_endpoint.port: (ORIGINATOR_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN RAW:status_code ILIKE '2%%' THEN 1 WHEN RAW:status_code
+      ILIKE  '4%%' THEN 2 WHEN RAW:status_code ILIKE '5%%' THEN 2 WHEN RAW:status_code
+      IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success'
+      WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: (RAW:status_code)::VARCHAR
+    status_detail: (RAW:status_msg)::VARCHAR
+    status_id: (CASE WHEN RAW:status_code ILIKE '2%%' THEN 1 WHEN RAW:status_code
+      ILIKE  '4%%' THEN 2 WHEN RAW:status_code ILIKE '5%%' THEN 2 WHEN RAW:status_code
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes: (ORIGINATOR_BYTES + RESPONDER_BYTES)::NUMBER
+    traffic.bytes_in: (RESPONDER_BYTES)::NUMBER
+    traffic.bytes_out: (ORIGINATOR_BYTES)::NUMBER
+    traffic.packets: (ORIGINATOR_PACKETS + RESPONDER_PACKETS)::NUMBER
+    traffic.packets_in: (RESPONDER_PACKETS)::NUMBER
+    traffic.packets_out: (ORIGINATOR_PACKETS)::NUMBER
+    type_name: '(CASE ((400200 + (CASE WHEN RAW:method IS NULL THEN 0 WHEN RAW:method
+      = ''CONNECT'' THEN 1 WHEN RAW:method = ''HEAD'' THEN 4 WHEN RAW:method = ''OPTIONS''
+      THEN 5 WHEN RAW:method = ''POST'' THEN 6 WHEN RAW:method = ''GET'' THEN 3 ELSE
+      99 END))::NUMBER) WHEN 400200 THEN ''HTTP Activity: Unknown'' WHEN 400201 THEN
+      ''HTTP Activity: Connect'' WHEN 400202 THEN ''HTTP Activity: Delete'' WHEN 400203
+      THEN ''HTTP Activity: Get'' WHEN 400204 THEN ''HTTP Activity: Head'' WHEN 400205
+      THEN ''HTTP Activity: Options'' WHEN 400206 THEN ''HTTP Activity: Post'' WHEN
+      400207 THEN ''HTTP Activity: Put'' WHEN 400208 THEN ''HTTP Activity: Trace''
+      WHEN 400299 THEN ''HTTP Activity: Other'' END)::VARCHAR'
+    type_uid: (400200 + (CASE WHEN RAW:method IS NULL THEN 0 WHEN RAW:method = 'CONNECT'
+      THEN 1 WHEN RAW:method = 'HEAD' THEN 4 WHEN RAW:method = 'OPTIONS' THEN 5 WHEN
+      RAW:method = 'POST' THEN 6 WHEN RAW:method = 'GET' THEN 3 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: LOG_TYPE = 'http.log'

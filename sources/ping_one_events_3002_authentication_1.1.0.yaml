@@ -1,0 +1,126 @@
+type: mapping
+id: ping_one_events_3002_authentication_1.1.0
+version: '4'
+name: Ping One Events to OCSF class Authentication
+data-types:
+- ping-one-events
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE = 'SESSION.CREATED'
+      THEN 1 WHEN ACTION_TYPE = 'SESSION.DELETED' THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION_TYPE IS NULL THEN 0 WHEN ACTION_TYPE =
+      'SESSION.CREATED' THEN 1 WHEN ACTION_TYPE = 'SESSION.DELETED' THEN 2 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN 2 THEN 'Logoff'
+      WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket Request' WHEN
+      5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.url.hostname: (PARSE_URL(ACTORS:user:href):host)::VARCHAR
+    http_request.url.path: (PARSE_URL(ACTORS:user:href):path)::VARCHAR
+    http_request.url.scheme: (PARSE_URL(ACTORS:user:href):scheme)::VARCHAR
+    http_request.user_agent: (PARSE_JSON(SOURCE):userAgent)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process: NULL::VARIANT
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: (RESULT_MESSAGE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('ping-one-events')::VARCHAR
+    metadata.product.vendor_name: ('ping-identity')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (PARSE_URL(ACTORS:user:href):host)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (PARSE_JSON(SOURCE):ipAddress)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(ACTORS:user:name, PARSE_JSON(RESOURCES)[0]:name))::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session.uid: (IFF(PARSE_JSON(RESOURCES)[1]:type = 'SESSION', PARSE_JSON(RESOURCES)[1]:id,
+      NULL))::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (PARSE_JSON(SOURCE):ipAddress)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RESULT_STATUS IS NULL THEN 0 WHEN RESULT_STATUS = 'SUCCESS'
+      THEN 1 WHEN RESULT_STATUS ILIKE '%fail%' OR RESULT_STATUS ILIKE '%unsuccess%'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (ACTION:description)::VARCHAR
+    status_id: (CASE WHEN RESULT_STATUS IS NULL THEN 0 WHEN RESULT_STATUS = 'SUCCESS'
+      THEN 1 WHEN RESULT_STATUS ILIKE '%fail%' OR RESULT_STATUS ILIKE '%unsuccess%'
+      THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', recorded::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (recorded)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN ACTION_TYPE IS NULL THEN 300200 WHEN ACTION_TYPE
+      = ''SESSION.CREATED'' THEN 300201 WHEN ACTION_TYPE = ''SESSION.DELETED'' THEN
+      300202 ELSE 300299 END)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN ACTION_TYPE IS NULL THEN 300200 WHEN ACTION_TYPE = 'SESSION.CREATED'
+      THEN 300201 WHEN ACTION_TYPE = 'SESSION.DELETED' THEN 300202 ELSE 300299 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (COALESCE(ACTORS:user:name, PARSE_JSON(RESOURCES)[0]:name))::VARCHAR
+    user.type: (CASE ((CASE WHEN COALESCE(ACTORS:user:type, PARSE_JSON(RESOURCES)[0]:type)
+      IS NULL THEN 0 WHEN COALESCE(ACTORS:user:type, PARSE_JSON(RESOURCES)[0]:type)
+      ILIKE '%user%' THEN 1 WHEN COALESCE(ACTORS:user:type, PARSE_JSON(RESOURCES)[0]:type)
+      ILIKE '%admin%' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN COALESCE(ACTORS:user:type, PARSE_JSON(RESOURCES)[0]:type)
+      IS NULL THEN 0 WHEN COALESCE(ACTORS:user:type, PARSE_JSON(RESOURCES)[0]:type)
+      ILIKE '%user%' THEN 1 WHEN COALESCE(ACTORS:user:type, PARSE_JSON(RESOURCES)[0]:type)
+      ILIKE '%admin%' THEN 2 ELSE 99 END)::NUMBER
+    user.uid: (COALESCE(ACTORS:user:id, PARSE_JSON(RESOURCES)[0]:id))::VARCHAR
+  predicate: ACTION_TYPE IN ('SESSION.CREATED', 'SESSION.DELETED')

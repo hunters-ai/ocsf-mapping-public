@@ -1,0 +1,158 @@
+type: mapping
+id: jumpcloud_directory_insights_3005_user_access_1.1.0
+version: '8'
+name: Jumpcloud Directory Insights to OCSF class User Access
+data-types:
+- jumpcloud-directory-insights
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE '%create%provision%'
+      OR EVENT_TYPE ILIKE '%grant%' THEN 1 WHEN EVENT_TYPE ILIKE '%delete%provision%'
+      OR EVENT_TYPE ILIKE '%deprovision%' OR EVENT_TYPE ILIKE '%revoke%' THEN 2 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE ILIKE
+      '%create%provision%' OR EVENT_TYPE ILIKE '%grant%' THEN 1 WHEN EVENT_TYPE ILIKE
+      '%delete%provision%' OR EVENT_TYPE ILIKE '%deprovision%' OR EVENT_TYPE ILIKE
+      '%revoke%' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Assign
+      Privileges' WHEN 2 THEN 'Revoke Privileges' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.invoked_by: (SERVICE)::VARCHAR
+    api.response.code: (RAW:message_chain:response_code)::NUMBER
+    api.response.message: (RAW:message_chain:response_message)::VARCHAR
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('user_access')::VARCHAR
+    class_uid: ('3005')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (RAW:system:hostname)::VARCHAR
+    device.ip: (CLIENT_IP)::VARCHAR
+    device.location.continent: (CASE RAW:geoip:continent_code WHEN 'AF' THEN 'Africa'
+      WHEN 'AN' THEN 'Antarctica' WHEN 'AS' THEN 'Asia' WHEN 'EU' THEN 'Europe' WHEN
+      'NA' THEN 'North America' WHEN 'OC' THEN 'Oceania' WHEN 'SA' THEN 'South America'
+      ELSE NULL END)::VARCHAR
+    device.location.coordinates: (ARRAY_CONSTRUCT(RAW:geoip:longitude, RAW:geoip:latitude))::ARRAY
+    device.location.country: (RAW:geoip:country_code)::VARCHAR
+    device.location.region: (CONCAT(RAW:geoip:country_code, '-', RAW:geoip:region_code))::VARCHAR
+    device.name: (RAW:system:displayName)::VARCHAR
+    device.os.name: (RAW:useragent:os_full)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN RAW:useragent:os IS NULL THEN 0 WHEN RAW:useragent:os
+      ILIKE '%Windows%' THEN 100 WHEN RAW:useragent:os ILIKE '%Linux%' OR RAW:useragent:os
+      ILIKE '%Ubuntu%' THEN 200 WHEN RAW:useragent:os ILIKE '%Android%' THEN 201 WHEN
+      RAW:useragent:os ILIKE '%Mac%' THEN 300 WHEN RAW:useragent:os ILIKE '%iOS%'
+      THEN 301 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN RAW:useragent:os IS NULL THEN 0 WHEN RAW:useragent:os
+      ILIKE '%Windows%' THEN 100 WHEN RAW:useragent:os ILIKE '%Linux%' OR RAW:useragent:os
+      ILIKE '%Ubuntu%' THEN 200 WHEN RAW:useragent:os ILIKE '%Android%' THEN 201 WHEN
+      RAW:useragent:os ILIKE '%Mac%' THEN 300 WHEN RAW:useragent:os ILIKE '%iOS%'
+      THEN 301 ELSE 99 END)::NUMBER
+    device.os.version: (RAW:useragent:os_version)::VARCHAR
+    device.uid: (RAW:system:id)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('jumpcloud-directory-insights')::VARCHAR
+    metadata.product.vendor_name: ('jumpcloud')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:system:hostname)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''resource.owner.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:resource:username)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(INITIATOR_EMAIL, INITIATED_BY:email))::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:user:name, USERNAME))::VARCHAR
+    privileges: (ARRAY_CONSTRUCT(EVENT_TYPE))::ARRAY
+    raw_data: NULL::VARCHAR
+    resource.name: (COALESCE(RAW:resource:displayName, RAW:resource:name))::VARCHAR
+    resource.owner.name: (RAW:resource:username)::VARCHAR
+    resource.type: (RAW:resource:type)::VARCHAR
+    resource.uid: (RAW:resource:id)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN SUCCESS IS NULL THEN 0 WHEN SUCCESS = TRUE THEN 1 WHEN
+      SUCCESS = FALSE THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN SUCCESS IS NULL THEN 0 WHEN SUCCESS = TRUE THEN 1 WHEN SUCCESS
+      = FALSE THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 300500 WHEN EVENT_TYPE ILIKE
+      ''%create%provision%'' OR EVENT_TYPE ILIKE ''%grant%'' THEN 300501 WHEN EVENT_TYPE
+      ILIKE ''%delete%provision%'' OR EVENT_TYPE ILIKE ''%deprovision%'' OR EVENT_TYPE
+      ILIKE ''%revoke%'' THEN 300502 ELSE 300599 END)::NUMBER) WHEN 300500 THEN ''User
+      Access Management: Unknown'' WHEN 300501 THEN ''User Access Management: Assign
+      Privileges'' WHEN 300502 THEN ''User Access Management: Revoke Privileges''
+      WHEN 300599 THEN ''User Access Management: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE IS NULL THEN 300500 WHEN EVENT_TYPE ILIKE '%create%provision%'
+      OR EVENT_TYPE ILIKE '%grant%' THEN 300501 WHEN EVENT_TYPE ILIKE '%delete%provision%'
+      OR EVENT_TYPE ILIKE '%deprovision%' OR EVENT_TYPE ILIKE '%revoke%' THEN 300502
+      ELSE 300599 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (COALESCE(INITIATOR_EMAIL, INITIATED_BY:email))::VARCHAR
+    user.full_name: (RAW:user:username)::VARCHAR
+    user.name: (COALESCE(RAW:user:name, USERNAME))::VARCHAR
+    user.org.uid: (ORGANIZATION)::VARCHAR
+    user.type: (CASE ((CASE WHEN INITIATOR_TYPE IS NULL THEN 0 WHEN INITIATOR_TYPE
+      = 'user' THEN 1 WHEN INITIATOR_TYPE = 'admin' THEN 2 WHEN INITIATOR_TYPE = 'system'
+      THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2
+      THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN INITIATOR_TYPE IS NULL THEN 0 WHEN INITIATOR_TYPE = 'user'
+      THEN 1 WHEN INITIATOR_TYPE = 'admin' THEN 2 WHEN INITIATOR_TYPE = 'system' THEN
+      3 ELSE 99 END)::NUMBER
+    user.uid: (COALESCE(RAW:user:id, INITIATED_BY:id))::VARCHAR
+  predicate: EVENT_TYPE ILIKE '%user%provision%' OR EVENT_TYPE ILIKE '%revoke%' OR
+    EVENT_TYPE ILIKE '%grant%'

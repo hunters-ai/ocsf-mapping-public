@@ -1,0 +1,107 @@
+type: mapping
+id: breez_security_alerts_6003_api_activity_1.1.0
+version: '1'
+name: Breez Security Alerts to OCSF class Api Activity
+data-types:
+- breez-security-alerts
+mapping:
+  fields:
+    activity_id: (CASE OPERATION WHEN NULL THEN 0 WHEN 'Create' THEN 1 WHEN 'Read'
+      THEN 2 WHEN 'Update' THEN 3 WHEN 'Delete' THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE OPERATION WHEN NULL THEN 0 WHEN 'Create' THEN 1 WHEN
+      'Read' THEN 2 WHEN 'Update' THEN 3 WHEN 'Delete' THEN 4 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update'
+      WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.uid: (BREEZ_EVENT_ID)::VARCHAR
+    actor.user.credential_uid: (ACCESS_KEY_ID)::VARCHAR
+    actor.user.name: (IFF(SESSION_NAME ILIKE ANY ('%@%.%', 'arn:%'), SESSION_NAME,
+      NULL))::VARCHAR
+    actor.user.uid: (COALESCE(ROLE_ARN, PRINCIPAL_ARN))::VARCHAR
+    actor.user.uid_alt: (CLIENT_ID)::VARCHAR
+    api.operation: (OPERATION)::VARCHAR
+    api.response.error_message: (ERROR_DETAILS)::VARCHAR
+    api.response.message: (RULE_DESCRIPTION)::VARCHAR
+    api.service.name: (API_NAME)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.account.name: (CLOUD_ACCOUNT_NAME)::VARCHAR
+    cloud.account.uid: (CLOUD_ACCOUNT_ID)::VARCHAR
+    cloud.region: (CLOUD_REGION)::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: (RULE_DESCRIPTION)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('breez-security-alerts')::VARCHAR
+    metadata.product.vendor_name: ('breez')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(SESSION_NAME ILIKE ANY ('%@%.%', 'arn:%'), SESSION_NAME, NULL))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(GEO_IP, SOURCE_IP_ADDRESS))::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name',TRY_PARSE_JSON(RESOURCE_DETAILS[0]):machine_resource::VARCHAR,
+      'type',TRY_PARSE_JSON(RESOURCE_DETAILS[0]):machine_type::VARCHAR )))::ARRAY
+    severity: (CASE ((CASE PRIORITY WHEN NULL THEN 0 WHEN 'LOW' THEN 2 WHEN 'MEDIUM'
+      THEN 3 WHEN 'HIGH' THEN 4 WHEN 'CRITICAL' THEN 5 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium'
+      WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    severity_id: (CASE PRIORITY WHEN NULL THEN 0 WHEN 'LOW' THEN 2 WHEN 'MEDIUM' THEN
+      3 WHEN 'HIGH' THEN 4 WHEN 'CRITICAL' THEN 5 ELSE 99 END)::NUMBER
+    src_endpoint.domain: (EVENT_SOURCE)::VARCHAR
+    src_endpoint.ip: (COALESCE(GEO_IP, SOURCE_IP_ADDRESS))::VARCHAR
+    src_endpoint.location.city: (GEO_CITY)::VARCHAR
+    src_endpoint.location.coordinates: (ARRAY_CONSTRUCT_COMPACT(geo_latitude, geo_longitude))::ARRAY
+    src_endpoint.location.country: (GEO_COUNTRY)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (COALESCE (ALERT_TIMESTAMP,  BREEZ_TIMESTAMP))::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (COALESCE (ALERT_TIMESTAMP,  BREEZ_TIMESTAMP))::TIMESTAMP_LTZ
+    status: (CASE ((CASE API_STATUS WHEN NULL THEN 0 WHEN 'Success' THEN 1 WHEN 'Failure'
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (API_STATUS)::VARCHAR
+    status_id: (CASE API_STATUS WHEN NULL THEN 0 WHEN 'Success' THEN 1 WHEN 'Failure'
+      THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (((600300 +  (CASE OPERATION WHEN NULL THEN 0 WHEN ''Create''
+      THEN 1 WHEN ''Read'' THEN 2 WHEN ''Update'' THEN 3 WHEN ''Delete'' THEN 4 ELSE
+      99 END::NUMBER)))::NUMBER) WHEN 600300 THEN ''API Activity: Unknown'' WHEN 600301
+      THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity: Read'' WHEN 600303
+      THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity: Delete'' WHEN
+      600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: ((600300 +  (CASE OPERATION WHEN NULL THEN 0 WHEN 'Create' THEN 1 WHEN
+      'Read' THEN 2 WHEN 'Update' THEN 3 WHEN 'Delete' THEN 4 ELSE 99 END::NUMBER)))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: OPERATION in ('Create', 'Read', 'Update', 'Delete')

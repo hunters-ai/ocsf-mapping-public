@@ -1,0 +1,131 @@
+type: mapping
+id: aws_transit_gateway_flow_logs_4001_network_activity_1.1.0
+version: '11'
+name: Aws Transit Gateway Flow Logs to OCSF class Network Activity
+data-types:
+- aws-transit-gateway-flow-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (6)::NUMBER
+    activity_name: (CASE ((6)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN
+      2 THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN
+      6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud.account.uid: (ACCOUNT_ID)::VARCHAR
+    cloud.provider: ('AWS')::VARCHAR
+    cloud.region: (REGION)::VARCHAR
+    connection_info.direction: (CASE ((CASE WHEN FLOW_DIRECTION IS NULL THEN 0 WHEN
+      FLOW_DIRECTION = 'ingress' THEN 1 WHEN FLOW_DIRECTION = 'egress' THEN 2 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN 2 THEN 'Outbound'
+      WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.direction_id: (CASE WHEN FLOW_DIRECTION IS NULL THEN 0 WHEN FLOW_DIRECTION
+      = 'ingress' THEN 1 WHEN FLOW_DIRECTION = 'egress' THEN 2 ELSE 99 END)::NUMBER
+    connection_info.protocol_name: (CASE WHEN PROTOCOL = 6 THEN 'tcp' WHEN PROTOCOL
+      = 17 THEN 'udp' ELSE NULL END)::VARCHAR
+    connection_info.protocol_num: (PROTOCOL)::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(SRCADDR, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(SRCADDR, 'INET', 1):family)::NUMBER
+    connection_info.tcp_flags: (TCP_FLAGS)::NUMBER
+    connection_info.uid: (TGW_ID)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    dst_endpoint.ip: (DSTADDR)::VARCHAR
+    dst_endpoint.port: (DSTPORT)::NUMBER
+    dst_endpoint.subnet_uid: (TGW_DST_SUBNET_ID)::VARCHAR
+    dst_endpoint.uid: (TGW_DST_VPC_ACCOUNT_ID)::VARCHAR
+    dst_endpoint.vpc_uid: (TGW_DST_VPC_ID)::VARCHAR
+    dst_endpoint.zone: (IFF(TGW_DST_AZ_ID = '-', NULL, TGW_DST_AZ_ID))::VARCHAR
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (END_TIME)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (END_TIME)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('aws-transit-gateway-flow-logs')::VARCHAR
+    metadata.product.vendor_name: ('aws')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DSTADDR)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SRCADDR)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SRCADDR)::VARCHAR
+    src_endpoint.port: (SRCPORT)::NUMBER
+    src_endpoint.subnet_uid: (TGW_SRC_SUBNET_ID)::VARCHAR
+    src_endpoint.uid: (TGW_SRC_VPC_ACCOUNT_ID)::VARCHAR
+    src_endpoint.vpc_uid: (TGW_SRC_VPC_ID)::VARCHAR
+    src_endpoint.zone: (IFF(TGW_SRC_AZ_ID = '-', NULL, TGW_SRC_AZ_ID))::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN LOG_STATUS IS NULL THEN 0 WHEN LOG_STATUS = 'OK' THEN
+      1 WHEN LOG_STATUS = 'SKIPDATA' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (LOG_STATUS)::VARCHAR
+    status_id: (CASE WHEN LOG_STATUS IS NULL THEN 0 WHEN LOG_STATUS = 'OK' THEN 1
+      WHEN LOG_STATUS = 'SKIPDATA' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', start_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (start_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic.bytes: (BYTES)::NUMBER
+    traffic.packets: (PACKETS)::NUMBER
+    type_name: '(CASE ((400106)::NUMBER) WHEN 400100 THEN ''Network Activity: Unknown''
+      WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network Activity:
+      Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN ''Network
+      Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN 400106 THEN
+      ''Network Activity: Traffic'' WHEN 400199 THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (400106)::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT

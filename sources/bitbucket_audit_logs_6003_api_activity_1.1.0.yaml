@@ -1,0 +1,116 @@
+type: mapping
+id: bitbucket_audit_logs_6003_api_activity_1.1.0
+version: '10'
+name: Bitbucket Audit Logs to OCSF class Api Activity
+data-types:
+- bitbucket-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN EXTRA_ATTRIBUTES:Action ILIKE '%POST%' THEN 1 WHEN EXTRA_ATTRIBUTES:Action
+      ILIKE '%GET%' THEN 2 WHEN EXTRA_ATTRIBUTES:Action ILIKE '%PUT%' THEN 3 WHEN
+      EXTRA_ATTRIBUTES:Action IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EXTRA_ATTRIBUTES:Action ILIKE '%POST%' THEN 1
+      WHEN EXTRA_ATTRIBUTES:Action ILIKE '%GET%' THEN 2 WHEN EXTRA_ATTRIBUTES:Action
+      ILIKE '%PUT%' THEN 3 WHEN EXTRA_ATTRIBUTES:Action IS NULL THEN 0 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update'
+      WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (COALESCE(AUTHOR_NAME, EXTRA_ATTRIBUTES:Username, EXTRA_ATTRIBUTES:Author,
+      EXTRA_ATTRIBUTES:"Initiating user"))::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN AUTHOR_TYPE='system' THEN 3 WHEN AUTHOR_TYPE
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN AUTHOR_TYPE='system' THEN 3 WHEN AUTHOR_TYPE IS
+      NULL THEN 0 ELSE 99 END)::NUMBER
+    actor.user.uid: (AUTHOR_ID)::VARCHAR
+    api.group.name: (EXTRA_ATTRIBUTES:Group)::VARCHAR
+    api.response.error_message: (EXTRA_ATTRIBUTES:Error)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.url.url_string: (SYSTEM)::VARCHAR
+    message: (ACTION)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('bitbucket-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('Atlassian')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(AUTHOR_NAME, EXTRA_ATTRIBUTES:Username, EXTRA_ATTRIBUTES:Author,
+        EXTRA_ATTRIBUTES:"Initiating user"))::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (SYSTEM)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    - name: '''src_endpoint.proxy_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (EXTRA_ATTRIBUTES:"Load balancer/proxy IP address")::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('uid', AFFECTED_OBJECTS_IDS[0], 'name',
+      AFFECTED_OBJECTS_NAMES[0], 'type', AFFECTED_OBJECTS_TYPES[0])))::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.proxy_endpoint.ip: (EXTRA_ATTRIBUTES:"Load balancer/proxy IP address")::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EXTRA_ATTRIBUTES:"Command result"='SUCCEEDED' THEN 1
+      WHEN EXTRA_ATTRIBUTES:"Command result"='CANCELED' THEN 2 WHEN EXTRA_ATTRIBUTES:"Command
+      result" IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN EXTRA_ATTRIBUTES:"Command result"='SUCCEEDED' THEN 1 WHEN
+      EXTRA_ATTRIBUTES:"Command result"='CANCELED' THEN 2 WHEN EXTRA_ATTRIBUTES:"Command
+      result" IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EXTRA_ATTRIBUTES:Action ILIKE ''%POST%'' THEN 600301
+      WHEN EXTRA_ATTRIBUTES:Action ILIKE ''%GET%'' THEN 600302 WHEN EXTRA_ATTRIBUTES:Action
+      ILIKE ''%PUT%'' THEN 600303 WHEN EXTRA_ATTRIBUTES:Action IS NULL THEN 600300
+      ELSE 6003099 END)::NUMBER) WHEN 600300 THEN ''API Activity: Unknown'' WHEN 600301
+      THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity: Read'' WHEN 600303
+      THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity: Delete'' WHEN
+      600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EXTRA_ATTRIBUTES:Action ILIKE '%POST%' THEN 600301 WHEN EXTRA_ATTRIBUTES:Action
+      ILIKE '%GET%' THEN 600302 WHEN EXTRA_ATTRIBUTES:Action ILIKE '%PUT%' THEN 600303
+      WHEN EXTRA_ATTRIBUTES:Action IS NULL THEN 600300 ELSE 6003099 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EXTRA_ATTRIBUTES:Action is not NULL

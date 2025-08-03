@@ -1,0 +1,161 @@
+type: mapping
+id: universal_wel_1007_process_activity_1.1.0
+version: '10'
+name: Universal Wel to OCSF class Process Activity
+data-types:
+- universal-wel
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (IFF(EVENT_ID = 4688, 1, 2))::NUMBER
+    activity_name: (CASE ((IFF(EVENT_ID = 4688, 1, 2))::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Launch' WHEN 2 THEN 'Terminate' WHEN 3 THEN 'Open' WHEN 4 THEN
+      'Inject' WHEN 5 THEN 'Set User ID' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.idp.name: (PROVIDER)::VARCHAR
+    actor.idp.uid: (REGEXP_SUBSTR(RAW:ProviderGuid, '^{(.+)}', 1, 1, 'e'))::VARCHAR
+    actor.user.domain: (MESSAGE_DETAILS:creator_subject:account_domain)::VARCHAR
+    actor.user.name: (MESSAGE_DETAILS:creator_subject:account_name)::VARCHAR
+    actor.user.uid: (MESSAGE_DETAILS:creator_subject:security_id)::VARCHAR
+    actual_permissions: NULL::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('process_activity')::VARCHAR
+    class_uid: ('1007')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (MACHINE_NAME)::VARCHAR
+    device.ip: (RAW:MessageSourceAddress)::VARCHAR
+    device.name: (MACHINE_NAME)::VARCHAR
+    disposition: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    exit_code: NULL::NUMBER
+    firewall_rule: NULL::VARIANT
+    injection_type: NULL::VARCHAR
+    injection_type_id: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: (RAW:Message)::VARCHAR
+    metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('universal-wel')::VARCHAR
+    metadata.product.vendor_name: ('windows-event-log')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    module: NULL::VARIANT
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (MESSAGE_DETAILS:creator_subject:account_name)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (MACHINE_NAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:MessageSourceAddress)::VARCHAR
+    - name: '''process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (COALESCE(MESSAGE_DETAILS:process_information:new_process_name,RAW:NewProcessName))::VARCHAR
+    - name: '''process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (COALESCE(MESSAGE_DETAILS:process_information:creator_process_name, RAW:ParentProcessName::VARCHAR))::VARCHAR
+    - name: '''process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:SubjectUserName)::VARCHAR
+    process.cmd_line: (COALESCE(MESSAGE_DETAILS:process_information:process_command_line,
+      RAW:CommandLine))::VARCHAR
+    process.name: (COALESCE(MESSAGE_DETAILS:process_information:new_process_name,RAW:NewProcessName))::VARCHAR
+    process.parent_process.name: (COALESCE(MESSAGE_DETAILS:process_information:creator_process_name,
+      RAW:ParentProcessName::VARCHAR))::VARCHAR
+    process.parent_process.uid: (COALESCE(MESSAGE_DETAILS:process_information:creator_process_id,
+      RAW:ProcessId::VARCHAR))::VARCHAR
+    process.tid: (RAW:ExecutionThreadID)::NUMBER
+    process.uid: (COALESCE(RAW:NewProcessId, MESSAGE_DETAILS:process_information:new_process_id))::VARCHAR
+    process.user.domain: (RAW:SubjectDomainName)::VARCHAR
+    process.user.name: (RAW:SubjectUserName)::VARCHAR
+    process.user.uid: (RAW:SubjectUserSid)::VARCHAR
+    raw_data: NULL::VARCHAR
+    requested_permissions: NULL::NUMBER
+    severity: (CASE ((CASE WHEN RAW:Severity = 'INFO' THEN 1 WHEN RAW:Severity IS
+      NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN RAW:Severity = 'INFO' THEN 1 WHEN RAW:Severity IS NULL
+      THEN 0 ELSE 99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (('1')::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: ('1')::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((IFF(EVENT_ID = 4688, 100701, 100702))::NUMBER) WHEN 100700
+      THEN ''Process Activity: Unknown'' WHEN 100701 THEN ''Process Activity: Launch''
+      WHEN 100702 THEN ''Process Activity: Terminate'' WHEN 100703 THEN ''Process
+      Activity: Open'' WHEN 100704 THEN ''Process Activity: Inject'' WHEN 100705 THEN
+      ''Process Activity: Set User ID'' WHEN 100799 THEN ''Process Activity: Other''
+      END)::VARCHAR'
+    type_uid: (IFF(EVENT_ID = 4688, 100701, 100702))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_ID IN (4688, 4689)

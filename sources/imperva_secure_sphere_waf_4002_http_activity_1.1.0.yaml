@@ -1,0 +1,182 @@
+type: mapping
+id: imperva_secure_sphere_waf_4002_http_activity_1.1.0
+version: '10'
+name: Imperva Secure Sphere Waf to OCSF class Http Activity
+data-types:
+- imperva-secure-sphere-waf
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'block' THEN 2 WHEN
+      ACTION = 'alert' THEN 1 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'block' THEN 2 WHEN
+      ACTION = 'alert' THEN 1 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN REQUEST_METHOD = 'CONNECT' THEN 1 WHEN REQUEST_METHOD
+      = 'DELETE' THEN 2 WHEN REQUEST_METHOD = 'GET' THEN 3 WHEN REQUEST_METHOD = 'HEAD'
+      THEN 4 WHEN REQUEST_METHOD = 'OPTIONS' THEN 5 WHEN REQUEST_METHOD = 'POST' THEN
+      6 WHEN REQUEST_METHOD = 'PUT' THEN 7 WHEN REQUEST_METHOD = 'TRACK' THEN 8 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN REQUEST_METHOD = 'CONNECT' THEN 1 WHEN REQUEST_METHOD
+      = 'DELETE' THEN 2 WHEN REQUEST_METHOD = 'GET' THEN 3 WHEN REQUEST_METHOD = 'HEAD'
+      THEN 4 WHEN REQUEST_METHOD = 'OPTIONS' THEN 5 WHEN REQUEST_METHOD = 'POST' THEN
+      6 WHEN REQUEST_METHOD = 'PUT' THEN 7 WHEN REQUEST_METHOD = 'TRACK' THEN 8 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Connect' WHEN 2 THEN 'Delete'
+      WHEN 3 THEN 'Get' WHEN 4 THEN 'Head' WHEN 5 THEN 'Options' WHEN 6 THEN 'Post'
+      WHEN 7 THEN 'Put' WHEN 8 THEN 'Trace' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (USERNAME)::VARCHAR
+    api: NULL::VARIANT
+    app_name: (APPLICATION_NAME)::VARCHAR
+    attacks: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('tactic', VIOLATION_ATTRIBUTES,
+      'technique', REASON)))::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.direction: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.direction_id: (1)::NUMBER
+    connection_info.protocol_name: (PROTOCOL)::VARCHAR
+    connection_info.protocol_num: (IFF(PROTOCOL = 'TCP', 6, NULL))::NUMBER
+    connection_info.protocol_ver: (CASE ((PARSE_IP(SOURCE_IP, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(SOURCE_IP, 'INET', 1):family)::NUMBER
+    connection_info.session.uid: (REGEXP_SUBSTR(HTTP_INFO, 'session-id"="(.+)"', 1,
+      1, 'e'))::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'block' THEN
+      2 WHEN ACTION = 'alert' THEN 19 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN
+      12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed'
+      WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN
+      18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count'
+      WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24
+      THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN
+      27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN
+      'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved'
+      WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'block' THEN 2
+      WHEN ACTION = 'alert' THEN 19 ELSE 99 END)::NUMBER
+    dst_endpoint.ip: (DESTINATION_IP)::VARCHAR
+    dst_endpoint.port: (DESTINATION_PORT)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule.category: (CATEGORY)::VARCHAR
+    http_cookies: NULL::ARRAY
+    http_request.args: (REQUEST_PARAMETERS)::VARCHAR
+    http_request.http_method: (IFF(REQUEST_METHOD = 'TRACK', 'TRACE', REQUEST_METHOD))::VARCHAR
+    http_request.url.scheme: (REGEXP_SUBSTR(REQUEST, '(.+)://', 1, 1, 'e'))::VARCHAR
+    http_request.url.url_string: (IFF(REQUEST ILIKE '%?', SPLIT_PART(REQUEST, '?',
+      1), REQUEST))::VARCHAR
+    http_request.user_agent: (REQUEST_CLIENT_APPLICATION)::VARCHAR
+    http_request.version: (REGEXP_SUBSTR(HTTP_INFO, 'HTTP/\\d\\.\\d'))::VARCHAR
+    http_response.code: (REGEXP_SUBSTR(HTTP_INFO, 'response-code"="(\\d+)"', 1, 1,
+      'e'))::NUMBER
+    http_response.length: (REGEXP_SUBSTR(HTTP_INFO, 'response-size"="(\\d+)"', 1,
+      1, 'e'))::NUMBER
+    http_status: NULL::NUMBER
+    load_balancer.endpoint_connections: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('network_endpoint',
+      OBJECT_CONSTRUCT_KEEP_NULL('ip', MX_IP, 'svc_name', SERVICE_NAME))))::ARRAY
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('imperva-secure-sphere-waf')::VARCHAR
+    metadata.product.vendor_name: ('imperva')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (DESTINATION_IP)::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (IFF(REQUEST ILIKE '%?', SPLIT_PART(REQUEST, '?', 1), REQUEST))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN SEVERITY = 'Informative' THEN 1 WHEN SEVERITY = 'Low'
+      THEN 2 WHEN SEVERITY = 'Medium' THEN 3 WHEN SEVERITY = 'High' THEN 4 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN
+      'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6
+      THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY = 'Informative' THEN 1 WHEN SEVERITY = 'Low'
+      THEN 2 WHEN SEVERITY = 'Medium' THEN 3 WHEN SEVERITY = 'High' THEN 4 ELSE 99
+      END)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.port: (SOURCE_PORT)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN REGEXP_SUBSTR(HTTP_INFO, 'response-code"="(\\d+)"',
+      1, 1, 'e') IS NULL THEN 0 WHEN REGEXP_SUBSTR(HTTP_INFO, 'response-code"="(\\d+)"',
+      1, 1, 'e') ILIKE '2%' THEN 1 WHEN REGEXP_SUBSTR(HTTP_INFO, 'response-code"="(\\d+)"',
+      1, 1, 'e') ILIKE ANY ('4%', '5%') THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN REGEXP_SUBSTR(HTTP_INFO, 'response-code"="(\\d+)"', 1, 1,
+      'e') IS NULL THEN 0 WHEN REGEXP_SUBSTR(HTTP_INFO, 'response-code"="(\\d+)"',
+      1, 1, 'e') ILIKE '2%' THEN 1 WHEN REGEXP_SUBSTR(HTTP_INFO, 'response-code"="(\\d+)"',
+      1, 1, 'e') ILIKE ANY ('4%', '5%') THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', receipt_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (receipt_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((400200 + (CASE WHEN REQUEST_METHOD = ''CONNECT'' THEN 1 WHEN
+      REQUEST_METHOD = ''DELETE'' THEN 2 WHEN REQUEST_METHOD = ''GET'' THEN 3 WHEN
+      REQUEST_METHOD = ''HEAD'' THEN 4 WHEN REQUEST_METHOD = ''OPTIONS'' THEN 5 WHEN
+      REQUEST_METHOD = ''POST'' THEN 6 WHEN REQUEST_METHOD = ''PUT'' THEN 7 WHEN REQUEST_METHOD
+      = ''TRACK'' THEN 8 ELSE 99 END))::NUMBER) WHEN 400200 THEN ''HTTP Activity:
+      Unknown'' WHEN 400201 THEN ''HTTP Activity: Connect'' WHEN 400202 THEN ''HTTP
+      Activity: Delete'' WHEN 400203 THEN ''HTTP Activity: Get'' WHEN 400204 THEN
+      ''HTTP Activity: Head'' WHEN 400205 THEN ''HTTP Activity: Options'' WHEN 400206
+      THEN ''HTTP Activity: Post'' WHEN 400207 THEN ''HTTP Activity: Put'' WHEN 400208
+      THEN ''HTTP Activity: Trace'' WHEN 400299 THEN ''HTTP Activity: Other'' END)::VARCHAR'
+    type_uid: (400200 + (CASE WHEN REQUEST_METHOD = 'CONNECT' THEN 1 WHEN REQUEST_METHOD
+      = 'DELETE' THEN 2 WHEN REQUEST_METHOD = 'GET' THEN 3 WHEN REQUEST_METHOD = 'HEAD'
+      THEN 4 WHEN REQUEST_METHOD = 'OPTIONS' THEN 5 WHEN REQUEST_METHOD = 'POST' THEN
+      6 WHEN REQUEST_METHOD = 'PUT' THEN 7 WHEN REQUEST_METHOD = 'TRACK' THEN 8 ELSE
+      99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: REQUEST_METHOD IN ('GET', 'TRACK', 'OPTIONS', 'HEAD', 'PUT', 'CONNECT',
+    'POST', 'DELETE')

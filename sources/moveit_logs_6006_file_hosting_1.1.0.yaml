@@ -1,0 +1,137 @@
+type: mapping
+id: moveit_logs_6006_file_hosting_1.1.0
+version: '11'
+name: Moveit Logs to OCSF class File Hosting
+data-types:
+- moveit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION = 'file_upload' THEN 1 WHEN ACTION = 'file_download'
+      THEN 2 WHEN ACTION = 'file_delete' THEN 4 WHEN ACTION = 'file_rename' THEN 5
+      WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION = 'file_upload' THEN 1 WHEN ACTION = 'file_download'
+      THEN 2 WHEN ACTION = 'file_delete' THEN 4 WHEN ACTION = 'file_rename' THEN 5
+      WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Upload' WHEN 10 THEN 'Lock' WHEN 11 THEN 'Unlock' WHEN 12 THEN 'Share'
+      WHEN 13 THEN 'Unshare' WHEN 14 THEN 'Open' WHEN 15 THEN 'Sync' WHEN 16 THEN
+      'Unsync' WHEN 2 THEN 'Download' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN
+      5 THEN 'Rename' WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move' WHEN 8 THEN 'Restore'
+      WHEN 9 THEN 'Preview' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.boundary: (CASE ((5)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Localhost' WHEN 10 THEN 'Gateway VPC' WHEN 11 THEN 'Internet Gateway' WHEN
+      2 THEN 'Internal' WHEN 3 THEN 'External' WHEN 4 THEN 'Same VPC' WHEN 5 THEN
+      'Internet/VPC Gateway' WHEN 6 THEN 'Virtual Private Gateway' WHEN 7 THEN 'Intra-region
+      VPC' WHEN 8 THEN 'Inter-region VPC' WHEN 9 THEN 'Local Gateway' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    connection_info.boundary_id: (5)::NUMBER
+    connection_info.direction: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.direction_id: (1)::NUMBER
+    connection_info.protocol_ver: (CASE ((IFF(IP_ADDRESS ILIKE '%%.%%.%%.%%', PARSE_IP(IP_ADDRESS,
+      'INET', 1):family::NUMBER, NULL))::NUMBER) WHEN 0 THEN 'Unknown' WHEN 4 THEN
+      'Internet Protocol version 4 (IPv4)' WHEN 6 THEN 'Internet Protocol version
+      6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (IFF(IP_ADDRESS ILIKE '%%.%%.%%.%%', PARSE_IP(IP_ADDRESS,
+      'INET', 1):family::NUMBER, NULL))::NUMBER
+    count: (RATE)::NUMBER
+    dst_endpoint.name: (RAW:targetName)::VARCHAR
+    duration: (DURATION)::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.accessor.full_name: (USER_FULL_NAME)::VARCHAR
+    file.accessor.name: (USERNAME)::VARCHAR
+    file.name: (FILE_NAME)::VARCHAR
+    file.parent_folder: (FOLDER_PATH)::VARCHAR
+    file.size: (TRANSFER_SIZE)::NUMBER
+    file.type: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File'
+      WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device'
+      WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    file.type_id: (0)::NUMBER
+    file.uid: (FILE_ID)::VARCHAR
+    message: (MESSAGE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('moveit-logs')::VARCHAR
+    metadata.product.vendor_name: ('moveit')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.accessor'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.accessor.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (FILE_NAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN ERROR_CODE = 0 THEN 1 WHEN ERROR_CODE = 200 THEN 2 WHEN
+      ERROR_CODE IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1
+      THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN ERROR_CODE = 0 THEN 1 WHEN ERROR_CODE = 200 THEN 2 WHEN
+      ERROR_CODE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', log_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (log_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN ACTION = ''file_upload'' THEN 600601 WHEN ACTION
+      = ''file_download'' THEN 600602 WHEN ACTION = ''file_delete'' THEN 600604 WHEN
+      ACTION = ''file_rename'' THEN 600605 WHEN ACTION IS NULL THEN 600600 ELSE 600699
+      END)::NUMBER) WHEN 600600 THEN ''File Hosting Activity: Unknown'' WHEN 600601
+      THEN ''File Hosting Activity: Upload'' WHEN 600602 THEN ''File Hosting Activity:
+      Download'' WHEN 600603 THEN ''File Hosting Activity: Update'' WHEN 600604 THEN
+      ''File Hosting Activity: Delete'' WHEN 600605 THEN ''File Hosting Activity:
+      Rename'' WHEN 600606 THEN ''File Hosting Activity: Copy'' WHEN 600607 THEN ''File
+      Hosting Activity: Move'' WHEN 600608 THEN ''File Hosting Activity: Restore''
+      WHEN 600609 THEN ''File Hosting Activity: Preview'' WHEN 600610 THEN ''File
+      Hosting Activity: Lock'' WHEN 600611 THEN ''File Hosting Activity: Unlock''
+      WHEN 600612 THEN ''File Hosting Activity: Share'' WHEN 600613 THEN ''File Hosting
+      Activity: Unshare'' WHEN 600614 THEN ''File Hosting Activity: Open'' WHEN 600615
+      THEN ''File Hosting Activity: Sync'' WHEN 600616 THEN ''File Hosting Activity:
+      Unsync'' WHEN 600699 THEN ''File Hosting Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN ACTION = 'file_upload' THEN 600601 WHEN ACTION = 'file_download'
+      THEN 600602 WHEN ACTION = 'file_delete' THEN 600604 WHEN ACTION = 'file_rename'
+      THEN 600605 WHEN ACTION IS NULL THEN 600600 ELSE 600699 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: ACTION ILIKE 'file%%'

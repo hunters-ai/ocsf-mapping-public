@@ -1,0 +1,120 @@
+type: mapping
+id: salesforce_event_logs_6003_api_activity_1.1.0
+version: '9'
+name: Salesforce Event Logs to OCSF class Api Activity
+data-types:
+- salesforce-event-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN RAW:METHOD IS NULL THEN 0 WHEN RAW:METHOD IN ('CREATE',
+      'POST') THEN 1 WHEN RAW:METHOD ILIKE '%GET%' THEN 2 WHEN RAW:METHOD IN ('UPDATE',
+      'PUT', 'PATCH') THEN 3 WHEN RAW:METHOD ILIKE '%DELETE%' THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:METHOD IS NULL THEN 0 WHEN RAW:METHOD IN
+      ('CREATE', 'POST') THEN 1 WHEN RAW:METHOD ILIKE '%GET%' THEN 2 WHEN RAW:METHOD
+      IN ('UPDATE', 'PUT', 'PATCH') THEN 3 WHEN RAW:METHOD ILIKE '%DELETE%' THEN 4
+      ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN
+      'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.session.uid: (SESSION_KEY)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE ILIKE
+      '%User%' OR user_type ILIKE '%Standard%' THEN 1 WHEN user_type ILIKE '%Admin%'
+      THEN 2 WHEN user_type = 'AutomatedProcess' THEN 3 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE ILIKE '%User%'
+      OR user_type ILIKE '%Standard%' THEN 1 WHEN user_type ILIKE '%Admin%' THEN 2
+      WHEN user_type = 'AutomatedProcess' THEN 3 ELSE 99 END)::NUMBER
+    actor.user.uid: (USER_ID)::VARCHAR
+    actor.user.uid_alt: (USER_ID_DERIVED)::VARCHAR
+    api.operation: (COALESCE(RAW:METHOD_NAME, RAW:OPERATION))::VARCHAR
+    api.request.uid: (REQUEST_ID)::VARCHAR
+    api.response.code: (TRY_TO_NUMERIC(REPLACE(RAW:STATUS_CODE, '"', '')))::NUMBER
+    api.response.error_message: (COALESCE(RAW:EXCEPTION_MESSAGE, RAW:ERROR_MESSAGE))::VARCHAR
+    api.service.uid: (RAW:CONNECTED_APP_ID)::VARCHAR
+    api.version: (RAW:API_VERSION)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.org.uid: (ORGANIZATION_ID)::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: (TRY_TO_NUMERIC(REPLACE(RAW:RUN_TIME, '"', '')))::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.http_method: (CASE WHEN RAW:HTTP_METHOD = 'DELETE' THEN 'DELETE'
+      WHEN RAW:HTTP_METHOD = 'GET' THEN 'GET' WHEN RAW:HTTP_METHOD = 'HEAD' THEN 'HEAD'
+      WHEN RAW:HTTP_METHOD = 'OPTIONS' THEN 'OPTIONS' WHEN RAW:HTTP_METHOD = 'POST'
+      THEN 'POST' WHEN RAW:HTTP_METHOD = 'PUT' THEN 'PUT' ELSE NULL END)::VARCHAR
+    http_request.length: (TRY_TO_NUMERIC(REPLACE(RAW:REQUEST_SIZE, '"', '')))::NUMBER
+    http_request.url.path: (RAW:API_RESOURCE)::VARCHAR
+    http_request.url.url_string: (URI)::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: (RAW:MESSAGE)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('salesforce-event-logs')::VARCHAR
+    metadata.product.vendor_name: ('salesforce')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (URI)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', RAW:ENTITY_NAME::VARCHAR,
+      'type', RAW:ENTITY_TYPE::VARCHAR)))::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (CLIENT_IP)::VARCHAR
+    src_endpoint.name: (RAW:CLIENT_NAME)::VARCHAR
+    src_endpoint.uid: (RAW:CLIENT_ID)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RAW:REQUEST_STATUS IS NULL THEN 0 WHEN RAW:REQUEST_STATUS
+      = 'S' THEN 1 WHEN RAW:REQUEST_STATUS = 'F' THEN 2 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: (RAW:STATUS_CODE)::VARCHAR
+    status_detail: (COALESCE(RAW:EXCEPTION_MESSAGE, RAW:ERROR_MESSAGE))::VARCHAR
+    status_id: (CASE WHEN RAW:REQUEST_STATUS IS NULL THEN 0 WHEN RAW:REQUEST_STATUS
+      = 'S' THEN 1 WHEN RAW:REQUEST_STATUS = 'F' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600300 + (CASE WHEN RAW:METHOD IS NULL THEN 0 WHEN RAW:METHOD
+      IN (''CREATE'', ''POST'') THEN 1 WHEN RAW:METHOD ILIKE ''%GET%'' THEN 2 WHEN
+      RAW:METHOD IN (''UPDATE'', ''PUT'', ''PATCH'') THEN 3 WHEN RAW:METHOD ILIKE
+      ''%DELETE%'' THEN 4 ELSE 99 END))::NUMBER) WHEN 600300 THEN ''API Activity:
+      Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity:
+      Read'' WHEN 600303 THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity:
+      Delete'' WHEN 600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (600300 + (CASE WHEN RAW:METHOD IS NULL THEN 0 WHEN RAW:METHOD IN ('CREATE',
+      'POST') THEN 1 WHEN RAW:METHOD ILIKE '%GET%' THEN 2 WHEN RAW:METHOD IN ('UPDATE',
+      'PUT', 'PATCH') THEN 3 WHEN RAW:METHOD ILIKE '%DELETE%' THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TYPE ILIKE '%Api%'

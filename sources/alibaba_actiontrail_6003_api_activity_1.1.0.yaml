@@ -1,0 +1,114 @@
+type: mapping
+id: alibaba_actiontrail_6003_api_activity_1.1.0
+version: '9'
+name: Alibaba Actiontrail to OCSF class Api Activity
+data-types:
+- alibaba-actiontrail
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE '%Create%' THEN
+      1 WHEN EVENT_RW='Read' THEN 2 WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE ANY
+      ('%Update%','%Modify%') THEN 3 WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE '%Delete%'
+      THEN 4 WHEN EVENT_RW IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE '%Create%'
+      THEN 1 WHEN EVENT_RW='Read' THEN 2 WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE
+      ANY ('%Update%','%Modify%') THEN 3 WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE
+      '%Delete%' THEN 4 WHEN EVENT_RW IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update'
+      WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.session.created_time: (date_part('epoch_milliseconds', (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES:creationDate)::TIMESTAMP_LTZ))::NUMBER
+    actor.session.created_time_dt: (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES:creationDate)::TIMESTAMP_LTZ
+    actor.session.is_mfa: (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES:mfaAuthenticated[0])::BOOLEAN
+    actor.user.account.uid: (COALESCE(USER_IDENTITY_ACCOUNT_ID, RECIPIENT_ACCOUNT_ID))::VARCHAR
+    actor.user.credential_uid: (USER_IDENTITY_ACCESS_KEY_ID)::VARCHAR
+    actor.user.name: (USER_IDENTITY_USER_NAME)::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN USER_IDENTITY_TYPE='ram-user' THEN 1 WHEN USER_IDENTITY_TYPE='root-account'
+      THEN 2 WHEN USER_IDENTITY_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN USER_IDENTITY_TYPE='ram-user' THEN 1 WHEN USER_IDENTITY_TYPE='root-account'
+      THEN 2 WHEN USER_IDENTITY_TYPE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    actor.user.uid: (USER_IDENTITY_PRINCIPAL_ID)::VARCHAR
+    api.request.data: (RAW:event:requestParameters)::VARIANT
+    api.request.uid: (REQUEST_ID)::VARCHAR
+    api.response.data: (RAW:event:responseElements)::VARIANT
+    api.response.error: (ERROR_CODE)::VARCHAR
+    api.response.error_message: (ERROR_MESSAGE)::VARCHAR
+    api.response.message: (RAW:event:responseElements:Message)::VARCHAR
+    api.service.name: (SERVICE_NAME)::VARCHAR
+    api.version: (RAW:event:apiVersion)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.provider: ('Alibaba Cloud')::VARCHAR
+    cloud.region: (ACS_REGION)::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.length: (REQUEST_PARAMETERS_LENGTH)::NUMBER
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: (EVENT_NAME)::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('alibaba-actiontrail')::VARCHAR
+    metadata.product.vendor_name: ('alibaba')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER_IDENTITY_USER_NAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(SOURCE_IP_ADDRESS, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'))::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: NULL::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (REGEXP_SUBSTR(SOURCE_IP_ADDRESS, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'))::VARCHAR
+    src_endpoint.name: (EVENT_SOURCE)::VARCHAR
+    src_endpoint.port: (REQUEST_PARAMETERS_CLIENT_PORT)::NUMBER
+    src_endpoint.vpc_uid: (RAW:event:vpcId)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (RAW:event:responseElements:Code)::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_RW=''Write'' AND EVENT_NAME ILIKE ''%Create%''
+      THEN 600301 WHEN EVENT_RW=''Read'' THEN 600302 WHEN EVENT_RW=''Write'' AND EVENT_NAME
+      ILIKE ANY (''%Update%'',''%Modify%'') THEN 600303 WHEN EVENT_RW=''Write'' AND
+      EVENT_NAME ILIKE ''%Delete%'' THEN 600304 WHEN EVENT_RW IS NULL THEN 600300
+      ELSE 600399 END)::NUMBER) WHEN 600300 THEN ''API Activity: Unknown'' WHEN 600301
+      THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity: Read'' WHEN 600303
+      THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity: Delete'' WHEN
+      600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE '%Create%' THEN 600301
+      WHEN EVENT_RW='Read' THEN 600302 WHEN EVENT_RW='Write' AND EVENT_NAME ILIKE
+      ANY ('%Update%','%Modify%') THEN 600303 WHEN EVENT_RW='Write' AND EVENT_NAME
+      ILIKE '%Delete%' THEN 600304 WHEN EVENT_RW IS NULL THEN 600300 ELSE 600399 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TYPE = 'ApiCall'

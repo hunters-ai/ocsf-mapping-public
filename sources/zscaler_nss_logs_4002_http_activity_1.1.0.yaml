@@ -1,0 +1,183 @@
+type: mapping
+id: zscaler_nss_logs_4002_http_activity_1.1.0
+version: '1'
+name: Zscaler Nss Logs to OCSF class Http Activity
+data-types:
+- zscaler-nss-logs
+mapping:
+  fields:
+    action: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'Allowed' THEN 1
+      WHEN ACTION = 'Blocked' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION = 'Allowed' THEN 1 WHEN
+      ACTION = 'Blocked' THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (CASE WHEN REQUEST_METHOD IS NULL THEN 0 WHEN REQUEST_METHOD = 'CONNECT'
+      THEN 1 WHEN REQUEST_METHOD = 'DELETE' THEN 2 WHEN REQUEST_METHOD = 'GET' THEN
+      3 WHEN REQUEST_METHOD = 'HEAD' THEN 4 WHEN REQUEST_METHOD = 'OPTIONS' THEN 5
+      WHEN REQUEST_METHOD = 'POST' THEN 6 WHEN REQUEST_METHOD = 'PUT' THEN 7 WHEN
+      REQUEST_METHOD = 'TRACE' THEN 8 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN REQUEST_METHOD IS NULL THEN 0 WHEN REQUEST_METHOD
+      = 'CONNECT' THEN 1 WHEN REQUEST_METHOD = 'DELETE' THEN 2 WHEN REQUEST_METHOD
+      = 'GET' THEN 3 WHEN REQUEST_METHOD = 'HEAD' THEN 4 WHEN REQUEST_METHOD = 'OPTIONS'
+      THEN 5 WHEN REQUEST_METHOD = 'POST' THEN 6 WHEN REQUEST_METHOD = 'PUT' THEN
+      7 WHEN REQUEST_METHOD = 'TRACE' THEN 8 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Connect' WHEN 2 THEN 'Delete' WHEN 3 THEN 'Get' WHEN 4 THEN 'Head'
+      WHEN 5 THEN 'Options' WHEN 6 THEN 'Post' WHEN 7 THEN 'Put' WHEN 8 THEN 'Trace'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (USER)::VARCHAR
+    actor.user.name: (DEVICE_OWNER)::VARCHAR
+    api: NULL::VARIANT
+    app_name: (APPNAME)::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('http_activity')::VARCHAR
+    class_uid: ('4002')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (DEVICE_HOSTNAME)::VARCHAR
+    device.location.city: (REGEXP_SUBSTR(LOCATION::VARCHAR, '%20(\\w+)-', 1, 1, 'e',
+      1))::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (COALESCE(CLIENT_IP, CLIENT_PUBLICIP))::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    http_cookies: NULL::ARRAY
+    http_request.http_headers: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name',
+      'Content-Type', 'value', CONTENT_TYPE)))::ARRAY
+    http_request.length: (REQUEST_SIZE)::NUMBER
+    http_request.referrer: (REFERER_URL)::VARCHAR
+    http_request.url.category_ids: (ARRAY_CONSTRUCT(CASE WHEN URL_CATEGORY ILIKE ANY
+      ('%business%','%economy%') THEN 21 WHEN URL_CATEGORY ILIKE '%education%' THEN
+      27 WHEN URL_CATEGORY ILIKE '%games%' THEN 33 WHEN URL_CATEGORY ILIKE '%government%'
+      THEN 34 WHEN URL_CATEGORY ILIKE ANY ('%internet%','%technology%') THEN 38 WHEN
+      URL_CATEGORY ILIKE '%portals%' THEN 40 WHEN URL_CATEGORY ILIKE ANY ('%news%','%media%')
+      THEN 46 WHEN URL_CATEGORY ILIKE ANY ('%chat%','%whatsapp%') THEN 51 WHEN URL_CATEGORY
+      ILIKE '%social%networking%' THEN 55 WHEN URL_CATEGORY ILIKE '%finance%' THEN
+      31 WHEN URL_CATEGORY ILIKE '%file%' THEN 56 WHEN URL_CATEGORY ILIKE '%remote%access%tool%'
+      THEN 57 WHEN URL_CATEGORY ILIKE '%shopping%' THEN 58 WHEN URL_CATEGORY ILIKE
+      '%restaurant%' THEN 64 WHEN URL_CATEGORY ILIKE '%travel%' THEN 66 WHEN URL_CATEGORY
+      ILIKE ANY ('%video%','%movie%') THEN 84 WHEN URL_CATEGORY ILIKE '%translat%'
+      THEN 95 ELSE 0 END))::ARRAY
+    http_request.url.hostname: (HOSTNAME)::VARCHAR
+    http_request.url.url_string: (URL)::VARCHAR
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    http_response.length: (RESPONSE_SIZE)::NUMBER
+    http_status: (STATUS)::NUMBER
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (REASON)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('zscaler-nss-logs')::VARCHAR
+    metadata.product.vendor_name: ('zscaler')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (USER)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (DEVICE_OWNER)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (DEVICE_HOSTNAME)::VARCHAR
+    - name: '''device.location'''
+      type: '''Geo Location'''
+      type_id: 26
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(CLIENT_IP, CLIENT_PUBLICIP))::VARCHAR
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOSTNAME)::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (URL)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SERVER_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SERVER_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE ((CASE WHEN REQUEST_METHOD IS NULL THEN 400200 WHEN REQUEST_METHOD
+      = ''CONNECT'' THEN 400201 WHEN REQUEST_METHOD = ''DELETE'' THEN 400202 WHEN
+      REQUEST_METHOD = ''GET'' THEN 400203 WHEN REQUEST_METHOD = ''HEAD'' THEN 400204
+      WHEN REQUEST_METHOD = ''OPTIONS'' THEN 400205 WHEN REQUEST_METHOD = ''POST''
+      THEN 400206 WHEN REQUEST_METHOD = ''PUT'' THEN 400207 WHEN REQUEST_METHOD =
+      ''TRACE'' THEN 400208 ELSE 400299 END)::NUMBER) WHEN 400200 THEN ''HTTP Activity:
+      Unknown'' WHEN 400201 THEN ''HTTP Activity: Connect'' WHEN 400202 THEN ''HTTP
+      Activity: Delete'' WHEN 400203 THEN ''HTTP Activity: Get'' WHEN 400204 THEN
+      ''HTTP Activity: Head'' WHEN 400205 THEN ''HTTP Activity: Options'' WHEN 400206
+      THEN ''HTTP Activity: Post'' WHEN 400207 THEN ''HTTP Activity: Put'' WHEN 400208
+      THEN ''HTTP Activity: Trace'' WHEN 400299 THEN ''HTTP Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN REQUEST_METHOD IS NULL THEN 400200 WHEN REQUEST_METHOD =
+      'CONNECT' THEN 400201 WHEN REQUEST_METHOD = 'DELETE' THEN 400202 WHEN REQUEST_METHOD
+      = 'GET' THEN 400203 WHEN REQUEST_METHOD = 'HEAD' THEN 400204 WHEN REQUEST_METHOD
+      = 'OPTIONS' THEN 400205 WHEN REQUEST_METHOD = 'POST' THEN 400206 WHEN REQUEST_METHOD
+      = 'PUT' THEN 400207 WHEN REQUEST_METHOD = 'TRACE' THEN 400208 ELSE 400299 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: PROTOCOL ILIKE '%http%'

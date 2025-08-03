@@ -1,0 +1,116 @@
+type: mapping
+id: aws_cloudtrail_6003_api_activity_1.1.0
+version: '11'
+name: Aws Cloudtrail to OCSF class Api Activity
+data-types:
+- aws-cloudtrail
+mapping:
+  fields:
+    activity_id: (IFF(READ_ONLY = TRUE, 2, 0))::NUMBER
+    activity_name: (CASE ((IFF(READ_ONLY = TRUE, 2, 0))::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.idp.uid: (USER_IDENTITY:identityProvider)::VARCHAR
+    actor.invoked_by: (USER_IDENTITY_INVOKED_BY)::VARCHAR
+    actor.session.created_time: (date_part('epoch_milliseconds', (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_CREATION_DATE)::TIMESTAMP_LTZ))::NUMBER
+    actor.session.created_time_dt: (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_CREATION_DATE)::TIMESTAMP_LTZ
+    actor.session.is_mfa: (USER_IDENTITY_SESSION_CONTEXT_ATTRIBUTES_MFA_AUTHENTICATED)::BOOLEAN
+    actor.session.issuer: (USER_IDENTITY_SESSION_CONTEXT_SESSION_ISSUER_USER_NAME)::VARCHAR
+    actor.user.account.uid: (USER_IDENTITY_ACCOUNT_ID)::VARCHAR
+    actor.user.email_addr: (IFF(USER_IDENTITY_USER_NAME ILIKE '%@%', USER_IDENTITY_USER_NAME,
+      NULL))::VARCHAR
+    actor.user.name: (IFF(USER_IDENTITY_USER_NAME NOT ILIKE '%@%', USER_IDENTITY_USER_NAME,
+      NULL))::VARCHAR
+    actor.user.type: (CASE ((CASE WHEN USER_IDENTITY_TYPE IS NULL OR USER_IDENTITY_TYPE
+      IN ('Unknown', 'FederatedUser') THEN 0 WHEN USER_IDENTITY_TYPE = 'Root' THEN
+      2 ELSE 1 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN
+      'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN USER_IDENTITY_TYPE IS NULL OR USER_IDENTITY_TYPE
+      IN ('Unknown', 'FederatedUser') THEN 0 WHEN USER_IDENTITY_TYPE = 'Root' THEN
+      2 ELSE 1 END)::NUMBER
+    actor.user.uid: (USER_IDENTITY_ARN)::VARCHAR
+    api.request.data: (REQUEST_PARAMETERS)::VARIANT
+    api.request.uid: (REQUEST_ID)::VARCHAR
+    api.response.data: (RESPONSE_ELEMENTS)::VARIANT
+    api.response.error: (ERROR_CODE)::VARCHAR
+    api.response.error_message: (ERROR_MESSAGE)::VARCHAR
+    api.service.name: (SPLIT_PART(EVENT_SOURCE, '.amazonaws', 1))::VARCHAR
+    api.version: (API_VERSION)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud.account.uid: (RECIPIENT_ACCOUNT_ID)::VARCHAR
+    cloud.provider: ('AWS')::VARCHAR
+    cloud.region: (AWS_REGION)::VARCHAR
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.length: (ADDITIONAL_EVENT_DATA:bytesTransferredIn)::NUMBER
+    http_request.user_agent: (USER_AGENT)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.event_code: (event_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('aws-cloudtrail')::VARCHAR
+    metadata.product.vendor_name: ('aws')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (IFF(USER_IDENTITY_USER_NAME ILIKE '%@%', USER_IDENTITY_USER_NAME, NULL))::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(USER_IDENTITY_USER_NAME NOT ILIKE '%@%', USER_IDENTITY_USER_NAME,
+        NULL))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (OBJECT_CONSTRUCT_KEEP_NULL('uid', RESOURCES[ARRAY_SIZE(RESOURCES)
+      - 1]:ARN, 'user', OBJECT_CONSTRUCT_KEEP_NULL('account', OBJECT_CONSTRUCT_KEEP_NULL('uid',
+      RESOURCES[ARRAY_SIZE(RESOURCES) - 1]:accountId)), 'type', RESOURCES[ARRAY_SIZE(RESOURCES)
+      - 1]:type))::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SOURCE_IP_ADDRESS)::VARCHAR
+    src_endpoint.vpc_uid: (VPC_ENDPOINT_ID)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((IFF(ERROR_CODE IS NULL, 1, 2))::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (IFF(ERROR_CODE IS NULL, 1, 2))::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((IFF(READ_ONLY = TRUE, 600302, 600300))::NUMBER) WHEN 600300
+      THEN ''API Activity: Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN
+      600302 THEN ''API Activity: Read'' WHEN 600303 THEN ''API Activity: Update''
+      WHEN 600304 THEN ''API Activity: Delete'' WHEN 600399 THEN ''API Activity: Other''
+      END)::VARCHAR'
+    type_uid: (IFF(READ_ONLY = TRUE, 600302, 600300))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TYPE = 'AwsApiCall'

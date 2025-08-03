@@ -1,0 +1,8 @@
+id: 6001_web_resources_activity_1.1.0
+version: '4'
+description: OCSF View For Class - 6001 Web Resources Activity
+source-table-ids:
+- surf_applications_logs_6001_web_resources_activity_1.1.0
+- cato_networks_sockets_management_events_6001_web_resources_activity_1.1.0
+- surf_navigations_logs_6001_web_resources_activity_1.1.0
+- island_siem_audit_logs_6001_web_resources_activity_1.1.0

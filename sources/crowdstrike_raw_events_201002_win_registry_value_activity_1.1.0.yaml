@@ -1,0 +1,153 @@
+type: mapping
+id: crowdstrike_raw_events_201002_win_registry_value_activity_1.1.0
+version: '17'
+name: Crowdstrike Raw Events to OCSF class Win/registry Value Activity
+data-types:
+- crowdstrike-raw-events
+mapping:
+  fields:
+    action: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (CASE WHEN RAW:RegOperationType::VARCHAR IS NULL THEN 0 WHEN RAW:RegOperationType::VARCHAR
+      = 1 THEN 2 WHEN RAW:RegOperationType::VARCHAR = 2 THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:RegOperationType::VARCHAR IS NULL THEN 0
+      WHEN RAW:RegOperationType::VARCHAR = 1 THEN 2 WHEN RAW:RegOperationType::VARCHAR
+      = 2 THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Get' WHEN
+      2 THEN 'Set' WHEN 3 THEN 'Modify' WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.cmd_line: (COMMAND_LINE)::VARCHAR
+    actor.process.file.name: (TARGET_FILE_NAME)::VARCHAR
+    actor.process.file.path: (IMAGE_FILE_NAME)::VARCHAR
+    actor.process.pid: (RAW_PROCESS_ID)::NUMBER
+    actor.process.tid: (RAW:ContextThreadId)::NUMBER
+    actor.process.uid: (RAW:ContextProcessId)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('win/registry_value_activity')::VARCHAR
+    class_uid: ('201002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.domain: (DOMAIN_NAME)::VARCHAR
+    device.ip: (AIP)::VARCHAR
+    device.org.uid: (CID)::VARCHAR
+    device.os.name: (EVENT_PLATFORM)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN EVENT_PLATFORM IS NULL THEN 0 WHEN EVENT_PLATFORM
+      = 'Win' THEN 100 WHEN EVENT_PLATFORM = 'Lin' THEN 200 WHEN EVENT_PLATFORM =
+      'Mac' THEN 300 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows'
+      WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android'
+      WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN
+      'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN EVENT_PLATFORM IS NULL THEN 0 WHEN EVENT_PLATFORM
+      = 'Win' THEN 100 WHEN EVENT_PLATFORM = 'Lin' THEN 200 WHEN EVENT_PLATFORM =
+      'Mac' THEN 300 ELSE 99 END)::NUMBER
+    device.uid: (AID)::VARCHAR
+    disposition: (CASE ((CASE WHEN EVENT_SIMPLE_NAME IS NULL THEN 0 WHEN EVENT_SIMPLE_NAME
+      = 'RegistryOperationBlocked' THEN 2 WHEN EVENT_SIMPLE_NAME = 'RegistryOperationDetectInfo'
+      THEN 15 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN EVENT_SIMPLE_NAME IS NULL THEN 0 WHEN EVENT_SIMPLE_NAME
+      = 'RegistryOperationBlocked' THEN 2 WHEN EVENT_SIMPLE_NAME = 'RegistryOperationDetectInfo'
+      THEN 15 ELSE 99 END)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_simple_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('crowdstrike-raw-events')::VARCHAR
+    metadata.product.vendor_name: ('crowdstrike')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (TARGET_FILE_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (AIP)::VARCHAR
+    prev_reg_value: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    reg_value.modified_time: (date_part('epoch_milliseconds', (TO_TIMESTAMP_LTZ(raw:ContextTimeStamp::number))::TIMESTAMP_LTZ))::NUMBER
+    reg_value.modified_time_dt: (TO_TIMESTAMP_LTZ(raw:ContextTimeStamp::number))::TIMESTAMP_LTZ
+    reg_value.name: (RAW:RegValueName)::VARCHAR
+    reg_value.path: (RAW:RegObjectName)::VARCHAR
+    reg_value.type: (CASE ((CASE WHEN RAW:RegType::VARCHAR IS NULL THEN 0 WHEN RAW:RegType::VARCHAR
+      = 3 THEN 1 WHEN RAW:RegType::VARCHAR = 4 THEN 2 WHEN RAW:RegType::VARCHAR =
+      5 THEN 3 WHEN RAW:RegType::VARCHAR = 2 THEN 4 WHEN RAW:RegType::VARCHAR = 6
+      THEN 5 WHEN RAW:RegType::VARCHAR = 7 THEN 6 WHEN RAW:RegType::VARCHAR = 0 THEN
+      7 WHEN RAW:RegType::VARCHAR = 11 THEN 8 WHEN RAW:RegType::VARCHAR = 1 THEN 10
+      ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'REG_BINARY' WHEN 10
+      THEN 'REG_SZ' WHEN 2 THEN 'REG_DWORD' WHEN 3 THEN 'REG_DWORD_BIG_ENDIAN' WHEN
+      4 THEN 'REG_EXPAND_SZ' WHEN 5 THEN 'REG_LINK' WHEN 6 THEN 'REG_MULTI_SZ' WHEN
+      7 THEN 'REG_NONE' WHEN 8 THEN 'REG_QWORD' WHEN 9 THEN 'REG_QWORD_LITTLE_ENDIAN'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    reg_value.type_id: (CASE WHEN RAW:RegType::VARCHAR IS NULL THEN 0 WHEN RAW:RegType::VARCHAR
+      = 3 THEN 1 WHEN RAW:RegType::VARCHAR = 4 THEN 2 WHEN RAW:RegType::VARCHAR =
+      5 THEN 3 WHEN RAW:RegType::VARCHAR = 2 THEN 4 WHEN RAW:RegType::VARCHAR = 6
+      THEN 5 WHEN RAW:RegType::VARCHAR = 7 THEN 6 WHEN RAW:RegType::VARCHAR = 0 THEN
+      7 WHEN RAW:RegType::VARCHAR = 11 THEN 8 WHEN RAW:RegType::VARCHAR = 1 THEN 10
+      ELSE 99 END)::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((20100200 + (CASE WHEN RAW:RegOperationType::VARCHAR IS NULL
+      THEN 0 WHEN RAW:RegOperationType::VARCHAR = 1 THEN 2 WHEN RAW:RegOperationType::VARCHAR
+      = 2 THEN 4 ELSE 99 END))::NUMBER) WHEN 20100200 THEN ''Registry Value Activity:
+      Unknown'' WHEN 20100201 THEN ''Registry Value Activity: Get'' WHEN 20100202
+      THEN ''Registry Value Activity: Set'' WHEN 20100203 THEN ''Registry Value Activity:
+      Modify'' WHEN 20100204 THEN ''Registry Value Activity: Delete'' WHEN 20100299
+      THEN ''Registry Value Activity: Other'' END)::VARCHAR'
+    type_uid: (20100200 + (CASE WHEN RAW:RegOperationType::VARCHAR IS NULL THEN 0
+      WHEN RAW:RegOperationType::VARCHAR = 1 THEN 2 WHEN RAW:RegOperationType::VARCHAR
+      = 2 THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_SIMPLE_NAME IN ('AsepKeyUpdate','AsepValueUpdate','RegGenericValueUpdate','RegKeySecurityDecreasedFromUnsignedModule','RegSystemConfigValueUpdate','RegistryOperationBlocked','RegistryOperationDetectInfo','SuspiciousRegAsepUpdate')

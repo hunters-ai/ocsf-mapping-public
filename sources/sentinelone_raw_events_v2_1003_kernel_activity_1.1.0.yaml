@@ -1,0 +1,215 @@
+type: mapping
+id: sentinelone_raw_events_v2_1003_kernel_activity_1.1.0
+version: '1'
+name: Sentinelone Raw Events V2 to OCSF class Kernel Activity
+data-types:
+- sentinelone-raw-events-v2
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN ('Process
+      Creation', 'File Creation', 'Registry Key Create', 'Registry Value Create')
+      THEN 1 WHEN EVENT_TYPE IN ('File Deletion', 'Registry Key Delete', 'Registry
+      Value Delete') THEN 3 WHEN EVENT_TYPE IN ('File Rename', 'Registry Key Security
+      Changed', 'Driver Load', 'Duplicate Process Handle', 'Duplicate Thread Handle',
+      'Remote Thread Creation', 'File Modification', 'Registry Value Modified', 'Open
+      Remote Process Handle') THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN
+      ('Process Creation', 'File Creation', 'Registry Key Create', 'Registry Value
+      Create') THEN 1 WHEN EVENT_TYPE IN ('File Deletion', 'Registry Key Delete',
+      'Registry Value Delete') THEN 3 WHEN EVENT_TYPE IN ('File Rename', 'Registry
+      Key Security Changed', 'Driver Load', 'Duplicate Process Handle', 'Duplicate
+      Thread Handle', 'Remote Thread Creation', 'File Modification', 'Registry Value
+      Modified', 'Open Remote Process Handle') THEN 4 ELSE 99 END)::NUMBER) WHEN 0
+      THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Read' WHEN 3 THEN 'Delete'
+      WHEN 4 THEN 'Invoke' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (SRC_PROCESS_CMDLINE)::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (SRC_PROCESS_START_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (SRC_PROCESS_START_TIME)::TIMESTAMP_LTZ
+    actor.process.file.company_name: (RAW:"src.process.publisher")::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'MD5', 'algorithm_id', 1, 'value', RAW:"src.process.image.md5"),OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-1', 'algorithm_id', 2, 'value', RAW:"src.process.image.sha1"),OBJECT_CONSTRUCT_KEEP_NULL('algorithm','SHA-256',
+      'algorithm_id', 3, 'value', SRC_PROCESS_IMAGE_SHA256)))::ARRAY
+    actor.process.file.path: (SRC_PROCESS_IMAGE_PATH)::VARCHAR
+    actor.process.integrity: (CASE ((CASE WHEN RAW:"src.process.integrityLevel" =
+      'SYSTEM' THEN 5 WHEN RAW:"src.process.integrityLevel" = 'MEDIUM' THEN 3 WHEN
+      RAW:"src.process.integrityLevel" = 'INTEGRITY_LEVEL_UNKNOWN' THEN 0 WHEN RAW:"src.process.integrityLevel"
+      = 'LOW' THEN 2 WHEN RAW:"src.process.integrityLevel" = 'HIGH' THEN 4 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted' WHEN 2 THEN 'Low'
+      WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System' WHEN 6 THEN 'Protected'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.integrity_id: (CASE WHEN RAW:"src.process.integrityLevel" = 'SYSTEM'
+      THEN 5 WHEN RAW:"src.process.integrityLevel" = 'MEDIUM' THEN 3 WHEN RAW:"src.process.integrityLevel"
+      = 'INTEGRITY_LEVEL_UNKNOWN' THEN 0 WHEN RAW:"src.process.integrityLevel" = 'LOW'
+      THEN 2 WHEN RAW:"src.process.integrityLevel" = 'HIGH' THEN 4 ELSE 99 END)::NUMBER
+    actor.process.name: (SRC_PROCESS_NAME)::VARCHAR
+    actor.process.parent_process.cmd_line: (SRC_PROCESS_PARENT_CMDLINE)::VARCHAR
+    actor.process.parent_process.created_time: (date_part('epoch_milliseconds', (SRC_PROCESS_PARENT_START_TIME)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.parent_process.created_time_dt: (SRC_PROCESS_PARENT_START_TIME)::TIMESTAMP_LTZ
+    actor.process.parent_process.file.company_name: (RAW:"src.process.parent.publisher")::VARCHAR
+    actor.process.parent_process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'MD5', 'algorithm_id', 1, 'value', RAW:"src.process.parent.image.md5"),OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-1', 'algorithm_id', 2, 'value', RAW:"src.process.parent.image.sha1"),OBJECT_CONSTRUCT_KEEP_NULL('algorithm','SHA-256',
+      'algorithm_id', 3, 'value', SRC_PROCESS_PARENT_IMAGE_SHA256)))::ARRAY
+    actor.process.parent_process.integrity: (CASE ((CASE WHEN RAW:"src.process.parent.integrityLevel"
+      = 'SYSTEM' THEN 5 WHEN RAW:"src.process.parent.integrityLevell" = 'MEDIUM' THEN
+      3 WHEN RAW:"src.process.parent.integrityLevel" = 'INTEGRITY_LEVEL_UNKNOWN' THEN
+      0 WHEN RAW:"src.process.parent.integrityLevel" = 'LOW' THEN 2 WHEN RAW:"src.process.parent.integrityLevel"
+      = 'HIGH' THEN 4 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Untrusted'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'System'
+      WHEN 6 THEN 'Protected' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.parent_process.integrity_id: (CASE WHEN RAW:"src.process.parent.integrityLevel"
+      = 'SYSTEM' THEN 5 WHEN RAW:"src.process.parent.integrityLevell" = 'MEDIUM' THEN
+      3 WHEN RAW:"src.process.parent.integrityLevel" = 'INTEGRITY_LEVEL_UNKNOWN' THEN
+      0 WHEN RAW:"src.process.parent.integrityLevel" = 'LOW' THEN 2 WHEN RAW:"src.process.parent.integrityLevel"
+      = 'HIGH' THEN 4 ELSE 99 END)::NUMBER
+    actor.process.parent_process.name: (SRC_PROCESS_PARENT_NAME)::VARCHAR
+    actor.process.parent_process.pid: (SRC_PROCESS_PARENT_PID)::NUMBER
+    actor.process.parent_process.session.uid: (RAW:"src.process.parent.sessionId")::VARCHAR
+    actor.process.parent_process.uid: (SRC_PROCESS_PARENT_UID)::VARCHAR
+    actor.process.pid: (SRC_PROCESS_PID)::NUMBER
+    actor.process.session.uid: (RAW:"src.process.sessionId")::VARCHAR
+    actor.process.uid: (SRC_PROCESS_UID)::VARCHAR
+    actor.process.user.name: (SRC_PROCESS_USER_NAME)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('kernel_activity')::VARCHAR
+    class_uid: ('1003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.name: (COMPUTER_NAME)::VARCHAR
+    device.os.name: (OS_NAME)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN OS_FAMILY = 'linux' THEN 200 WHEN OS_FAMILY
+      = 'windows' THEN 100 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN
+      'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN
+      'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN
+      400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    device.os.type_id: (CASE WHEN OS_FAMILY = 'linux' THEN 200 WHEN OS_FAMILY = 'windows'
+      THEN 100 ELSE 99 END)::NUMBER
+    device.type: (CASE ((CASE WHEN RAW:"endpoint.type" IS NULL THEN 0 WHEN RAW:"endpoint.type"
+      ILIKE '%laptop%' THEN 3 WHEN RAW:"endpoint.type" ILIKE '%server%' THEN 1 WHEN
+      RAW:"endpoint.type" ILIKE '%desktop%' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Server' WHEN 10 THEN 'Switch' WHEN 11 THEN 'Hub' WHEN
+      2 THEN 'Desktop' WHEN 3 THEN 'Laptop' WHEN 4 THEN 'Tablet' WHEN 5 THEN 'Mobile'
+      WHEN 6 THEN 'Virtual' WHEN 7 THEN 'IOT' WHEN 8 THEN 'Browser' WHEN 9 THEN 'Firewall'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    device.type_id: (CASE WHEN RAW:"endpoint.type" IS NULL THEN 0 WHEN RAW:"endpoint.type"
+      ILIKE '%laptop%' THEN 3 WHEN RAW:"endpoint.type" ILIKE '%server%' THEN 1 WHEN
+      RAW:"endpoint.type" ILIKE '%desktop%' THEN 2 ELSE 99 END)::NUMBER
+    device.uid: (AGENT_UUID)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    kernel.name: (REGEXP_SUBSTR(TGT_FILE_PATH, '[^/\\\\]+$'))::VARCHAR
+    kernel.path: (TGT_FILE_PATH)::VARCHAR
+    kernel.type: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Shared Mutex'
+      WHEN 2 THEN 'System Call' WHEN 99 THEN 'Other' END)::VARCHAR
+    kernel.type_id: (99)::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('sentinelone-raw-events-v2')::VARCHAR
+    metadata.product.vendor_name: ('sentinelone')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (SRC_PROCESS_NAME)::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (SRC_PROCESS_PARENT_NAME)::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (SRC_PROCESS_USER_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((100300 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE
+      IN (''Process Creation'', ''File Creation'', ''Registry Key Create'', ''Registry
+      Value Create'') THEN 1 WHEN EVENT_TYPE IN (''File Deletion'', ''Registry Key
+      Delete'', ''Registry Value Delete'') THEN 3 WHEN EVENT_TYPE IN (''File Rename'',
+      ''Registry Key Security Changed'', ''Driver Load'', ''Duplicate Process Handle'',
+      ''Duplicate Thread Handle'', ''Remote Thread Creation'', ''File Modification'',
+      ''Registry Value Modified'', ''Open Remote Process Handle'') THEN 4 ELSE 99
+      END))::NUMBER) WHEN 100300 THEN ''Kernel Activity: Unknown'' WHEN 100301 THEN
+      ''Kernel Activity: Create'' WHEN 100302 THEN ''Kernel Activity: Read'' WHEN
+      100303 THEN ''Kernel Activity: Delete'' WHEN 100304 THEN ''Kernel Activity:
+      Invoke'' WHEN 100399 THEN ''Kernel Activity: Other'' END)::VARCHAR'
+    type_uid: (100300 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN ('Process
+      Creation', 'File Creation', 'Registry Key Create', 'Registry Value Create')
+      THEN 1 WHEN EVENT_TYPE IN ('File Deletion', 'Registry Key Delete', 'Registry
+      Value Delete') THEN 3 WHEN EVENT_TYPE IN ('File Rename', 'Registry Key Security
+      Changed', 'Driver Load', 'Duplicate Process Handle', 'Duplicate Thread Handle',
+      'Remote Thread Creation', 'File Modification', 'Registry Value Modified', 'Open
+      Remote Process Handle') THEN 4 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TYPE IN ('Process Creation', 'Registry Key Create', 'Registry Key
+    Delete', 'Registry Value Create', 'Registry Value Delete', 'Registry Value Modified',
+    'Registry Key Security Changed', 'Driver Load', 'File Creation', 'File Deletion',
+    'File Modification', 'File Rename', 'Duplicate Process Handle', 'Duplicate Thread
+    Handle', 'Remote Thread Creation', 'Open Remote Process Handle')

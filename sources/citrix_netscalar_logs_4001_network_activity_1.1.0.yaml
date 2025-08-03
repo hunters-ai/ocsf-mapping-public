@@ -1,0 +1,140 @@
+type: mapping
+id: citrix_netscalar_logs_4001_network_activity_1.1.0
+version: '12'
+name: Citrix Netscalar Logs to OCSF class Network Activity
+data-types:
+- citrix-netscalar-logs
+mapping:
+  fields:
+    action: NULL::VARCHAR
+    action_id: NULL::NUMBER
+    activity_id: (CASE WHEN EVENT_TYPE ILIKE '%SUCCESS%' THEN 1 WHEN EVENT_TYPE ILIKE
+      '%TERMINATE%' THEN 2 WHEN EVENT_TYPE ILIKE '%FAILURE%' THEN 4 WHEN EVENT_TYPE
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE ILIKE '%SUCCESS%' THEN 1 WHEN EVENT_TYPE
+      ILIKE '%TERMINATE%' THEN 2 WHEN EVENT_TYPE ILIKE '%FAILURE%' THEN 4 WHEN EVENT_TYPE
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open'
+      WHEN 2 THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse'
+      WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.cmd_line: (EXTRACTED_COLUMNS:COMMAND)::VARCHAR
+    actor.user.name: (EXTRACTED_COLUMNS:user)::VARCHAR
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.session.expiration_reason: (EXTRACTED_COLUMNS:reason)::VARCHAR
+    connection_info.session.uid_alt: (EXTRACTED_COLUMNS:session)::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.ip: (COALESCE(DESTINATION_IP, EXTRACTED_COLUMNS:remote_ip))::VARCHAR
+    dst_endpoint.port: (DESTINATION_PORT)::NUMBER
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (CASE WHEN POSITION('GMT' IN EXTRACTED_COLUMNS:end_time::VARCHAR)
+      > 0 THEN TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:end_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS
+      GMT') ELSE TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:end_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS')
+      END)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (CASE WHEN POSITION('GMT' IN EXTRACTED_COLUMNS:end_time::VARCHAR)
+      > 0 THEN TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:end_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS
+      GMT') ELSE TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:end_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS')
+      END)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('citrix-netscalar-logs')::VARCHAR
+    metadata.product.vendor_name: ('citrix')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (EXTRACTED_COLUMNS:user)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(DESTINATION_IP, EXTRACTED_COLUMNS:remote_ip))::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    src_endpoint.port: (SOURCE_PORT)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (CASE WHEN POSITION('GMT' IN EXTRACTED_COLUMNS:start_time::VARCHAR)
+      > 0 THEN TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:start_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS
+      GMT') ELSE TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:start_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS')
+      END)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (CASE WHEN POSITION('GMT' IN EXTRACTED_COLUMNS:start_time::VARCHAR)
+      > 0 THEN TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:start_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS
+      GMT') ELSE TRY_TO_TIMESTAMP_LTZ(EXTRACTED_COLUMNS:start_time::VARCHAR, 'MM/DD/YYYY:HH24:MI:SS')
+      END)::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EXTRACTED_COLUMNS:status ILIKE '%Success%' THEN 1 WHEN
+      EXTRACTED_COLUMNS:status ILIKE '%ERROR%' THEN 2 WHEN EXTRACTED_COLUMNS:STATUS
+      IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success'
+      WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (EXTRACTED_COLUMNS:STATUS)::VARCHAR
+    status_id: (CASE WHEN EXTRACTED_COLUMNS:status ILIKE '%Success%' THEN 1 WHEN EXTRACTED_COLUMNS:status
+      ILIKE '%ERROR%' THEN 2 WHEN EXTRACTED_COLUMNS:STATUS IS NULL THEN 0 ELSE 99
+      END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls.cipher: (EXTRACTED_COLUMNS:cipher_suite)::VARCHAR
+    tls.handshake_dur: (REGEXP_SUBSTR(EXTRACTED_COLUMNS:handshake_time, '\d+'))::NUMBER
+    tls.version: (EXTRACTED_COLUMNS:client_version)::VARCHAR
+    traffic.bytes_in: (COALESCE(EXTRACTED_COLUMNS:total_bytes_recv, EXTRACTED_COLUMNS:Total_bytes_recv))::NUMBER
+    traffic.bytes_out: (COALESCE(EXTRACTED_COLUMNS:total_bytes_send, EXTRACTED_COLUMNS:Total_bytes_send))::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_TYPE ILIKE ''%SUCCESS%'' THEN 400101 WHEN
+      EVENT_TYPE ILIKE ''%TERMINATE%'' THEN 400102 WHEN EVENT_TYPE ILIKE ''%FAILURE%''
+      THEN 400104 WHEN EVENT_TYPE IS NULL THEN 400100 ELSE 400199 END)::NUMBER) WHEN
+      400100 THEN ''Network Activity: Unknown'' WHEN 400101 THEN ''Network Activity:
+      Open'' WHEN 400102 THEN ''Network Activity: Close'' WHEN 400103 THEN ''Network
+      Activity: Reset'' WHEN 400104 THEN ''Network Activity: Fail'' WHEN 400105 THEN
+      ''Network Activity: Refuse'' WHEN 400106 THEN ''Network Activity: Traffic''
+      WHEN 400199 THEN ''Network Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_TYPE ILIKE '%SUCCESS%' THEN 400101 WHEN EVENT_TYPE
+      ILIKE '%TERMINATE%' THEN 400102 WHEN EVENT_TYPE ILIKE '%FAILURE%' THEN 400104
+      WHEN EVENT_TYPE IS NULL THEN 400100 ELSE 400199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT

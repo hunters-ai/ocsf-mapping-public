@@ -1,0 +1,112 @@
+type: mapping
+id: lastpass_user_activity_reports_3001_account_change_1.1.0
+version: '9'
+name: Lastpass User Activity Reports to OCSF class Account Change
+data-types:
+- lastpass-user-activity-reports
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%add%policy%'
+      THEN 7 WHEN ACTION ILIKE '%delete%policy%' THEN 8 WHEN ACTION ILIKE '%create%'
+      THEN 1 WHEN ACTION ILIKE '%reactivated%user%' THEN 2 WHEN ACTION ILIKE '%password%change%'
+      THEN 3 WHEN ACTION ILIKE '%password%reset%' THEN 4 WHEN ACTION IN ('Deactivated
+      User', 'Disabled', 'Disable Duo') THEN 5 WHEN ACTION ILIKE '%delete%' THEN 6
+      WHEN ACTION ILIKE '%account%lock%' THEN 9 WHEN ACTION ILIKE '%multifactor%enable%'
+      THEN 10 WHEN ACTION ILIKE '%disable%auth%' THEN 11 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION IS NULL THEN 0 WHEN ACTION ILIKE '%add%policy%'
+      THEN 7 WHEN ACTION ILIKE '%delete%policy%' THEN 8 WHEN ACTION ILIKE '%create%'
+      THEN 1 WHEN ACTION ILIKE '%reactivated%user%' THEN 2 WHEN ACTION ILIKE '%password%change%'
+      THEN 3 WHEN ACTION ILIKE '%password%reset%' THEN 4 WHEN ACTION IN ('Deactivated
+      User', 'Disabled', 'Disable Duo') THEN 5 WHEN ACTION ILIKE '%delete%' THEN 6
+      WHEN ACTION ILIKE '%account%lock%' THEN 9 WHEN ACTION ILIKE '%multifactor%enable%'
+      THEN 10 WHEN ACTION ILIKE '%disable%auth%' THEN 11 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 10 THEN 'MFA Factor Enable' WHEN
+      11 THEN 'MFA Factor Disable' WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password Change'
+      WHEN 4 THEN 'Password Reset' WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete' WHEN
+      7 THEN 'Attach Policy' WHEN 8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: (COALESCE(ACTION, DATA))::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('lastpass-user-activity-reports')::VARCHAR
+    metadata.product.vendor_name: ('lastpass')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP_ADDRESS)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN ACTION IS NULL THEN 300100 WHEN ACTION ILIKE ''%add%policy%''
+      THEN 300107 WHEN ACTION ILIKE ''%delete%policy%'' THEN 300108 WHEN ACTION ILIKE
+      ''%create%'' THEN 300101 WHEN ACTION ILIKE ''%reactivated%user%'' THEN 300102
+      WHEN ACTION ILIKE ''%password%change%'' THEN 300103 WHEN ACTION ILIKE ''%password%reset%''
+      THEN 300104 WHEN ACTION IN (''Deactivated User'', ''Disabled'', ''Disable Duo'')
+      THEN 300105 WHEN ACTION ILIKE ''%delete%'' THEN 300106 WHEN ACTION ILIKE ''%account%lock%''
+      THEN 300109 WHEN ACTION ILIKE ''%multifactor%enable%'' THEN 300110 WHEN ACTION
+      ILIKE ''%disable%auth%'' THEN 300111 ELSE 300199 END)::NUMBER) WHEN 300100 THEN
+      ''Account Change: Unknown'' WHEN 300101 THEN ''Account Change: Create'' WHEN
+      300102 THEN ''Account Change: Enable'' WHEN 300103 THEN ''Account Change: Password
+      Change'' WHEN 300104 THEN ''Account Change: Password Reset'' WHEN 300105 THEN
+      ''Account Change: Disable'' WHEN 300106 THEN ''Account Change: Delete'' WHEN
+      300107 THEN ''Account Change: Attach Policy'' WHEN 300108 THEN ''Account Change:
+      Detach Policy'' WHEN 300109 THEN ''Account Change: Lock'' WHEN 300110 THEN ''Account
+      Change: MFA Factor Enable'' WHEN 300111 THEN ''Account Change: MFA Factor Disable''
+      WHEN 300199 THEN ''Account Change: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN ACTION IS NULL THEN 300100 WHEN ACTION ILIKE '%add%policy%'
+      THEN 300107 WHEN ACTION ILIKE '%delete%policy%' THEN 300108 WHEN ACTION ILIKE
+      '%create%' THEN 300101 WHEN ACTION ILIKE '%reactivated%user%' THEN 300102 WHEN
+      ACTION ILIKE '%password%change%' THEN 300103 WHEN ACTION ILIKE '%password%reset%'
+      THEN 300104 WHEN ACTION IN ('Deactivated User', 'Disabled', 'Disable Duo') THEN
+      300105 WHEN ACTION ILIKE '%delete%' THEN 300106 WHEN ACTION ILIKE '%account%lock%'
+      THEN 300109 WHEN ACTION ILIKE '%multifactor%enable%' THEN 300110 WHEN ACTION
+      ILIKE '%disable%auth%' THEN 300111 ELSE 300199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.email_addr: (USERNAME)::VARCHAR
+    user_result: NULL::VARIANT

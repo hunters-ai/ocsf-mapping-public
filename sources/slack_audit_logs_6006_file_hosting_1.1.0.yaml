@@ -1,0 +1,146 @@
+type: mapping
+id: slack_audit_logs_6006_file_hosting_1.1.0
+version: '9'
+name: Slack Audit Logs to OCSF class File Hosting
+data-types:
+- slack-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN ACTION = 'file_uploaded' THEN 1 WHEN ACTION IN ('file_downloaded',
+      'canvas_downloaded') THEN 2 WHEN ACTION IN ('file_deleted', 'canvas_deleted')
+      THEN 4 WHEN ACTION = 'canvas_edited' THEN 3 WHEN ACTION IN ('file_shared', 'canvas_shared')
+      THEN 12 WHEN ACTION = 'canvas_unshared' THEN 13 WHEN ACTION = 'canvas_opened'
+      THEN 14 WHEN ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN ACTION = 'file_uploaded' THEN 1 WHEN ACTION IN
+      ('file_downloaded', 'canvas_downloaded') THEN 2 WHEN ACTION IN ('file_deleted',
+      'canvas_deleted') THEN 4 WHEN ACTION = 'canvas_edited' THEN 3 WHEN ACTION IN
+      ('file_shared', 'canvas_shared') THEN 12 WHEN ACTION = 'canvas_unshared' THEN
+      13 WHEN ACTION = 'canvas_opened' THEN 14 WHEN ACTION IS NULL THEN 0 ELSE 99
+      END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Upload' WHEN 10 THEN 'Lock'
+      WHEN 11 THEN 'Unlock' WHEN 12 THEN 'Share' WHEN 13 THEN 'Unshare' WHEN 14 THEN
+      'Open' WHEN 15 THEN 'Sync' WHEN 16 THEN 'Unsync' WHEN 2 THEN 'Download' WHEN
+      3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Copy'
+      WHEN 7 THEN 'Move' WHEN 8 THEN 'Restore' WHEN 9 THEN 'Preview' WHEN 99 THEN
+      'Other' END)::VARCHAR
+    actor.session.uid: (CONTEXT_SESSION_ID)::VARCHAR
+    actor.user.email_addr: (ACTOR_USER_EMAIL)::VARCHAR
+    actor.user.full_name: (ACTOR_USER_NAME)::VARCHAR
+    actor.user.groups: (ARRAY_CONSTRUCT(ACTOR_USER_TEAM))::ARRAY
+    actor.user.org.uid: (DETAILS:organization_id)::VARCHAR
+    actor.user.type: (CASE ((IFF(ACTOR_TYPE = 'user', 1, 99))::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (IFF(ACTOR_TYPE = 'user', 1, 99))::NUMBER
+    actor.user.uid: (ACTOR_USER_ID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_ver: (CASE ((PARSE_IP(CONTEXT_IP_ADDRESS, 'INET', 1):family)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(CONTEXT_IP_ADDRESS, 'INET', 1):family)::NUMBER
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('value', DETAILS:md5_hash,
+      'algorithm_id', IFF(DETAILS:md5_hash IS NULL, NULL, 1), 'algorithm', IFF(DETAILS:md5_hash
+      IS NULL, NULL, 'MD5'))))::ARRAY
+    file.name: (ENTITY_FILE_NAME)::VARCHAR
+    file.product.url_string: (DETAILS:url_private)::VARCHAR
+    file.uid: (ENTITY_FILE_ID)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('slack-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('slack')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR_USER_EMAIL)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (ENTITY_FILE_NAME)::VARCHAR
+    - name: '''file.product.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (DETAILS:url_private)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CONTEXT_IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.domain: (CONTEXT_LOCATION_DOMAIN)::VARCHAR
+    src_endpoint.ip: (CONTEXT_IP_ADDRESS)::VARCHAR
+    src_endpoint.location.desc: (CONTEXT_LOCATION_TYPE)::VARCHAR
+    src_endpoint.name: (DETAILS:source_user_username)::VARCHAR
+    src_endpoint.uid: (CONTEXT_LOCATION_ID)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', date_create::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (date_create)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600600 + (CASE WHEN ACTION = ''file_uploaded'' THEN 1 WHEN
+      ACTION IN (''file_downloaded'', ''canvas_downloaded'') THEN 2 WHEN ACTION IN
+      (''file_deleted'', ''canvas_deleted'') THEN 4 WHEN ACTION = ''canvas_edited''
+      THEN 3 WHEN ACTION IN (''file_shared'', ''canvas_shared'') THEN 12 WHEN ACTION
+      = ''canvas_unshared'' THEN 13 WHEN ACTION = ''canvas_opened'' THEN 14 WHEN ACTION
+      IS NULL THEN 0 ELSE 99 END))::NUMBER) WHEN 600600 THEN ''File Hosting Activity:
+      Unknown'' WHEN 600601 THEN ''File Hosting Activity: Upload'' WHEN 600602 THEN
+      ''File Hosting Activity: Download'' WHEN 600603 THEN ''File Hosting Activity:
+      Update'' WHEN 600604 THEN ''File Hosting Activity: Delete'' WHEN 600605 THEN
+      ''File Hosting Activity: Rename'' WHEN 600606 THEN ''File Hosting Activity:
+      Copy'' WHEN 600607 THEN ''File Hosting Activity: Move'' WHEN 600608 THEN ''File
+      Hosting Activity: Restore'' WHEN 600609 THEN ''File Hosting Activity: Preview''
+      WHEN 600610 THEN ''File Hosting Activity: Lock'' WHEN 600611 THEN ''File Hosting
+      Activity: Unlock'' WHEN 600612 THEN ''File Hosting Activity: Share'' WHEN 600613
+      THEN ''File Hosting Activity: Unshare'' WHEN 600614 THEN ''File Hosting Activity:
+      Open'' WHEN 600615 THEN ''File Hosting Activity: Sync'' WHEN 600616 THEN ''File
+      Hosting Activity: Unsync'' WHEN 600699 THEN ''File Hosting Activity: Other''
+      END)::VARCHAR'
+    type_uid: (600600 + (CASE WHEN ACTION = 'file_uploaded' THEN 1 WHEN ACTION IN
+      ('file_downloaded', 'canvas_downloaded') THEN 2 WHEN ACTION IN ('file_deleted',
+      'canvas_deleted') THEN 4 WHEN ACTION = 'canvas_edited' THEN 3 WHEN ACTION IN
+      ('file_shared', 'canvas_shared') THEN 12 WHEN ACTION = 'canvas_unshared' THEN
+      13 WHEN ACTION = 'canvas_opened' THEN 14 WHEN ACTION IS NULL THEN 0 ELSE 99
+      END))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: ENTITY_TYPE = 'file'

@@ -1,0 +1,143 @@
+type: mapping
+id: abnormal_threats_2004_detection_finding_1.1.0
+version: '1'
+name: Abnormal Threats to OCSF class Detection Finding
+data-types:
+- abnormal-threats
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (1)::NUMBER
+    activity_name: (CASE (1::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN
+      2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.domain: (SPLIT_PART(FROM_ADDRESS, '@', 2))::VARCHAR
+    actor.user.email_addr: (FROM_ADDRESS)::VARCHAR
+    actor.user.name: (IFF(FROM_NAME ILIKE '%@%', SPLIT_PART(FROM_NAME, '@', 1), FROM_NAME))::VARCHAR
+    actor.user.type: (CASE (CASE WHEN FROM_NAME ILIKE '%admin%' THEN 2 WHEN FROM_NAME
+      IS NULL THEN 0 ELSE 1 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN FROM_NAME ILIKE '%admin%' THEN 2 WHEN FROM_NAME
+      IS NULL THEN 0 ELSE 1 END)::NUMBER
+    api: NULL::VARIANT
+    attacks: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('attacks', OBJECT_CONSTRUCT_KEEP_NULL('tactic',
+      OBJECT_CONSTRUCT_KEEP_NULL('name', ATTACK_TYPE), 'technique', OBJECT_CONSTRUCT_KEEP_NULL('name',
+      ATTACK_STRATEGY, 'src_url', IFF(ARRAY_TO_STRING(URLS, '; ') IS NULL OR ARRAY_TO_STRING(URLS,
+      '; ') = '', NULL, ARRAY_TO_STRING(URLS, '; ')))))))::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (2::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud: NULL::VARIANT
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: (0)::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (0)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('src_endpoint', OBJECT_CONSTRUCT_KEEP_NULL('ip',
+      IFF(SENDER_IP_ADDRESS = '' OR SENDER_IP_ADDRESS IS NULL, NULL, SENDER_IP_ADDRESS),
+      'name', IFF(FROM_NAME ILIKE '%@%', SPLIT_PART(FROM_NAME, '@', 1), FROM_NAME),
+      'domain', SPLIT_PART(FROM_ADDRESS, '@', 2)), 'dst_endpoint', OBJECT_CONSTRUCT_KEEP_NULL('domain',
+      SPLIT_PART(RECIPIENT_ADDRESS, '@', 2)), 'actor', OBJECT_CONSTRUCT_KEEP_NULL('user',
+      OBJECT_CONSTRUCT_KEEP_NULL('name', IFF(FROM_NAME ILIKE '%@%', SPLIT_PART(FROM_NAME,
+      '@', 1), FROM_NAME), 'email_addr', FROM_ADDRESS, 'type_id', CASE WHEN FROM_NAME
+      ILIKE '%admin%' THEN 2 WHEN FROM_NAME IS NULL THEN 0 ELSE 1 END, 'type', CASE
+      (CASE WHEN FROM_NAME ILIKE '%admin%' THEN 2 WHEN FROM_NAME IS NULL THEN 0 ELSE
+      1 END) WHEN 2 THEN 'Admin' WHEN 1 THEN 'User' WHEN 0 THEN 'Unknown' END)))))::ARRAY
+    finding_info.attacks: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('attacks', OBJECT_CONSTRUCT_KEEP_NULL('tactic',
+      OBJECT_CONSTRUCT_KEEP_NULL('name', ATTACK_TYPE), 'technique', OBJECT_CONSTRUCT_KEEP_NULL('name',
+      ATTACK_STRATEGY, 'src_url', IFF(ARRAY_TO_STRING(URLS, '; ') IS NULL OR ARRAY_TO_STRING(URLS,
+      '; ') = '', NULL, ARRAY_TO_STRING(URLS, '; ')))))))::ARRAY
+    finding_info.modified_time: (date_part('epoch_milliseconds', REMEDIATION_TIMESTAMP::TIMESTAMP_LTZ))::NUMBER
+    finding_info.modified_time_dt: (REMEDIATION_TIMESTAMP)::TIMESTAMP_LTZ
+    finding_info.src_url: (ABX_PORTAL_URL)::VARCHAR
+    finding_info.title: (ARRAY_TO_STRING(SUMMARY_INSIGHTS, '; '))::VARCHAR
+    finding_info.types: (SUMMARY_INSIGHTS)::ARRAY
+    finding_info.uid: (THREAT_ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: (SUBJECT)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('abnormal-threats')::VARCHAR
+    metadata.product.vendor_name: ('abnormal_security')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (FROM_ADDRESS)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (IFF(FROM_NAME ILIKE '%@%', SPLIT_PART(FROM_NAME, '@', 1), FROM_NAME))::VARCHAR
+    - name: '''finding_info.src_url'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (ABX_PORTAL_URL)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('type', ATTACKED_PARTY,
+      'name', IMPERSONATED_PARTY)))::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN AUTO_REMEDIATED = 'true' THEN 4 WHEN AUTO_REMEDIATED
+      = 'false' THEN 1 WHEN AUTO_REMEDIATED IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'New' WHEN 2 THEN 'In Progress' WHEN 3 THEN 'Suppressed'
+      WHEN 4 THEN 'Resolved' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN AUTO_REMEDIATED = 'true' THEN 4 WHEN AUTO_REMEDIATED = 'false'
+      THEN 1 WHEN AUTO_REMEDIATED IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', received_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (received_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (200401::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200401)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY
+  predicate: THREAT_ID IS NOT NULL

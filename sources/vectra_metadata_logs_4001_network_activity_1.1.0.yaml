@@ -1,0 +1,156 @@
+type: mapping
+id: vectra_metadata_logs_4001_network_activity_1.1.0
+version: '12'
+name: Vectra Metadata Logs to OCSF class Network Activity
+data-types:
+- vectra-metadata-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN RAW:conn_state = 'S1' THEN 1 WHEN RAW:conn_state = 'RSTO'
+      THEN 2 WHEN RAW:conn_state = 'RSTR' THEN 3 WHEN RAW:conn_state = 's2' THEN 4
+      WHEN RAW:conn_state = 'REJ' THEN 5 WHEN RAW:conn_state = 'OTH' THEN 6 ELSE 99
+      END)::NUMBER
+    activity_name: (CASE ((CASE WHEN RAW:conn_state = 'S1' THEN 1 WHEN RAW:conn_state
+      = 'RSTO' THEN 2 WHEN RAW:conn_state = 'RSTR' THEN 3 WHEN RAW:conn_state = 's2'
+      THEN 4 WHEN RAW:conn_state = 'REJ' THEN 5 WHEN RAW:conn_state = 'OTH' THEN 6
+      ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN 2 THEN 'Close'
+      WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN 6 THEN 'Traffic'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.name: (USERNAME)::VARCHAR
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('network_activity')::VARCHAR
+    class_uid: ('4001')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_name: (PROTO_NAME)::VARCHAR
+    connection_info.protocol_num: (PROTO)::NUMBER
+    count: NULL::NUMBER
+    device.hostname: (HOSTNAME)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.domain: (RESP_DOMAINS)::VARCHAR
+    dst_endpoint.hostname: (RESP_HOSTNAME)::VARCHAR
+    dst_endpoint.ip: (COALESCE(ID_RESP_H, ASSIGNED_IP))::VARCHAR
+    dst_endpoint.uid: (RESP_HUID)::VARCHAR
+    dst_endpoint.vlan_uid: (RAW:resp_vlan_id)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (METADATA_TYPE)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('vectra-metadata-logs')::VARCHAR
+    metadata.product.vendor_name: ('vectra')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.tenant_uid: (UID)::VARCHAR
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USERNAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOSTNAME)::VARCHAR
+    - name: '''dst_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RESP_HOSTNAME)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(ID_RESP_H, ASSIGNED_IP))::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (ORIG_HOSTNAME)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (ID_ORIG_H)::VARCHAR
+    - name: '''src_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (MAC)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: NULL::VARCHAR
+    severity_id: NULL::NUMBER
+    src_endpoint.hostname: (ORIG_HOSTNAME)::VARCHAR
+    src_endpoint.ip: (ID_ORIG_H)::VARCHAR
+    src_endpoint.mac: (MAC)::VARCHAR
+    src_endpoint.port: (ID_ORIG_P)::NUMBER
+    src_endpoint.uid: (ORIG_HUID)::VARCHAR
+    src_endpoint.vlan_uid: (RAW:orig_vlan_id)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (EVENT_TIME)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (EVENT_TIME)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls.alert: (TTLS)::NUMBER
+    traffic.bytes: (RAW:resp_ip_bytes::NUMBER + RAW:orig_ip_bytes)::NUMBER
+    traffic.bytes_in: (RAW:resp_ip_bytes)::NUMBER
+    traffic.bytes_out: (RAW:orig_ip_bytes)::NUMBER
+    traffic.packets: (RAW:resp_pkts::NUMBER + RAW:orig_pkts)::NUMBER
+    traffic.packets_in: (RAW:resp_pkts)::NUMBER
+    traffic.packets_out: (RAW:orig_pkts)::NUMBER
+    type_name: '(CASE ((CASE WHEN RAW:conn_state = ''S1'' THEN 400101 WHEN RAW:conn_state
+      = ''RSTO'' THEN 400102 WHEN RAW:conn_state = ''RSTR'' THEN 400103 WHEN RAW:conn_state
+      = ''s2'' THEN 400104 WHEN RAW:conn_state = ''REJ'' THEN 400105 WHEN RAW:conn_state
+      = ''OTH'' THEN 400106 ELSE 400199 END)::NUMBER) WHEN 400100 THEN ''Network Activity:
+      Unknown'' WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network
+      Activity: Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN
+      ''Network Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN
+      400106 THEN ''Network Activity: Traffic'' WHEN 400199 THEN ''Network Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN RAW:conn_state = 'S1' THEN 400101 WHEN RAW:conn_state = 'RSTO'
+      THEN 400102 WHEN RAW:conn_state = 'RSTR' THEN 400103 WHEN RAW:conn_state = 's2'
+      THEN 400104 WHEN RAW:conn_state = 'REJ' THEN 400105 WHEN RAW:conn_state = 'OTH'
+      THEN 400106 ELSE 400199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    url: NULL::VARIANT
+  predicate: METADATA_TYPE = 'metadata_isession'

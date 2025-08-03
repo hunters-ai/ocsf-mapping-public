@@ -1,0 +1,8 @@
+id: 1006_scheduled_job_activity_1.1.0
+version: '2'
+description: OCSF View For Class - 1006 Scheduled Job Activity
+source-table-ids:
+- sentinelone_raw_events_v2_1006_scheduled_job_activity_1.1.0
+- crowdstrike_raw_events_1006_scheduled_job_activity_1.1.0
+- universal_wel_1006_scheduled_job_activity_1.1.0
+- kaspersky_security_cloud_logs_1006_scheduled_job_activity_1.1.0

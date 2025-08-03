@@ -1,0 +1,14 @@
+id: 1007_process_activity_1.1.0
+version: '5'
+description: OCSF View For Class - 1007 Process Activity
+source-table-ids:
+- mdatp_device_process_events_1007_process_activity_1.1.0
+- sentinelone_raw_events_v2_1007_process_activity_1.1.0
+- crowdstrike_raw_events_1007_process_activity_1.1.0
+- osquery_logs_1007_process_activity_1.1.0
+- cb_platform_events_1007_process_activity_1.1.0
+- pan_edr_raw_logs_1007_process_activity_1.1.0
+- beyondtrust_events_1007_process_activity_1.1.0
+- universal_wel_1007_process_activity_1.1.0
+- sysdig_activity_command_1007_process_activity_1.1.0
+- microsoft_365_defender_advanced_hunting_1007_process_activity_1.1.0

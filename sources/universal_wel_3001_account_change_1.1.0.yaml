@@ -1,0 +1,163 @@
+type: mapping
+id: universal_wel_3001_account_change_1.1.0
+version: '1'
+name: Universal Wel to OCSF class Account Change
+data-types:
+- universal-wel
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_ID = 4720 THEN 1 WHEN EVENT_ID = 4722 THEN 2 WHEN
+      EVENT_ID = 4723 THEN 3 WHEN EVENT_ID = 4724 THEN 4 WHEN EVENT_ID = 4725 THEN
+      5 WHEN EVENT_ID = 4726 THEN 6 WHEN EVENT_ID IN (4728, 4732, 4704) THEN 7 WHEN
+      EVENT_ID IN (4729, 4733, 4705) THEN 8 WHEN EVENT_ID = 4740 THEN 9 WHEN EVENT_ID
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE (CASE WHEN EVENT_ID = 4720 THEN 1 WHEN EVENT_ID = 4722 THEN
+      2 WHEN EVENT_ID = 4723 THEN 3 WHEN EVENT_ID = 4724 THEN 4 WHEN EVENT_ID = 4725
+      THEN 5 WHEN EVENT_ID = 4726 THEN 6 WHEN EVENT_ID IN (4728, 4732, 4704) THEN
+      7 WHEN EVENT_ID IN (4729, 4733, 4705) THEN 8 WHEN EVENT_ID = 4740 THEN 9 WHEN
+      EVENT_ID IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Create' WHEN 10 THEN 'MFA Factor Enable' WHEN 11 THEN 'MFA Factor Disable'
+      WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password Change' WHEN 4 THEN 'Password Reset'
+      WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete' WHEN 7 THEN 'Attach Policy' WHEN
+      8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.created_time: (date_part('epoch_milliseconds', (RAW:ProcessCreationTime)::TIMESTAMP_LTZ))::NUMBER
+    actor.process.created_time_dt: (RAW:ProcessCreationTime)::TIMESTAMP_LTZ
+    actor.process.file.path: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
+    actor.process.uid: (MESSAGE_DETAILS:process_information:process_id)::VARCHAR
+    actor.user.name: (RAW:SubjectUserName)::VARCHAR
+    actor.user.uid: (RAW:SubjectUserSid)::VARCHAR
+    api.service.name: (PROVIDER)::VARCHAR
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (MACHINE_NAME)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (RAW:EventReceivedTime)::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (RAW:EventReceivedTime)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: (RAW:Message)::VARCHAR
+    metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('universal-wel')::VARCHAR
+    metadata.product.vendor_name: ('windows-event-log')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:SubjectUserName)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (MACHINE_NAME)::VARCHAR
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:Hostname)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (RAW:MessageSourceAddress)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:TargetUserName)::VARCHAR
+    - name: '''user_result.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (MESSAGE_DETAILS:changed_attributes:user_principal_name)::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 WHEN RAW:Severity = 'WARNING' THEN 3 ELSE 99 END)::NUMBER) WHEN 0 THEN
+      'Unknown' WHEN 1 THEN 'Informational' WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium'
+      WHEN 4 THEN 'High' WHEN 5 THEN 'Critical' WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    severity_id: (CASE WHEN RAW:Severity IS NULL THEN 0 WHEN RAW:Severity = 'INFO'
+      THEN 1 WHEN RAW:Severity = 'WARNING' THEN 3 ELSE 99 END)::NUMBER
+    src_endpoint.hostname: (RAW:Hostname)::VARCHAR
+    src_endpoint.ip: (RAW:MessageSourceAddress)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN AUDIT_SUCCESS = TRUE THEN 1 WHEN AUDIT_SUCCESS = FALSE
+      THEN 2 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (RAW:Message)::VARCHAR
+    status_id: (CASE WHEN AUDIT_SUCCESS = TRUE THEN 1 WHEN AUDIT_SUCCESS = FALSE THEN
+      2 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300100 + (CASE WHEN EVENT_ID = 4720 THEN 1 WHEN EVENT_ID =
+      4722 THEN 2 WHEN EVENT_ID = 4723 THEN 3 WHEN EVENT_ID = 4724 THEN 4 WHEN EVENT_ID
+      = 4725 THEN 5 WHEN EVENT_ID = 4726 THEN 6 WHEN EVENT_ID IN (4728, 4732, 4704)
+      THEN 7 WHEN EVENT_ID IN (4729, 4733, 4705) THEN 8 WHEN EVENT_ID = 4740 THEN
+      9 WHEN EVENT_ID IS NULL THEN 0 ELSE 99 END))::NUMBER) WHEN 300100 THEN ''Account
+      Change: Unknown'' WHEN 300101 THEN ''Account Change: Create'' WHEN 300102 THEN
+      ''Account Change: Enable'' WHEN 300103 THEN ''Account Change: Password Change''
+      WHEN 300104 THEN ''Account Change: Password Reset'' WHEN 300105 THEN ''Account
+      Change: Disable'' WHEN 300106 THEN ''Account Change: Delete'' WHEN 300107 THEN
+      ''Account Change: Attach Policy'' WHEN 300108 THEN ''Account Change: Detach
+      Policy'' WHEN 300109 THEN ''Account Change: Lock'' WHEN 300110 THEN ''Account
+      Change: MFA Factor Enable'' WHEN 300111 THEN ''Account Change: MFA Factor Disable''
+      WHEN 300199 THEN ''Account Change: Other'' END)::VARCHAR'
+    type_uid: (300100 + (CASE WHEN EVENT_ID = 4720 THEN 1 WHEN EVENT_ID = 4722 THEN
+      2 WHEN EVENT_ID = 4723 THEN 3 WHEN EVENT_ID = 4724 THEN 4 WHEN EVENT_ID = 4725
+      THEN 5 WHEN EVENT_ID = 4726 THEN 6 WHEN EVENT_ID IN (4728, 4732, 4704) THEN
+      7 WHEN EVENT_ID IN (4729, 4733, 4705) THEN 8 WHEN EVENT_ID = 4740 THEN 9 WHEN
+      EVENT_ID IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.name: (MESSAGE_DETAILS:target_account:account_name)::VARCHAR
+    user.domain: (MESSAGE_DETAILS:target_account:account_domain)::VARCHAR
+    user.name: (RAW:TargetUserName)::VARCHAR
+    user.uid: (MESSAGE_DETAILS:target_account:security_id)::VARCHAR
+    user_result.account.name: (MESSAGE_DETAILS:changed_attributes:sam_account_name)::VARCHAR
+    user_result.full_name: (MESSAGE_DETAILS:changed_attributes:display_name)::VARCHAR
+    user_result.groups: (ARRAY_CONSTRUCT(object_construct('uid',MESSAGE_DETAILS:changed_attributes:primary_group_id)))::ARRAY
+    user_result.name: (MESSAGE_DETAILS:changed_attributes:user_principal_name)::VARCHAR
+  predicate: EVENT_ID in (4720, 4722, 4723, 4724, 4725, 4726, 4728, 4732, 4729, 4733,
+    4740, 4738, 4704, 4705, 4767)

@@ -1,0 +1,152 @@
+type: mapping
+id: salesforce_event_logs_3002_authentication_1.1.0
+version: '10'
+name: Salesforce Event Logs to OCSF class Authentication
+data-types:
+- salesforce-event-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN ('Login','LoginAs')
+      THEN 1 WHEN EVENT_TYPE = 'Logout' THEN 2 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN
+      ('Login','LoginAs') THEN 1 WHEN EVENT_TYPE = 'Logout' THEN 2 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN 2 THEN 'Logoff' WHEN 3 THEN 'Authentication
+      Ticket' WHEN 4 THEN 'Service Ticket Request' WHEN 5 THEN 'Service Ticket Renew'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api.version: (RAW:API_VERSION)::VARCHAR
+    auth_protocol: (CASE ((CASE WHEN RAW:LOGIN_TYPE::VARCHAR IS NULL THEN 0 WHEN RAW:LOGIN_TYPE::VARCHAR
+      IN ('5', 'm', 'b', 'c', 'h', '8') THEN 5 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'NTLM' WHEN 10 THEN 'RADIUS' WHEN 2 THEN 'Kerberos' WHEN 3 THEN
+      'Digest' WHEN 4 THEN 'OpenID' WHEN 5 THEN 'SAML' WHEN 6 THEN 'OAUTH 2.0' WHEN
+      7 THEN 'PAP' WHEN 8 THEN 'CHAP' WHEN 9 THEN 'EAP' WHEN 99 THEN 'Other' END)::VARCHAR
+    auth_protocol_id: (CASE WHEN RAW:LOGIN_TYPE::VARCHAR IS NULL THEN 0 WHEN RAW:LOGIN_TYPE::VARCHAR
+      IN ('5', 'm', 'b', 'c', 'h', '8') THEN 5 ELSE 99 END)::NUMBER
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request.url.url_string: (URI)::VARCHAR
+    http_request.user_agent: (RAW:BROWSER_TYPE)::VARCHAR
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: NULL::BOOLEAN
+    logon_process.uid: (LOGIN_KEY)::VARCHAR
+    logon_type: NULL::VARCHAR
+    logon_type_id: NULL::NUMBER
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('salesforce-event-logs')::VARCHAR
+    metadata.product.vendor_name: ('salesforce')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''http_request.url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''http_request.url.url_string'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (URI)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(NULLIF(CLIENT_IP, 'Salesforce.com IP'), RAW:source_ip::VARCHAR))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(RAW:USER_NAME::VARCHAR, RAW:DELEGATED_USER_NAME::VARCHAR))::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session.uid: (SESSION_KEY)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (COALESCE(NULLIF(CLIENT_IP, 'Salesforce.com IP'), RAW:source_ip::VARCHAR))::VARCHAR
+    src_endpoint.os.type: (CASE ((CASE WHEN RAW:PLATFORM_TYPE IS NULL THEN 0 WHEN
+      RAW:PLATFORM_TYPE IN ('1000', '1008', '1013', '1015') THEN 100 WHEN RAW:PLATFORM_TYPE
+      = '4000' THEN 200 WHEN RAW:PLATFORM_TYPE = '5005' THEN 201 WHEN RAW:PLATFORM_TYPE
+      = '5007' THEN 302 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 100 THEN
+      'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux' WHEN 201 THEN
+      'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN
+      400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    src_endpoint.os.type_id: (CASE WHEN RAW:PLATFORM_TYPE IS NULL THEN 0 WHEN RAW:PLATFORM_TYPE
+      IN ('1000', '1008', '1013', '1015') THEN 100 WHEN RAW:PLATFORM_TYPE = '4000'
+      THEN 200 WHEN RAW:PLATFORM_TYPE = '5005' THEN 201 WHEN RAW:PLATFORM_TYPE = '5007'
+      THEN 302 ELSE 99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN RAW:LOGIN_STATUS IS NULL THEN 0 WHEN RAW:LOGIN_STATUS
+      IN ('LOGIN_NO_ERROR', 'LOGIN_DATA_DOWNLOAD_ONLY') THEN 1 WHEN RAW:LOGIN_STATUS
+      LIKE '%LOGIN_ERROR%' OR RAW:LOGIN_STATUS LIKE '%LOGIN_OAUTH%' OR RAW:LOGIN_STATUS
+      LIKE '%LOGIN_SAML_INVALID%' OR RAW:LOGIN_STATUS LIKE '%LOGIN_SAML_MISMATCH%'
+      OR RAW:LOGIN_STATUS LIKE '%LOGIN_SAML_MISSING%' THEN 2 WHEN RAW:LOGIN_STATUS
+      IN ('LOGIN_SAML_PROVISION_ERROR', 'LOGIN_SAML_REPLAY_ATTEMPTED', 'LOGIN_SAML_SITE_INACTIVE')
+      THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN
+      2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN RAW:LOGIN_STATUS IS NULL THEN 0 WHEN RAW:LOGIN_STATUS IN
+      ('LOGIN_NO_ERROR', 'LOGIN_DATA_DOWNLOAD_ONLY') THEN 1 WHEN RAW:LOGIN_STATUS
+      LIKE '%LOGIN_ERROR%' OR RAW:LOGIN_STATUS LIKE '%LOGIN_OAUTH%' OR RAW:LOGIN_STATUS
+      LIKE '%LOGIN_SAML_INVALID%' OR RAW:LOGIN_STATUS LIKE '%LOGIN_SAML_MISMATCH%'
+      OR RAW:LOGIN_STATUS LIKE '%LOGIN_SAML_MISSING%' THEN 2 WHEN RAW:LOGIN_STATUS
+      IN ('LOGIN_SAML_PROVISION_ERROR', 'LOGIN_SAML_REPLAY_ATTEMPTED', 'LOGIN_SAML_SITE_INACTIVE')
+      THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300200 +(CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE
+      IN (''Login'',''LoginAs'') THEN 1 WHEN EVENT_TYPE = ''Logout'' THEN 2 ELSE 99
+      END))::NUMBER) WHEN 300200 THEN ''Authentication: Unknown'' WHEN 300201 THEN
+      ''Authentication: Logon'' WHEN 300202 THEN ''Authentication: Logoff'' WHEN 300203
+      THEN ''Authentication: Authentication Ticket'' WHEN 300204 THEN ''Authentication:
+      Service Ticket Request'' WHEN 300205 THEN ''Authentication: Service Ticket Renew''
+      WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (300200 +(CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN ('Login','LoginAs')
+      THEN 1 WHEN EVENT_TYPE = 'Logout' THEN 2 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    user.name: (COALESCE(RAW:USER_NAME::VARCHAR, RAW:DELEGATED_USER_NAME::VARCHAR))::VARCHAR
+    user.org.uid: (ORGANIZATION_ID)::VARCHAR
+    user.type: (CASE ((CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE ILIKE '%User%'
+      OR user_type ILIKE '%Standard%' OR user_type ILIKE '%Guest%' OR user_type ILIKE
+      '%Partner%' OR user_type ILIKE '%Customer%' THEN 1 WHEN USER_TYPE ILIKE '%Manager%'
+      OR user_type = 'SfdcAdmin' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    user.type_id: (CASE WHEN USER_TYPE IS NULL THEN 0 WHEN USER_TYPE ILIKE '%User%'
+      OR user_type ILIKE '%Standard%' OR user_type ILIKE '%Guest%' OR user_type ILIKE
+      '%Partner%' OR user_type ILIKE '%Customer%' THEN 1 WHEN USER_TYPE ILIKE '%Manager%'
+      OR user_type = 'SfdcAdmin' THEN 2 ELSE 99 END)::NUMBER
+    user.uid: (COALESCE(USER_ID, RAW:DELEGATED_USER_ID))::VARCHAR
+    user.uid_alt: (COALESCE(USER_ID_DERIVED, RAW:DELEGATED_USER_ID_DERIVED))::VARCHAR
+  predicate: EVENT_TYPE in ('Login', 'LoginAs', 'Logout')

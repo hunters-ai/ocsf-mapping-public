@@ -1,0 +1,206 @@
+type: mapping
+id: crowdstrike_raw_events_3002_authentication_1.1.0
+version: '17'
+name: Crowdstrike Raw Events to OCSF class Authentication
+data-types:
+- crowdstrike-raw-events
+mapping:
+  fields:
+    activity_id: (case when event_simple_name in ('UserLogon', 'UserLogonFailed2',
+      'UserLogonFailed') then 1 when event_simple_name = 'UserLogoff' then 2 else
+      99 end)::NUMBER
+    activity_name: (CASE ((case when event_simple_name in ('UserLogon', 'UserLogonFailed2',
+      'UserLogonFailed') then 1 when event_simple_name = 'UserLogoff' then 2 else
+      99 end)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Logon' WHEN 2 THEN 'Logoff'
+      WHEN 3 THEN 'Authentication Ticket' WHEN 4 THEN 'Service Ticket Request' WHEN
+      5 THEN 'Service Ticket Renew' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.account.uid: (raw:RemoteAccount)::VARCHAR
+    actor.user.domain: (case WHEN RAW:LogonDomain::VARCHAR = '' THEN NULL::VARCHAR
+      WHEN RAW:LogonDomain::VARCHAR = '-' THEN NULL::VARCHAR WHEN RAW:LogonDomain::VARCHAR
+      = '.' THEN NULL::VARCHAR WHEN RAW:LogonDomain::VARCHAR = '?' THEN NULL::VARCHAR
+      WHEN RAW:LogonDomain::VARCHAR = (case WHEN event_platform = 'Win' THEN IFF(RAW:RemoteAccount::VARCHAR
+      = '1' or RAW:LogonServer::VARCHAR = '', NULL::VARCHAR, RAW:LogonServer::VARCHAR)
+      WHEN event_platform IN ('Mac','Lin') THEN IFF(NOT SPLIT_PART(SPLIT_PART(raw:UserPrincipal::VARCHAR,
+      '@', -1), '.', 1) = '', SPLIT_PART(SPLIT_PART(raw:UserPrincipal::VARCHAR, '@',
+      -1), '.', 1), RAW:ClientComputerName::VARCHAR) ELSE NULL::VARCHAR END) THEN
+      NULL::VARCHAR WHEN RAW:LogonDomain::VARCHAR = (CASE RAW:ClientComputerName::VARCHAR
+      WHEN '' THEN NULL::VARCHAR WHEN '-' THEN NULL::VARCHAR ELSE RAW:ClientComputerName::VARCHAR
+      END) THEN NULL::VARCHAR WHEN LOWER(RAW:LogonDomain::VARCHAR) IN ('anonymous',
+      'default internet information services user', 'system/localsystem', 'nt authority',
+      'nt service', 'network service', 'nt virtual machine', 'window manager', 'desktop
+      window manager', 'font driver host', 'workgroup', 'virtual users', 'user mode
+      driver framework')  THEN NULL::VARCHAR WHEN CONTAINS(RAW:UserName::VARCHAR,
+      '\\') AND EVENT_PLATFORM IN ('Mac', 'Lin')  THEN SPLIT_PART(RAW:UserName::VARCHAR,
+      '\\', 1) ELSE RAW:LogonDomain::VARCHAR END)::VARCHAR
+    actor.user.groups: (IFF(RAW:UserGroupsBitmask IS NOT NULL, ARRAY_CONSTRUCT(RAW:UserGroupsBitmask),   ARRAY_CONSTRUCT()))::ARRAY
+    actor.user.name: (CASE RAW:UserName::VARCHAR WHEN '' THEN NULL WHEN '-' THEN NULL
+      ELSE RAW:UserName END)::VARCHAR
+    actor.user.type: (CASE ((case cast(raw:UserIsAdmin::varchar as boolean) when False
+      then 1 When TRUE then 2 else 0 end)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'User' WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (case cast(raw:UserIsAdmin::varchar as boolean) when False
+      then 1 When TRUE then 2 else 0 end)::NUMBER
+    actor.user.uid: (CASE WHEN EVENT_PLATFORM = 'Win' THEN RAW:UserSid::VARCHAR WHEN
+      EVENT_PLATFORM IN ('Mac', 'Lin') THEN CONCAT(aid, ':', RAW:UID::VARCHAR) ELSE
+      NULL::VARCHAR END)::VARCHAR
+    api: NULL::VARIANT
+    auth_protocol: NULL::VARCHAR
+    auth_protocol_id: NULL::NUMBER
+    category_name: NULL::VARCHAR
+    category_uid: NULL::NUMBER
+    certificate: NULL::VARIANT
+    class_name: ('authentication')::VARCHAR
+    class_uid: ('3002')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.domain: (CASE WHEN event_platform = 'Win' THEN IFF(RAW:RemoteAccount::VARCHAR
+      = '1' or RAW:LogonServer::VARCHAR = '', NULL::VARCHAR, RAW:LogonServer::VARCHAR)
+      WHEN event_platform IN ('Mac','Lin') THEN IFF(NOT SPLIT_PART(SPLIT_PART(raw:UserPrincipal::VARCHAR,
+      '@', -1), '.', 1) = '', SPLIT_PART(SPLIT_PART(raw:UserPrincipal::VARCHAR, '@',
+      -1), '.', 1), RAW:ClientComputerName::VARCHAR) ELSE NULL::VARCHAR END)::VARCHAR
+    device.ip: (aip)::VARCHAR
+    device.name: (raw:ClientComputerName)::VARCHAR
+    device.org.uid: (cid)::VARCHAR
+    device.os.name: (EVENT_PLATFORM)::VARCHAR
+    device.os.type: (CASE ((case EVENT_PLATFORM when 'Win' then 100 when 'Lin' then
+      200 when 'Mac' then 300 when null then 0 else 99 end)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile' WHEN 200 THEN 'Linux'
+      WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301 THEN 'iOS' WHEN 302 THEN
+      'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX' WHEN 402 THEN 'HP-UX' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (case EVENT_PLATFORM when 'Win' then 100 when 'Lin' then 200
+      when 'Mac' then 300 when null then 0 else 99 end)::NUMBER
+    device.uid: (aid)::VARCHAR
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', (TO_TIMESTAMP_LTZ((try_to_double(RAW:LogoffTime::VARCHAR)
+      * 1000)::BIGINT, 3))::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (TO_TIMESTAMP_LTZ((try_to_double(RAW:LogoffTime::VARCHAR) * 1000)::BIGINT,
+      3))::TIMESTAMP_LTZ
+    enrichments: NULL::VARIANT
+    http_request: NULL::VARIANT
+    is_cleartext: NULL::BOOLEAN
+    is_mfa: NULL::BOOLEAN
+    is_new_logon: NULL::BOOLEAN
+    is_remote: (case when raw:RemoteAddressIP4 is not null or raw:RemoteAddressIP6
+      is not null then True else False END)::BOOLEAN
+    logon_process.pid: (raw:ContextProcessId)::NUMBER
+    logon_type: (CASE ((CASE RAW:LogonType::VARCHAR WHEN '2' THEN 2 WHEN '3' THEN
+      3 WHEN '4' THEN 4 WHEN '5' THEN 5 WHEN '7' THEN 7 WHEN '8' THEN 8 WHEN '9' THEN
+      9 WHEN '10' THEN 10 WHEN '11' THEN 11 WHEN '12' THEN 12 WHEN '13' THEN 13 ELSE
+      99 END)::NUMBER) WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive' WHEN
+      11 THEN 'Cached Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN 13
+      THEN 'Cached Unlock' WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN 4
+      THEN 'Batch' WHEN 5 THEN 'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network
+      Cleartext' WHEN 9 THEN 'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
+    logon_type_id: (CASE RAW:LogonType::VARCHAR WHEN '2' THEN 2 WHEN '3' THEN 3 WHEN
+      '4' THEN 4 WHEN '5' THEN 5 WHEN '7' THEN 7 WHEN '8' THEN 8 WHEN '9' THEN 9 WHEN
+      '10' THEN 10 WHEN '11' THEN 11 WHEN '12' THEN 12 WHEN '13' THEN 13 ELSE 99 END)::NUMBER
+    message: NULL::VARCHAR
+    metadata.event_code: (event_simple_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('crowdstrike-raw-events')::VARCHAR
+    metadata.product.vendor_name: ('crowdstrike')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (CASE RAW:UserName::VARCHAR WHEN '' THEN NULL WHEN '-' THEN NULL ELSE
+        RAW:UserName END)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (aip)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (coalesce(raw:RemoteAddressIP4, raw:RemoteAddressIP6))::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    service: NULL::VARIANT
+    session.uid: (raw:AuditSessionId)::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (coalesce(raw:RemoteAddressIP4, raw:RemoteAddressIP6))::VARCHAR
+    src_endpoint.name: (case RAW:ClientComputerName::VARCHAR WHEN '' THEN NULL::VARCHAR
+      WHEN '-' THEN NULL::VARCHAR ELSE RAW:ClientComputerName::VARCHAR END)::VARCHAR
+    start_time: (date_part('epoch_milliseconds', (TO_TIMESTAMP_LTZ((try_to_double(RAW:LogonTime::VARCHAR)
+      * 1000)::BIGINT, 3))::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (TO_TIMESTAMP_LTZ((try_to_double(RAW:LogonTime::VARCHAR) * 1000)::BIGINT,
+      3))::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN EVENT_SIMPLE_NAME = 'UserLogon' THEN 1 WHEN EVENT_SIMPLE_NAME
+      in ('UserLogonFailed','UserLogonFailed2') THEN 2 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: (raw:Status)::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN EVENT_SIMPLE_NAME = 'UserLogon' THEN 1 WHEN EVENT_SIMPLE_NAME
+      in ('UserLogonFailed','UserLogonFailed2') THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((case when event_simple_name in (''UserLogon'', ''UserLogonFailed2'',
+      ''UserLogonFailed'') then 300201 when event_simple_name = ''UserLogoff'' then
+      300202 else 300299 end)::NUMBER) WHEN 300200 THEN ''Authentication: Unknown''
+      WHEN 300201 THEN ''Authentication: Logon'' WHEN 300202 THEN ''Authentication:
+      Logoff'' WHEN 300203 THEN ''Authentication: Authentication Ticket'' WHEN 300204
+      THEN ''Authentication: Service Ticket Request'' WHEN 300205 THEN ''Authentication:
+      Service Ticket Renew'' WHEN 300299 THEN ''Authentication: Other'' END)::VARCHAR'
+    type_uid: (case when event_simple_name in ('UserLogon', 'UserLogonFailed2', 'UserLogonFailed')
+      then 300201 when event_simple_name = 'UserLogoff' then 300202 else 300299 end)::NUMBER
+    unmapped: NULL::VARIANT
+    user.account.uid: (raw:RemoteAccount)::VARCHAR
+    user.domain: (case WHEN RAW:LogonDomain::VARCHAR = '' THEN NULL::VARCHAR WHEN
+      RAW:LogonDomain::VARCHAR = '-' THEN NULL::VARCHAR WHEN RAW:LogonDomain::VARCHAR
+      = '.' THEN NULL::VARCHAR WHEN RAW:LogonDomain::VARCHAR = '?' THEN NULL::VARCHAR
+      WHEN RAW:LogonDomain::VARCHAR = (case WHEN event_platform = 'Win' THEN IFF(RAW:RemoteAccount::VARCHAR
+      = '1' or RAW:LogonServer::VARCHAR = '', NULL::VARCHAR, RAW:LogonServer::VARCHAR)
+      WHEN event_platform IN ('Mac','Lin') THEN IFF(NOT SPLIT_PART(SPLIT_PART(raw:UserPrincipal::VARCHAR,
+      '@', -1), '.', 1) = '', SPLIT_PART(SPLIT_PART(raw:UserPrincipal::VARCHAR, '@',
+      -1), '.', 1), RAW:ClientComputerName::VARCHAR) ELSE NULL::VARCHAR END) THEN
+      NULL::VARCHAR WHEN RAW:LogonDomain::VARCHAR = (CASE RAW:ClientComputerName::VARCHAR
+      WHEN '' THEN NULL::VARCHAR WHEN '-' THEN NULL::VARCHAR ELSE RAW:ClientComputerName::VARCHAR
+      END) THEN NULL::VARCHAR WHEN LOWER(RAW:LogonDomain::VARCHAR) IN ('anonymous',
+      'default internet information services user', 'system/localsystem', 'nt authority',
+      'nt service', 'network service', 'nt virtual machine', 'window manager', 'desktop
+      window manager', 'font driver host', 'workgroup', 'virtual users', 'user mode
+      driver framework')  THEN NULL::VARCHAR WHEN CONTAINS(RAW:UserName::VARCHAR,
+      '\\') AND EVENT_PLATFORM IN ('Mac', 'Lin')  THEN SPLIT_PART(RAW:UserName::VARCHAR,
+      '\\', 1) ELSE RAW:LogonDomain::VARCHAR END)::VARCHAR
+    user.groups: (IFF(RAW:UserGroupsBitmask IS NOT NULL, ARRAY_CONSTRUCT(RAW:UserGroupsBitmask),   ARRAY_CONSTRUCT()))::ARRAY
+    user.type: (CASE ((case cast(raw:UserIsAdmin::varchar as boolean) when False then
+      1 When TRUE then 2 else 0 end)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User'
+      WHEN 2 THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (case cast(raw:UserIsAdmin::varchar as boolean) when False then
+      1 When TRUE then 2 else 0 end)::NUMBER
+    user.uid: (CASE WHEN EVENT_PLATFORM = 'Win' THEN RAW:UserSid::VARCHAR WHEN EVENT_PLATFORM
+      IN ('Mac', 'Lin') THEN CONCAT(aid, ':', RAW:UID::VARCHAR) ELSE NULL::VARCHAR
+      END)::VARCHAR
+  predicate: event_simple_name IN ('UserLogon', 'UserLogoff', 'UserLogonFailed2',
+    'UserLogonFailed')

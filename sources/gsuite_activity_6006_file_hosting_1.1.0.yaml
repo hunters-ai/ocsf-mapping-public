@@ -1,0 +1,142 @@
+type: mapping
+id: gsuite_activity_6006_file_hosting_1.1.0
+version: '9'
+name: Gsuite Activity to OCSF class File Hosting
+data-types:
+- gsuite-activity
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_NAME IS NULL THEN 0 WHEN EVENT_NAME IN ('upload',
+      'uploaded_attachment', 'attachment_upload') THEN 1 WHEN EVENT_NAME IN ('attachment_download',
+      'download') THEN 2 WHEN EVENT_NAME = 'deleted_attachment' THEN 4  WHEN EVENT_NAME
+      = 'rename' THEN 5 WHEN EVENT_NAME = 'copy' THEN 6 WHEN EVENT_NAME = 'move' THEN
+      7 WHEN EVENT_NAME = 'RESTORE' THEN 8 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN EVENT_NAME IS NULL THEN 0 WHEN EVENT_NAME IN
+      ('upload', 'uploaded_attachment', 'attachment_upload') THEN 1 WHEN EVENT_NAME
+      IN ('attachment_download', 'download') THEN 2 WHEN EVENT_NAME = 'deleted_attachment'
+      THEN 4  WHEN EVENT_NAME = 'rename' THEN 5 WHEN EVENT_NAME = 'copy' THEN 6 WHEN
+      EVENT_NAME = 'move' THEN 7 WHEN EVENT_NAME = 'RESTORE' THEN 8 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Upload' WHEN 10 THEN 'Lock' WHEN 11 THEN
+      'Unlock' WHEN 12 THEN 'Share' WHEN 13 THEN 'Unshare' WHEN 14 THEN 'Open' WHEN
+      15 THEN 'Sync' WHEN 16 THEN 'Unsync' WHEN 2 THEN 'Download' WHEN 3 THEN 'Update'
+      WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename' WHEN 6 THEN 'Copy' WHEN 7 THEN 'Move'
+      WHEN 8 THEN 'Restore' WHEN 9 THEN 'Preview' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (ACTOR_EMAIL)::VARCHAR
+    actor.user.org.uid: (ID_CUSTOMER_ID)::VARCHAR
+    actor.user.uid: (ACTOR_PROFILE_ID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('file_hosting')::VARCHAR
+    class_uid: ('6006')::NUMBER
+    cloud.provider: ('GCP')::VARCHAR
+    connection_info: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    expiration_time: NULL::NUMBER
+    expiration_time_dt: NULL::TIMESTAMP_LTZ
+    file.creator.uid: (EVENT_PARAMETERS:originating_app_id)::VARCHAR
+    file.name: (EVENT_PARAMETERS:doc_title)::VARCHAR
+    file.owner.email_addr: (EVENT_PARAMETERS:owner)::VARCHAR
+    file.uid: (EVENT_PARAMETERS:doc_id)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.event_code: (id_application_name)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('gsuite-activity')::VARCHAR
+    metadata.product.vendor_name: ('gsuite')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ACTOR_EMAIL)::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.creator'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (EVENT_PARAMETERS:doc_title)::VARCHAR
+    - name: '''file.owner'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.owner.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (EVENT_PARAMETERS:owner)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (IP_ADDRESS)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (IP_ADDRESS)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2
+      THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', id_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (id_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((CASE WHEN EVENT_NAME IS NULL THEN 600600 WHEN EVENT_NAME IN
+      (''upload'', ''uploaded_attachment'', ''attachment_upload'') THEN 600601 WHEN
+      EVENT_NAME IN (''attachment_download'', ''download'') THEN 600602 WHEN EVENT_NAME
+      = ''deleted_attachment'' THEN 600604  WHEN EVENT_NAME = ''rename'' THEN 600605
+      WHEN EVENT_NAME = ''copy'' THEN 600606 WHEN EVENT_NAME = ''move'' THEN 600607
+      WHEN EVENT_NAME = ''RESTORE'' THEN 600608 ELSE 600699 END)::NUMBER) WHEN 600600
+      THEN ''File Hosting Activity: Unknown'' WHEN 600601 THEN ''File Hosting Activity:
+      Upload'' WHEN 600602 THEN ''File Hosting Activity: Download'' WHEN 600603 THEN
+      ''File Hosting Activity: Update'' WHEN 600604 THEN ''File Hosting Activity:
+      Delete'' WHEN 600605 THEN ''File Hosting Activity: Rename'' WHEN 600606 THEN
+      ''File Hosting Activity: Copy'' WHEN 600607 THEN ''File Hosting Activity: Move''
+      WHEN 600608 THEN ''File Hosting Activity: Restore'' WHEN 600609 THEN ''File
+      Hosting Activity: Preview'' WHEN 600610 THEN ''File Hosting Activity: Lock''
+      WHEN 600611 THEN ''File Hosting Activity: Unlock'' WHEN 600612 THEN ''File Hosting
+      Activity: Share'' WHEN 600613 THEN ''File Hosting Activity: Unshare'' WHEN 600614
+      THEN ''File Hosting Activity: Open'' WHEN 600615 THEN ''File Hosting Activity:
+      Sync'' WHEN 600616 THEN ''File Hosting Activity: Unsync'' WHEN 600699 THEN ''File
+      Hosting Activity: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_NAME IS NULL THEN 600600 WHEN EVENT_NAME IN ('upload',
+      'uploaded_attachment', 'attachment_upload') THEN 600601 WHEN EVENT_NAME IN ('attachment_download',
+      'download') THEN 600602 WHEN EVENT_NAME = 'deleted_attachment' THEN 600604  WHEN
+      EVENT_NAME = 'rename' THEN 600605 WHEN EVENT_NAME = 'copy' THEN 600606 WHEN
+      EVENT_NAME = 'move' THEN 600607 WHEN EVENT_NAME = 'RESTORE' THEN 600608 ELSE
+      600699 END)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_NAME IN ('upload', 'uploaded_attachment', 'attachment_upload',
+    'attachment_download', 'download', 'deleted_attachment', 'rename', 'copy', 'move',
+    'RESTORE')
