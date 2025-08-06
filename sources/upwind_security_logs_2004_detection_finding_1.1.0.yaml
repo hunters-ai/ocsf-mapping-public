@@ -1,0 +1,102 @@
+type: mapping
+id: upwind_security_logs_2004_detection_finding_1.1.0
+version: '1'
+name: Upwind Security Logs to OCSF class Detection Finding
+data-types:
+- upwind-security-logs
+mapping:
+  fields:
+    action: NULL::VARCHAR
+    action_id: (99)::NUMBER
+    activity_id: (99)::NUMBER
+    activity_name: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    attacks: (ARRAY_CONSTRUCT( OBJECT_CONSTRUCT_KEEP_NULL( 'framework', 'MITRE ATT&CK',
+      'tactic_id', mitre_attacks_tactic_id, 'tactic', mitre_attacks_tactic_name, 'technique_id',
+      mitre_attacks_technique_id, 'technique', mitre_attacks_technique_name ) ) )::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((2)::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud: NULL::VARIANT
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: (OCCURRENCE_COUNT)::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: EVENT_ENDED_AT::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: ( ARRAY_CONSTRUCT( OBJECT_CONSTRUCT_KEEP_NULL( 'policy_id', TRIGGERS_POLICY_ID,
+      'policy_name', TRIGGERS_POLICY_NAME ) ) )::ARRAY
+    finding_info.analytic.category: (CATEGORY)::VARCHAR
+    finding_info.analytic.desc: (DESCRIPTION)::VARCHAR
+    finding_info.analytic.uid: (EVENT_TYPE)::VARCHAR
+    finding_info.src_url: (UPWIND_CONSOLE_LINK)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: TITLE::VARCHAR
+    metadata.event_code: (type)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('upwind-security-logs')::VARCHAR
+    metadata.product.vendor_name: ('upwind')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''finding_info.src_url'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (UPWIND_CONSOLE_LINK)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: ( ARRAY_CONSTRUCT( OBJECT_CONSTRUCT_KEEP_NULL( 'uid', RESOURCE_ID::VARCHAR,
+      'name', resource_name, 'type', resource_type, 'region', resource_region, 'provider',
+      resource_cloud_provider, 'account_id', resource_cloud_account_id, 'cluster_id',
+      resource_cluster_id, 'namespace', resource_namespace ) ))::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE ((CASE WHEN SEVERITY = 'informational' THEN 1 WHEN SEVERITY =
+      'Low' THEN 2 WHEN SEVERITY = 'medium' THEN 3 WHEN SEVERITY = 'High' THEN 4 WHEN
+      SEVERITY = 'Critical' THEN 5 WHEN SEVERITY = 'Fatal' THEN 6 WHEN SEVERITY IS
+      NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN SEVERITY = 'informational' THEN 1 WHEN SEVERITY = 'Low'
+      THEN 2 WHEN SEVERITY = 'medium' THEN 3 WHEN SEVERITY = 'High' THEN 4 WHEN SEVERITY
+      = 'Critical' THEN 5 WHEN SEVERITY = 'Fatal' THEN 6 WHEN SEVERITY IS NULL THEN
+      0 ELSE 99 END)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'New' WHEN 2 THEN
+      'In Progress' WHEN 3 THEN 'Suppressed' WHEN 4 THEN 'Resolved' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (99)::NUMBER
+    time: (date_part('epoch_milliseconds', EVENT_ENDED_AT::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (EVENT_ENDED_AT)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((200401)::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200401)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY
