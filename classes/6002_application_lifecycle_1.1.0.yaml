@@ -1,0 +1,5 @@
+id: 6002_application_lifecycle_1.1.0
+version: '1'
+description: OCSF View For Class - 6002 Application Lifecycle
+source-table-ids:
+- kaspersky_security_cloud_logs_6002_application_lifecycle_1.1.0

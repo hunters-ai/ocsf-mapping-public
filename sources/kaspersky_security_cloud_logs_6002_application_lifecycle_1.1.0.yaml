@@ -1,0 +1,110 @@
+type: mapping
+id: kaspersky_security_cloud_logs_6002_application_lifecycle_1.1.0
+version: '1'
+name: Kaspersky Security Cloud Logs to OCSF class Application Lifecycle
+data-types:
+- kaspersky-security-cloud-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE ILIKE 'Start%'
+      THEN 3 WHEN TASK_STATE ILIKE 'Stop%' THEN 4 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE ILIKE
+      'Start%' THEN 3 WHEN TASK_STATE ILIKE 'Stop%' THEN 4 ELSE 99 END)::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Install' WHEN 2 THEN 'Remove' WHEN 3 THEN 'Start'
+      WHEN 4 THEN 'Stop' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.path: (IFF(object_type = 'File',OBJECT_NAME, NULL))::VARCHAR
+    actor.process.name: (PROCESS_NAME)::VARCHAR
+    actor.process.pid: (PROCESS_ID)::NUMBER
+    actor.user.account.name: (USER_ACCOUNT)::VARCHAR
+    api: NULL::VARIANT
+    app.feature.name: (TASK_DISPLAY_NAME)::VARCHAR
+    app.name: (PRODUCT)::VARCHAR
+    app.path: (APPLICATION_PATH)::VARCHAR
+    app.vendor_name: ('Kaspersky')::VARCHAR
+    app.version: (VERSION)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('application_lifecycle')::VARCHAR
+    class_uid: ('6002')::NUMBER
+    cloud.provider: ('Kaspersky')::VARCHAR
+    count: NULL::NUMBER
+    device.domain: (KSC_FQDN)::VARCHAR
+    device.groups: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', GROUP_NAME)))::ARRAY
+    device.hostname: (HOST_NAME)::VARCHAR
+    device.ip: (HOST_IP)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: (EVENT_DESCRIPTION)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('kaspersky-security-cloud-logs')::VARCHAR
+    metadata.product.vendor_name: ('kaspersky')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (PROCESS_NAME)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST_NAME)::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (HOST_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: (date_part('epoch_milliseconds', (TIMESTAMP)::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (TIMESTAMP)::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (((600200 +  (CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE
+      ILIKE ''Start%'' THEN 3 WHEN TASK_STATE ILIKE ''Stop%'' THEN 4 ELSE 99 END::NUMBER)))::NUMBER)
+      WHEN 600200 THEN ''Application Lifecycle: Unknown'' WHEN 600201 THEN ''Application
+      Lifecycle: Install'' WHEN 600202 THEN ''Application Lifecycle: Remove'' WHEN
+      600203 THEN ''Application Lifecycle: Start'' WHEN 600204 THEN ''Application
+      Lifecycle: Stop'' WHEN 600299 THEN ''Application Lifecycle: Other'' END)::VARCHAR'
+    type_uid: ((600200 +  (CASE WHEN TASK_STATE IS NULL THEN 0 WHEN TASK_STATE ILIKE
+      'Start%' THEN 3 WHEN TASK_STATE ILIKE 'Stop%' THEN 4 ELSE 99 END::NUMBER)))::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: EVENT_TASK_DISPLAY_NAME IN ( 'Application databases update error', 'Patch
+    installation failed', 'Task state changed', 'Task failed' )

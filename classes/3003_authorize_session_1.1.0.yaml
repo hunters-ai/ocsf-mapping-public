@@ -1,0 +1,5 @@
+id: 3003_authorize_session_1.1.0
+version: '1'
+description: OCSF View For Class - 3003 Authorize Session
+source-table-ids:
+- lumos_activity_logs_3003_authorize_session_1.1.0
