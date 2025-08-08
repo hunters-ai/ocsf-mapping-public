@@ -1,0 +1,115 @@
+type: mapping
+id: sysdig_next_gen_activity_commands_1004_memory_activity_1.1.0
+version: '1'
+name: Sysdig Next Gen Activity Commands to OCSF class Memory Activity
+data-types:
+- sysdig-next-gen-activity-commands
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allocate Page'
+      WHEN 2 THEN 'Modify Page' WHEN 3 THEN 'Delete Page' WHEN 4 THEN 'Buffer Overflow'
+      WHEN 5 THEN 'Disable DEP' WHEN 6 THEN 'Enable DEP' WHEN 7 THEN 'Read' WHEN 8
+      THEN 'Write' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.parent_process.pid: (PPID)::NUMBER
+    actor.process.pid: (PID)::NUMBER
+    actual_permissions: NULL::NUMBER
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    base_address: NULL::VARCHAR
+    category_name: (CASE (1::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_uid: (1)::NUMBER
+    class_name: ('memory_activity')::VARCHAR
+    class_uid: ('1004')::NUMBER
+    cloud.provider: ('sysdig')::VARCHAR
+    count: (COUNT)::NUMBER
+    device.container.uid: (CONTAINER_ID)::VARCHAR
+    device.hostname: (HOSTNAME)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('sysdig-next-gen-activity-commands')::VARCHAR
+    metadata.product.vendor_name: ('sysdig-next-gen')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.container'''
+      type: '''Container'''
+      type_id: 27
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOSTNAME)::VARCHAR
+    - name: '''process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    process.cmd_line: (COMMAND_LINE)::VARCHAR
+    process.parent_process.pid: (PPID)::NUMBER
+    process.pid: (PID)::NUMBER
+    raw_data: NULL::VARCHAR
+    requested_permissions: NULL::NUMBER
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    size: NULL::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN
+      'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (0)::NUMBER
+    time: (date_part('epoch_milliseconds', timestamp::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (timestamp)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (100400::NUMBER) WHEN 100400 THEN ''Memory Activity: Unknown''
+      WHEN 100401 THEN ''Memory Activity: Allocate Page'' WHEN 100402 THEN ''Memory
+      Activity: Modify Page'' WHEN 100403 THEN ''Memory Activity: Delete Page'' WHEN
+      100404 THEN ''Memory Activity: Buffer Overflow'' WHEN 100405 THEN ''Memory Activity:
+      Disable DEP'' WHEN 100406 THEN ''Memory Activity: Enable DEP'' WHEN 100407 THEN
+      ''Memory Activity: Read'' WHEN 100408 THEN ''Memory Activity: Write'' WHEN 100499
+      THEN ''Memory Activity: Other'' END)::VARCHAR'
+    type_uid: (100400)::NUMBER
+    unmapped: NULL::VARIANT
