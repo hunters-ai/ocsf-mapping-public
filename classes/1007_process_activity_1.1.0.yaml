@@ -12,4 +12,5 @@ source-table-ids:
 - universal_wel_1007_process_activity_1.1.0
 - sysdig_activity_command_1007_process_activity_1.1.0
 - microsoft_365_defender_advanced_hunting_1007_process_activity_1.1.0
+- sysdig_next_gen_activity_kubernetes_1007_process_activity_1.1.0
 - sysdig_next_gen_activity_commands_1007_process_activity_1.1.0
