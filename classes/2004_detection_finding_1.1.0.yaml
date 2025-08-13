@@ -1,5 +1,5 @@
 id: 2004_detection_finding_1.1.0
-version: '15'
+version: '16'
 description: OCSF View For Class - 2004 Detection Finding
 source-table-ids:
 - microsoft_365_defender_alert_info_2004_detection_finding_1.1.0
@@ -21,3 +21,4 @@ source-table-ids:
 - surf_alerts_logs_2004_detection_finding_1.1.0
 - kaspersky_security_cloud_logs_2004_detection_finding_1.1.0
 - upwind_security_logs_2004_detection_finding_1.1.0
+- rhisac_threat_indicators_2004_detection_finding_1.1.0
