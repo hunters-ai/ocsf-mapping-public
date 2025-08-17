@@ -1,6 +1,6 @@
 type: mapping
 id: azure_virtual_network_flow-logs_4001_network_activity_1.1.0
-version: '2'
+version: '3'
 name: Azure Virtual Network Flow Logs to OCSF class Network Activity
 data-types:
 - azure-virtual-network-flow-logs
@@ -77,7 +77,7 @@ mapping:
     status_detail: NULL::VARCHAR
     status_id: NULL::NUMBER
     time: NULL::NUMBER
-    time_dt: NULL::TIMESTAMP_LTZ
+    time_dt: TIME::TIMESTAMP_LTZ
     timezone_offset: NULL::NUMBER
     tls: NULL::VARIANT
     traffic: NULL::VARIANT
