@@ -1,0 +1,147 @@
+type: mapping
+id: astrix_security_logs_2004_detection_finding_1.1.0
+version: '1'
+name: Astrix Security Logs to OCSF class Detection Finding
+data-types:
+- astrix-security-logs
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN ('new_leaked_secret',
+      'leaked_secret', 'issue_created') THEN 1 WHEN EVENT_TYPE IN ('secret_inactivated',
+      'risk_level_increased') THEN 2 WHEN EVENT_TYPE = 'leakage_deleted' THEN 3 ELSE
+      99 END)::NUMBER
+    activity_name: (CASE (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN ('new_leaked_secret',
+      'leaked_secret', 'issue_created') THEN 1 WHEN EVENT_TYPE IN ('secret_inactivated',
+      'risk_level_increased') THEN 2 WHEN EVENT_TYPE = 'leakage_deleted' THEN 3 ELSE
+      99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 2 THEN 'Update'
+      WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.domain: (ACCOUNT_DOMAIN)::VARCHAR
+    actor.user.email_addr: (INTEGRATION_USERS[0]:email)::VARCHAR
+    actor.user.name: (INTEGRATION_USERS[0]:name)::VARCHAR
+    actor.user.type: (CASE (CASE WHEN INTEGRATION_USERS[0]:role IS NULL THEN 0 WHEN
+      INTEGRATION_USERS[0]:role = 'VIP' THEN 2 WHEN INTEGRATION_USERS[0]:role = 'User'
+      THEN 1 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2
+      THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.type_id: (CASE WHEN INTEGRATION_USERS[0]:role IS NULL THEN 0 WHEN INTEGRATION_USERS[0]:role
+      = 'VIP' THEN 2 WHEN INTEGRATION_USERS[0]:role = 'User' THEN 1 ELSE 99 END)::NUMBER
+    actor.user.uid: (INTEGRATION_USERS[0]:id)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (2::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud.provider: (ACCOUNT_PLATFORM)::VARCHAR
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: (date_part('epoch_milliseconds', INTEGRATION_LAST_ACCESSED::TIMESTAMP_LTZ))::NUMBER
+    end_time_dt: (INTEGRATION_LAST_ACCESSED)::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('actor', OBJECT_CONSTRUCT_KEEP_NULL('user',
+      OBJECT_CONSTRUCT_KEEP_NULL('name', LEAKED_SECRET_OWNER, 'email_addr', SECRET_LEAKER))),
+      OBJECT_CONSTRUCT_KEEP_NULL('file', OBJECT_CONSTRUCT_KEEP_NULL('name', LEAKED_SECRET_LOCATION_NAME,
+      'uid', LEAKED_SECRET_LOCATION_ID, 'path', IFF(LEAKED_SECRET_LOCATION_URL ILIKE
+      'http%', PARSE_URL(LEAKED_SECRET_LOCATION_URL, 1):host::VARCHAR, LEAKED_SECRET_LOCATION_URL)))))::ARRAY
+    finding_info.created_time: (date_part('epoch_milliseconds', ISSUE_CREATE_AT::TIMESTAMP_LTZ))::NUMBER
+    finding_info.created_time_dt: (ISSUE_CREATE_AT)::TIMESTAMP_LTZ
+    finding_info.desc: (ISSUE_DESCRIPTION)::VARCHAR
+    finding_info.src_url: (ISSUE_ASTRIX_LINK)::VARCHAR
+    finding_info.title: (ISSUE_FINDING)::VARCHAR
+    finding_info.types: (ARRAY_CONSTRUCT(ISSUE_TYPE))::ARRAY
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (EVENT_TYPE)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('astrix-security-logs')::VARCHAR
+    metadata.product.vendor_name: ('astrix')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (INTEGRATION_USERS[0]:email)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (INTEGRATION_USERS[0]:name)::VARCHAR
+    - name: '''finding_info.src_url'''
+      type: '''URL String'''
+      type_id: 6
+      reputation: null::VARIANT
+      value: (ISSUE_ASTRIX_LINK)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation.desc: (ISSUE_REMEDIATION:name)::VARCHAR
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('uid', INTEGRATION_ID,
+      'name', INTEGRATION_NAME, 'criticality', INTEGRATION_RISK, 'owner', OBJECT_CONSTRUCT_KEEP_NULL('name',
+      INTEGRATION_OWNER_NAME, 'email_addr', INTEGRATION_OWNER_EMAIL, 'type_id', CASE
+      WHEN INTEGRATION_OWNER_ROLE IS NULL THEN 0 WHEN INTEGRATION_OWNER_ROLE = 'vip'
+      THEN 2 WHEN INTEGRATION_OWNER_ROLE = 'user' THEN 1 ELSE 99 END))))::ARRAY
+    risk_level: (CASE (CASE WHEN INTEGRATION_RISK = 'Low' THEN 1 WHEN INTEGRATION_RISK
+      = 'Medium' THEN 2 WHEN INTEGRATION_RISK = 'High' THEN 3 WHEN INTEGRATION_RISK
+      = 'Critical' THEN 4 END::NUMBER) WHEN 0 THEN 'Info' WHEN 1 THEN 'Low' WHEN 2
+      THEN 'Medium' WHEN 3 THEN 'High' WHEN 4 THEN 'Critical' END)::VARCHAR
+    risk_level_id: (CASE WHEN INTEGRATION_RISK = 'Low' THEN 1 WHEN INTEGRATION_RISK
+      = 'Medium' THEN 2 WHEN INTEGRATION_RISK = 'High' THEN 3 WHEN INTEGRATION_RISK
+      = 'Critical' THEN 4 END)::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE (CASE WHEN ISSUE_SEVERITY IS NULL THEN 0 WHEN ISSUE_SEVERITY =
+      'Low' THEN 2 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (CASE WHEN ISSUE_SEVERITY IS NULL THEN 0 WHEN ISSUE_SEVERITY = 'Low'
+      THEN 2 ELSE 99 END)::NUMBER
+    start_time: (date_part('epoch_milliseconds', INTEGRATION_INSTALLATION_TIME::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (INTEGRATION_INSTALLATION_TIME)::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN ISSUE_STATE IS NULL THEN 0 WHEN ISSUE_STATE = 'Open'
+      THEN 1 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'New' WHEN 2 THEN
+      'In Progress' WHEN 3 THEN 'Suppressed' WHEN 4 THEN 'Resolved' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (INTEGRATION_STATUS)::VARCHAR
+    status_id: (CASE WHEN ISSUE_STATE IS NULL THEN 0 WHEN ISSUE_STATE = 'Open' THEN
+      1 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', TIMESTAMP::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (TIMESTAMP)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((200400 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE
+      IN (''new_leaked_secret'', ''leaked_secret'', ''issue_created'') THEN 1 WHEN
+      EVENT_TYPE IN (''secret_inactivated'', ''risk_level_increased'') THEN 2 WHEN
+      EVENT_TYPE = ''leakage_deleted'' THEN 3 ELSE 99 END))::NUMBER) WHEN 200400 THEN
+      ''Detection Finding: Unknown'' WHEN 200401 THEN ''Detection Finding: Create''
+      WHEN 200402 THEN ''Detection Finding: Update'' WHEN 200403 THEN ''Detection
+      Finding: Close'' WHEN 200499 THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200400 + (CASE WHEN EVENT_TYPE IS NULL THEN 0 WHEN EVENT_TYPE IN ('new_leaked_secret',
+      'leaked_secret', 'issue_created') THEN 1 WHEN EVENT_TYPE IN ('secret_inactivated',
+      'risk_level_increased') THEN 2 WHEN EVENT_TYPE = 'leakage_deleted' THEN 3 ELSE
+      99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY
+  predicate: EVENT_TYPE IN ('new_leaked_secret','leaked_secret','leakage_deleted','issue_created','secret_inactivated','risk_level_increased')
