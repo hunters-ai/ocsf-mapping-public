@@ -40,6 +40,8 @@ mapping:
     metadata.log_version: (FLOW_LOG_VERSION)::VARCHAR
     metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
     metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('azure-virtual-network-flow-logs')::VARCHAR
+    metadata.product.vendor_name: ('azure')::VARCHAR
     metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
     metadata.uid: (metadata$uuid)::VARCHAR
     metadata.version: ('1.1.0')::VARCHAR
