@@ -1,6 +1,6 @@
 type: mapping
 id: azure_virtual_network_flow-logs_4001_network_activity_1.1.0
-version: '3'
+version: '4'
 name: Azure Virtual Network Flow Logs to OCSF class Network Activity
 data-types:
 - azure-virtual-network-flow-logs
