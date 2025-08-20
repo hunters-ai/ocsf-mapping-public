@@ -1,6 +1,6 @@
 type: mapping
 id: crowdstrike_raw_events_4001_network_activity_1.1.0
-version: '25'
+version: '26'
 name: Crowdstrike Raw Events to OCSF class Network Activity
 data-types:
 - crowdstrike-raw-events
@@ -16,6 +16,7 @@ mapping:
     actor.process.cmd_line: (COMMAND_LINE)::VARCHAR
     actor.process.file.name: (TARGET_FILE_NAME)::VARCHAR
     actor.process.file.parent_folder: (TARGET_DIRECTORY_NAME)::VARCHAR
+    actor.process.name: (RAW:ContextBaseFileName)::VARCHAR
     actor.process.uid: (RAW:ContextProcessId)::VARCHAR
     api: NULL::VARIANT
     app_name: (RAW:ContextBaseFileName)::VARCHAR
@@ -78,6 +79,11 @@ mapping:
       type_id: 7
       reputation: null::VARIANT
       value: (TARGET_FILE_NAME)::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (RAW:ContextBaseFileName)::VARCHAR
     - name: '''device'''
       type: '''Endpoint'''
       type_id: 20
@@ -101,8 +107,10 @@ mapping:
     proxy_tls: NULL::VARIANT
     proxy_traffic: NULL::VARIANT
     raw_data: NULL::VARCHAR
-    severity: NULL::VARCHAR
-    severity_id: NULL::NUMBER
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
     src_endpoint.ip: (COALESCE(RAW:LocalAddressIP4, RAW:LocalAddressIP6))::VARCHAR
     src_endpoint.port: (RAW:LocalPort)::NUMBER
     start_time: NULL::NUMBER
