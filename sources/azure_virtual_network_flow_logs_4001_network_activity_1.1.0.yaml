@@ -1,6 +1,6 @@
 type: mapping
-id: azure_virtual_network_flow-logs_4001_network_activity_1.1.0
-version: '4'
+id: azure_virtual_network_flow_logs_4001_network_activity_1.1.0
+version: '5'
 name: Azure Virtual Network Flow Logs to OCSF class Network Activity
 data-types:
 - azure-virtual-network-flow-logs
@@ -9,7 +9,7 @@ mapping:
     action: NULL::VARCHAR
     action_id: NULL::NUMBER
     activity_id: (99)::NUMBER
-    activity_name: (CASE (99::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN
+    activity_name: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Open' WHEN
       2 THEN 'Close' WHEN 3 THEN 'Reset' WHEN 4 THEN 'Fail' WHEN 5 THEN 'Refuse' WHEN
       6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
     actor: NULL::VARIANT
@@ -17,17 +17,21 @@ mapping:
     app_name: NULL::VARCHAR
     attacks: NULL::ARRAY
     authorizations: NULL::ARRAY
-    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
     category_uid: (4)::NUMBER
     class_name: ('network_activity')::VARCHAR
     class_uid: ('4001')::NUMBER
     cloud: NULL::VARIANT
-    connection_info: NULL::VARIANT
+    connection_info.direction: (CASE (99::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN 'Lateral' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    connection_info.direction_id: (99)::NUMBER
     count: NULL::NUMBER
     device.mac: (MAC_ADDRESS)::VARCHAR
     disposition: NULL::VARCHAR
     disposition_id: NULL::NUMBER
-    dst_endpoint: NULL::VARIANT
+    dst_endpoint.ip: (destination_ip)::VARCHAR
+    dst_endpoint.port: (destination_port)::NUMBER
     duration: NULL::NUMBER
     end_time: NULL::NUMBER
     end_time_dt: NULL::TIMESTAMP_LTZ
@@ -37,7 +41,12 @@ mapping:
     load_balancer: NULL::VARIANT
     malware: NULL::ARRAY
     message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
     metadata.log_version: (FLOW_LOG_VERSION)::VARCHAR
+    metadata.logged_time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    metadata.logged_time_dt: (time)::TIMESTAMP_LTZ
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
     metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
     metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
     metadata.product.name: ('azure-virtual-network-flow-logs')::VARCHAR
@@ -45,9 +54,6 @@ mapping:
     metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
     metadata.uid: (metadata$uuid)::VARCHAR
     metadata.version: ('1.1.0')::VARCHAR
-    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
-    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
-      'version', '2', 'uid', '1.1.0'))
     observables:
     - name: '''device'''
       type: '''Endpoint'''
@@ -59,6 +65,21 @@ mapping:
       type_id: 3
       reputation: null::VARIANT
       value: (MAC_ADDRESS)::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (destination_ip)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (source_ip)::VARCHAR
+    - name: '''src_endpoint.mac'''
+      type: '''MAC Address'''
+      type_id: 3
+      reputation: null::VARIANT
+      value: (mac_address)::VARCHAR
     proxy: NULL::VARIANT
     proxy_connection_info: NULL::VARIANT
     proxy_endpoint: NULL::VARIANT
@@ -67,23 +88,29 @@ mapping:
     proxy_tls: NULL::VARIANT
     proxy_traffic: NULL::VARIANT
     raw_data: NULL::VARCHAR
-    severity: (CASE (99::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+    severity: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
       WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
       WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
     severity_id: (99)::NUMBER
+    src_endpoint.ip: (source_ip)::VARCHAR
+    src_endpoint.mac: (mac_address)::VARCHAR
     src_endpoint.name: (OPERATION_NAME)::VARCHAR
-    start_time: NULL::NUMBER
-    start_time_dt: NULL::TIMESTAMP_LTZ
+    src_endpoint.port: (source_port)::NUMBER
+    start_time: (date_part('epoch_milliseconds', flow_start_time::TIMESTAMP_LTZ))::NUMBER
+    start_time_dt: (flow_start_time)::TIMESTAMP_LTZ
     status: NULL::VARCHAR
     status_code: NULL::VARCHAR
     status_detail: NULL::VARCHAR
     status_id: NULL::NUMBER
-    time: NULL::NUMBER
-    time_dt: TIME::TIMESTAMP_LTZ
+    time: (date_part('epoch_milliseconds', time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (time)::TIMESTAMP_LTZ
     timezone_offset: NULL::NUMBER
     tls: NULL::VARIANT
-    traffic: NULL::VARIANT
-    type_name: '(CASE (400106::NUMBER) WHEN 400100 THEN ''Network Activity: Unknown''
+    traffic.bytes_in: (bytes_dest_to_source)::NUMBER
+    traffic.bytes_out: (bytes_source_to_dest)::NUMBER
+    traffic.packets_in: (packets_dest_to_source)::NUMBER
+    traffic.packets_out: (packets_source_to_dest)::NUMBER
+    type_name: '(CASE ((400106)::NUMBER) WHEN 400100 THEN ''Network Activity: Unknown''
       WHEN 400101 THEN ''Network Activity: Open'' WHEN 400102 THEN ''Network Activity:
       Close'' WHEN 400103 THEN ''Network Activity: Reset'' WHEN 400104 THEN ''Network
       Activity: Fail'' WHEN 400105 THEN ''Network Activity: Refuse'' WHEN 400106 THEN
