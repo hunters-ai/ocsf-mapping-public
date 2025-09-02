@@ -1,5 +1,5 @@
 id: 4001_network_activity_1.1.0
-version: '47'
+version: '48'
 description: OCSF View For Class - 4001 Network Activity
 source-table-ids:
 - cisco_ftd_firewall_4001_network_activity_1.1.0
@@ -67,3 +67,4 @@ source-table-ids:
 - cato_networks_routing_events_4001_network_activity_1.1.0
 - sysdig_next_gen_activity_networks_4001_network_activity_1.1.0
 - azure_virtual_network_flow_logs_4001_network_activity_1.1.0
+- aws_nlb_logs_4001_network_activity_1.1.0
