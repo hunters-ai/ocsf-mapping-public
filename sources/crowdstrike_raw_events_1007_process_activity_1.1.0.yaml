@@ -1,6 +1,6 @@
 type: mapping
 id: crowdstrike_raw_events_1007_process_activity_1.1.0
-version: '19'
+version: '20'
 name: Crowdstrike Raw Events to OCSF class Process Activity
 data-types:
 - crowdstrike-raw-events
@@ -30,6 +30,7 @@ mapping:
     class_uid: ('1007')::NUMBER
     cloud: NULL::VARIANT
     count: NULL::NUMBER
+    device.hostname: (LAST_HOSTNAME)::VARCHAR
     device.ip: (AIP)::VARCHAR
     device.os.name: (CASE WHEN EVENT_PLATFORM = 'Win' THEN 'WINDOWS' WHEN EVENT_PLATFORM
       = 'Lin' THEN 'LINUX' WHEN EVENT_PLATFORM = 'Mac' THEN 'MAC' ELSE UPPER(event_platform)
@@ -70,6 +71,11 @@ mapping:
       type_id: 20
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (LAST_HOSTNAME)::VARCHAR
     - name: '''device.ip'''
       type: '''IP Address'''
       type_id: 2
@@ -89,41 +95,38 @@ mapping:
       type: '''Hash'''
       type_id: 8
       reputation: null::VARIANT
-      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
-        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
-        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
-        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
-        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY) > 0, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
-        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
-        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
-        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
-        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY)[0]:"value", NULL::ARRAY)
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'MD5',
+        'algorithm_id', 1, 'value',RAW:MD5HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-1', 'algorithm_id', 2, 'value',RAW:SHA1HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY) > 0, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm',
+        'MD5', 'algorithm_id', 1, 'value',RAW:MD5HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-1', 'algorithm_id', 2, 'value',RAW:SHA1HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY)[0]:"value",
+        NULL::ARRAY)
     - name: '''process.file.hashes'''
       type: '''Hash'''
       type_id: 8
       reputation: null::VARIANT
-      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
-        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
-        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
-        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
-        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY) > 1, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
-        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
-        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
-        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
-        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY)[1]:"value", NULL::ARRAY)
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'MD5',
+        'algorithm_id', 1, 'value',RAW:MD5HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-1', 'algorithm_id', 2, 'value',RAW:SHA1HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY) > 1, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm',
+        'MD5', 'algorithm_id', 1, 'value',RAW:MD5HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-1', 'algorithm_id', 2, 'value',RAW:SHA1HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY)[1]:"value",
+        NULL::ARRAY)
     - name: '''process.file.hashes'''
       type: '''Hash'''
       type_id: 8
       reputation: null::VARIANT
-      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
-        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
-        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
-        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
-        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY) > 2, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
-        CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
-        WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN
-        'TLSH' WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id',
-        3::NUMBER, 'value', RAW:SHA256HashData::VARCHAR)))::ARRAY)[2]:"value", NULL::ARRAY)
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'MD5',
+        'algorithm_id', 1, 'value',RAW:MD5HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-1', 'algorithm_id', 2, 'value',RAW:SHA1HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY) > 2, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm',
+        'MD5', 'algorithm_id', 1, 'value',RAW:MD5HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-1', 'algorithm_id', 2, 'value',RAW:SHA1HashData), OBJECT_CONSTRUCT('algorithm',
+        'SHA-256', 'algorithm_id', 3, 'value',RAW:SHA256HashData)))::ARRAY)[2]:"value",
+        NULL::ARRAY)
     - name: '''process.name'''
       type: '''Process Name'''
       type_id: 9
@@ -160,11 +163,10 @@ mapping:
       * 1000)::BIGINT, 3))::TIMESTAMP_LTZ))::NUMBER
     process.created_time_dt: (TO_TIMESTAMP_LTZ((try_to_double(RAW:ProcessStartTime::VARCHAR)
       * 1000)::BIGINT, 3))::TIMESTAMP_LTZ
-    process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
-      CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'MD5' WHEN 2 THEN 'SHA-1'
-      WHEN 3 THEN 'SHA-256' WHEN 4 THEN 'SHA-512' WHEN 5 THEN 'CTPH' WHEN 6 THEN 'TLSH'
-      WHEN 7 THEN 'quickXorHash' WHEN 99 THEN 'Other' END, 'algorithm_id', 3::NUMBER,
-      'value', RAW:SHA256HashData::VARCHAR)))::ARRAY
+    process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT('algorithm', 'MD5', 'algorithm_id',
+      1, 'value',RAW:MD5HashData), OBJECT_CONSTRUCT('algorithm', 'SHA-1', 'algorithm_id',
+      2, 'value',RAW:SHA1HashData), OBJECT_CONSTRUCT('algorithm', 'SHA-256', 'algorithm_id',
+      3, 'value',RAW:SHA256HashData)))::ARRAY
     process.file.path: (IMAGE_FILE_NAME)::VARCHAR
     process.integrity: (CASE ((CASE RAW:IntegrityLevel::varchar WHEN '4096' THEN 2
       WHEN '8192' THEN 3 WHEN '12288' THEN 4 WHEN '16384' THEN 5 WHEN '8448' THEN
@@ -205,3 +207,7 @@ mapping:
     type_uid: (100799)::NUMBER
     unmapped: NULL::VARIANT
   predicate: event_simple_name in ('ProcessRollup2', 'SyntheticProcessRollup2', 'ProcessBlocked')
+  sql: ' (SELECT cs.*, LAST_HOSTNAME FROM crowdstrike_raw_events cs, LATERAL (SELECT
+    AID, LAST_HOSTNAME, FIRST_SEEN FROM INVESTIGATION.EDR_AGENT_INFO WHERE (cs.AID
+    = EDR_AGENT_INFO.AID AND EDR_AGENT_INFO.FIRST_SEEN <= cs.EVENT_TIME) ) as edr_info
+    WHERE event_simple_name in (''ProcessRollup2'', ''SyntheticProcessRollup2'', ''ProcessBlocked'')) '
