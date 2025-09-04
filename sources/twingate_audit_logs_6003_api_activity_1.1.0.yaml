@@ -1,0 +1,83 @@
+type: mapping
+id: twingate_audit_logs_6003_api_activity_1.1.0
+version: '1'
+name: Twingate Audit Logs to OCSF class Api Activity
+data-types:
+- twingate-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE EVENT_ACTION WHEN 'create' THEN 1 WHEN 'delete' THEN 4 WHEN
+      NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE EVENT_ACTION WHEN 'create' THEN 1 WHEN 'delete' THEN
+      4 WHEN NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Read' WHEN 3 THEN 'Update' WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.user.name: (ACTOR_NAME)::VARCHAR
+    actor.user.uid: (ACTOR_ID)::VARCHAR
+    api.operation: (EVENT_ACTION)::VARCHAR
+    category_name: (CASE ((6)::NUMBER) WHEN 6 THEN 'Application Activity' END)::VARCHAR
+    category_uid: (6)::NUMBER
+    class_name: ('api_activity')::VARCHAR
+    class_uid: ('6003')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('twingate-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('twingate')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (ACTOR_NAME)::VARCHAR
+    raw_data: NULL::VARCHAR
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', ARRAY_TO_STRING(TARGETS_NAME,
+      '; '), 'uid', ARRAY_TO_STRING(TARGETS_ID, '; '), 'type', ARRAY_TO_STRING(TARGETS_TYPE,
+      '; '), 'owner', OBJECT_CONSTRUCT_KEEP_NULL('domain', IFF(TARGETS_ADDRESS[0]:value
+      REGEXP '[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+){1,}', TARGETS_ADDRESS[0]:value::VARCHAR,
+      NULL)), 'group', OBJECT_CONSTRUCT_KEEP_NULL('name', IFF(TARGETS_PRINCIPAL[0]:type
+      = 'Group', TARGETS_PRINCIPAL[0]:name::VARCHAR, NULL), 'uid', IFF(TARGETS_PRINCIPAL[0]:type
+      = 'Group', TARGETS_PRINCIPAL[0]:id::VARCHAR, NULL)))))::ARRAY
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.domain: (IFF(TARGETS_ADDRESS[0]:value REGEXP '[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+){1,}',
+      TARGETS_ADDRESS[0]:value::VARCHAR, NULL))::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((600300 + (CASE EVENT_ACTION WHEN ''create'' THEN 1 WHEN ''delete''
+      THEN 4 WHEN NULL THEN 0 ELSE 99 END))::NUMBER) WHEN 600300 THEN ''API Activity:
+      Unknown'' WHEN 600301 THEN ''API Activity: Create'' WHEN 600302 THEN ''API Activity:
+      Read'' WHEN 600303 THEN ''API Activity: Update'' WHEN 600304 THEN ''API Activity:
+      Delete'' WHEN 600399 THEN ''API Activity: Other'' END)::VARCHAR'
+    type_uid: (600300 + (CASE EVENT_ACTION WHEN 'create' THEN 1 WHEN 'delete' THEN
+      4 WHEN NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

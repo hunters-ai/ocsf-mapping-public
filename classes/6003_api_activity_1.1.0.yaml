@@ -1,5 +1,5 @@
 id: 6003_api_activity_1.1.0
-version: '25'
+version: '26'
 description: OCSF View For Class - 6003 Api Activity
 source-table-ids:
 - aws_cloudtrail_6003_api_activity_1.1.0
@@ -28,3 +28,4 @@ source-table-ids:
 - crowdstrike_falcon_event_streams_6003_api_activity_1.1.0
 - microsoft_graph_activity_logs_6003_api_activity_1.1.0
 - breez_security_alerts_6003_api_activity_1.1.0
+- twingate_audit_logs_6003_api_activity_1.1.0
