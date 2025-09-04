@@ -1,0 +1,134 @@
+type: mapping
+id: twingate_dns_logs_4003_dns_activity_1.1.0
+version: '1'
+name: Twingate Dns Logs to OCSF class Dns Activity
+data-types:
+- twingate-dns-logs
+mapping:
+  fields:
+    action: (CASE (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'default' THEN 1
+      WHEN STATUS = 'blocked' THEN 2 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Allowed' WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'default' THEN 1 WHEN
+      STATUS = 'blocked' THEN 2 ELSE 99 END)::NUMBER
+    activity_id: (6)::NUMBER
+    activity_name: (CASE (6::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Query' WHEN
+      2 THEN 'Response' WHEN 6 THEN 'Traffic' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    answers: NULL::ARRAY
+    api: NULL::VARIANT
+    app_name: NULL::VARCHAR
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('dns_activity')::VARCHAR
+    class_uid: ('4003')::NUMBER
+    cloud: NULL::VARIANT
+    connection_info.protocol_name: (LOWER(CONNECTION_PROTOCOL))::VARCHAR
+    connection_info.protocol_num: (CASE LOWER(CONNECTION_PROTOCOL) WHEN 'udp' THEN
+      17 WHEN 'tcp' THEN 6 WHEN NULL THEN 0 ELSE 99 END)::NUMBER
+    connection_info.protocol_ver: (CASE (PARSE_IP(CONNECTION_CLIENT_IP, 'INET', 1):family::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 4 THEN 'Internet Protocol version 4 (IPv4)' WHEN
+      6 THEN 'Internet Protocol version 6 (IPv6)' WHEN 99 THEN 'Other' END)::VARCHAR
+    connection_info.protocol_ver_id: (PARSE_IP(CONNECTION_CLIENT_IP, 'INET', 1):family)::NUMBER
+    count: NULL::NUMBER
+    device.hostname: (DEVICE_MODEL_HOSTNAME)::VARCHAR
+    device.name: (COALESCE(DEVICE_NAME, DEVICE_MODEL_LOCAL_NAME))::VARCHAR
+    device.uid: (DEVICE_ID)::VARCHAR
+    device.uid_alt: (DEVICE_MODEL_SERIAL_NUMBER)::VARCHAR
+    disposition: (CASE (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'default' THEN
+      1 WHEN STATUS = 'blocked' THEN 2 ELSE 99 END::NUMBER::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Allowed' WHEN 10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN
+      12 THEN 'Partially Corrected' WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed'
+      WHEN 15 THEN 'Detected' WHEN 16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN
+      18 THEN 'Tagged' WHEN 19 THEN 'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count'
+      WHEN 21 THEN 'Reset' WHEN 22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24
+      THEN 'Access Revoked' WHEN 25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN
+      27 THEN 'Error' WHEN 3 THEN 'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN
+      'Deleted' WHEN 6 THEN 'Dropped' WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved'
+      WHEN 9 THEN 'Restored' WHEN 99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'default' THEN
+      1 WHEN STATUS = 'blocked' THEN 2 ELSE 99 END::NUMBER)::NUMBER
+    dst_endpoint.domain: (ROOT_DOMAIN)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    load_balancer: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.event_code: (event_type)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('twingate-dns-logs')::VARCHAR
+    metadata.product.vendor_name: ('twingate')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','network_proxy','security_control','load_balancer','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (DEVICE_MODEL_HOSTNAME)::VARCHAR
+    - name: '''query.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (DOMAIN)::VARCHAR
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CONNECTION_CLIENT_IP)::VARCHAR
+    proxy: NULL::VARIANT
+    proxy_connection_info: NULL::VARIANT
+    proxy_endpoint: NULL::VARIANT
+    proxy_http_request: NULL::VARIANT
+    proxy_http_response: NULL::VARIANT
+    proxy_tls: NULL::VARIANT
+    proxy_traffic: NULL::VARIANT
+    query.hostname: (DOMAIN)::VARCHAR
+    query_time: NULL::NUMBER
+    query_time_dt: NULL::TIMESTAMP_LTZ
+    raw_data: NULL::VARCHAR
+    rcode: NULL::VARCHAR
+    rcode_id: NULL::NUMBER
+    response_time: NULL::NUMBER
+    response_time_dt: NULL::TIMESTAMP_LTZ
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.domain: (ROOT_DOMAIN)::VARCHAR
+    src_endpoint.ip: (CONNECTION_CLIENT_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'default' THEN 1
+      WHEN STATUS = 'blocked' THEN 2 ELSE 99 END::NUMBER::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (REASONS[0]:name)::VARCHAR
+    status_id: (CASE WHEN STATUS IS NULL THEN 0 WHEN STATUS = 'default' THEN 1 WHEN
+      STATUS = 'blocked' THEN 2 ELSE 99 END::NUMBER)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    tls: NULL::VARIANT
+    traffic: NULL::VARIANT
+    type_name: '(CASE (400306::NUMBER) WHEN 400300 THEN ''DNS Activity: Unknown''
+      WHEN 400301 THEN ''DNS Activity: Query'' WHEN 400302 THEN ''DNS Activity: Response''
+      WHEN 400306 THEN ''DNS Activity: Traffic'' WHEN 400399 THEN ''DNS Activity:
+      Other'' END)::VARCHAR'
+    type_uid: (400306)::NUMBER
+    unmapped: NULL::VARIANT
