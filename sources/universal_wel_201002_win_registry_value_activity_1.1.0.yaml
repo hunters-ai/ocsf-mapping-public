@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_201002_win_registry_value_activity_1.1.0
-version: '14'
+version: '15'
 name: Universal Wel to OCSF class Win/registry Value Activity
 data-types:
 - universal-wel
@@ -17,7 +17,8 @@ mapping:
       THEN 0 WHEN MESSAGE_DETAILS:object:operation_type ILIKE '%modified%' THEN 3
       ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Get' WHEN 2 THEN 'Set'
       WHEN 3 THEN 'Modify' WHEN 4 THEN 'Delete' WHEN 99 THEN 'Other' END)::VARCHAR
-    actor.process.file.path: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.file.name: (SPLIT_PART(RAW:ProcessName, '\\', -1))::VARCHAR
+    actor.process.file.path: (RAW:ProcessName)::VARCHAR
     actor.process.pid: (RAW:ExecutionProcessID)::NUMBER
     actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
     actor.process.uid: (MESSAGE_DETAILS:process_information:process_id)::VARCHAR
@@ -74,6 +75,11 @@ mapping:
       type_id: 24
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(RAW:ProcessName, '\\', -1))::VARCHAR
     - name: '''actor.user'''
       type: '''User'''
       type_id: 21
