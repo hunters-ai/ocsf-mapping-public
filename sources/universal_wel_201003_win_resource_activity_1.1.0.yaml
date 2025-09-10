@@ -1,17 +1,20 @@
 type: mapping
 id: universal_wel_201003_win_resource_activity_1.1.0
-version: '1'
+version: '2'
 name: Universal Wel to OCSF class Win/resource Activity
 data-types:
 - universal-wel
 mapping:
   fields:
-    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
-      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
     action_id: (0)::NUMBER
     activity_id: (1)::NUMBER
-    activity_name: (CASE (1::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Access' WHEN
-      99 THEN 'Other' END)::VARCHAR
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Access'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.name: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:ObjectName),
+      '\\', -1))::VARCHAR
+    actor.process.file.path: (COALESCE(RAW:ProcessName,RAW:ObjectName))::VARCHAR
     actor.process.name: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
     actor.process.pid: (TRY_TO_NUMBER(SUBSTR(MESSAGE_DETAILS:process_information:process_id::varchar,
       POSITION('x', MESSAGE_DETAILS:process_information:process_id::varchar) + 1),
@@ -23,7 +26,7 @@ mapping:
     api: NULL::VARIANT
     attacks: NULL::ARRAY
     authorizations: NULL::ARRAY
-    category_name: (CASE (1::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
+    category_name: (CASE ((1)::NUMBER) WHEN 1 THEN 'System Activity' END)::VARCHAR
     category_uid: (1)::NUMBER
     class_name: ('win/resource_activity')::VARCHAR
     class_uid: ('201003')::NUMBER
@@ -41,6 +44,9 @@ mapping:
     malware: NULL::ARRAY
     message: (MESSAGE_DETAILS:message_title)::VARCHAR
     metadata.event_code: (event_id)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
     metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
     metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
     metadata.product.name: ('universal-wel')::VARCHAR
@@ -48,15 +54,22 @@ mapping:
     metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
     metadata.uid: (metadata$uuid)::VARCHAR
     metadata.version: ('1.1.0')::VARCHAR
-    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
-    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
-      'version', '2', 'uid', '1.1.0'))
     observables:
     - name: '''actor.process'''
       type: '''Process'''
       type_id: 25
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:ObjectName), '\\', -1))::VARCHAR
     - name: '''actor.process.name'''
       type: '''Process Name'''
       type_id: 9
@@ -83,16 +96,16 @@ mapping:
       reputation: null::VARIANT
       value: (MESSAGE_DETAILS:network_information:source_address)::VARCHAR
     raw_data: NULL::VARCHAR
-    severity: (CASE (CASE WHEN RAW:Severity = 'INFO' THEN 1 WHEN RAW:Severity IS NULL
-      THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+    severity: (CASE ((CASE WHEN RAW:Severity = 'INFO' THEN 1 WHEN RAW:Severity IS
+      NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
       WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
       WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
     severity_id: (CASE WHEN RAW:Severity = 'INFO' THEN 1 WHEN RAW:Severity IS NULL
       THEN 0 ELSE 99 END)::NUMBER
     start_time: NULL::NUMBER
     start_time_dt: NULL::TIMESTAMP_LTZ
-    status: (CASE (CASE WHEN AUDIT_SUCCESS = 'TRUE' THEN 1 WHEN AUDIT_SUCCESS = 'FALSE'
-      THEN 2 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+    status: (CASE ((CASE WHEN AUDIT_SUCCESS = 'TRUE' THEN 1 WHEN AUDIT_SUCCESS = 'FALSE'
+      THEN 2 WHEN AUDIT_SUCCESS IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
       WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
     status_code: NULL::VARCHAR
     status_detail: NULL::VARCHAR
@@ -101,7 +114,7 @@ mapping:
     time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
     time_dt: (event_time)::TIMESTAMP_LTZ
     timezone_offset: NULL::NUMBER
-    type_name: '(CASE (20100301::NUMBER) WHEN 20100300 THEN ''Windows Resource Activity:
+    type_name: '(CASE ((20100301)::NUMBER) WHEN 20100300 THEN ''Windows Resource Activity:
       Unknown'' WHEN 20100301 THEN ''Windows Resource Activity: Access'' WHEN 20100399
       THEN ''Windows Resource Activity: Other'' END)::VARCHAR'
     type_uid: (20100301)::NUMBER
@@ -110,10 +123,10 @@ mapping:
       = '-', NULL, COALESCE(RAW:ResourceAttributes, MESSAGE_DETAILS:object:resource_attributes)))::VARCHAR
     win_resource.name: (COALESCE(RAW:ObjectName, MESSAGE_DETAILS:object:object_name))::VARCHAR
     win_resource.svc_name: (COALESCE(RAW:ObjectServer, MESSAGE_DETAILS:object:object_server))::VARCHAR
-    win_resource.type: (CASE (CASE WHEN RAW:ObjectType = 'File' THEN 7 WHEN RAW:ObjectType
+    win_resource.type: (CASE ((CASE WHEN RAW:ObjectType = 'File' THEN 7 WHEN RAW:ObjectType
       = 'Key' THEN 25 WHEN RAW:ObjectType = 'Directory' THEN 1 WHEN RAW:ObjectType
       = 'Process' THEN 20 WHEN RAW:ObjectType = 'Unknown' OR RAW:ObjectType IS NULL
-      THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Directory' WHEN
+      THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Directory' WHEN
       10 THEN 'Section' WHEN 11 THEN 'WindowStation' WHEN 12 THEN 'DebugObject' WHEN
       13 THEN 'FilterCommunicationPort' WHEN 14 THEN 'EventPair' WHEN 15 THEN 'Driver'
       WHEN 16 THEN 'IoCompletion' WHEN 17 THEN 'Controller' WHEN 18 THEN 'SymbolicLink'
