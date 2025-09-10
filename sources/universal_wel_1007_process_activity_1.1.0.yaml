@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_1007_process_activity_1.1.0
-version: '10'
+version: '11'
 name: Universal Wel to OCSF class Process Activity
 data-types:
 - universal-wel
@@ -95,6 +95,16 @@ mapping:
       type_id: 25
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:NewProcessName), '\\', -1))::VARCHAR
     - name: '''process.name'''
       type: '''Process Name'''
       type_id: 9
@@ -105,6 +115,16 @@ mapping:
       type_id: 25
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(RAW:ParentProcessName, '\\', -1))::VARCHAR
     - name: '''process.parent_process.name'''
       type: '''Process Name'''
       type_id: 9
@@ -122,7 +142,12 @@ mapping:
       value: (RAW:SubjectUserName)::VARCHAR
     process.cmd_line: (COALESCE(MESSAGE_DETAILS:process_information:process_command_line,
       RAW:CommandLine))::VARCHAR
+    process.file.name: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:NewProcessName), '\\',
+      -1))::VARCHAR
+    process.file.path: (COALESCE(RAW:ProcessName,RAW:NewProcessName))::VARCHAR
     process.name: (COALESCE(MESSAGE_DETAILS:process_information:new_process_name,RAW:NewProcessName))::VARCHAR
+    process.parent_process.file.name: (SPLIT_PART(RAW:ParentProcessName, '\\', -1))::VARCHAR
+    process.parent_process.file.path: (RAW:ParentProcessName)::VARCHAR
     process.parent_process.name: (COALESCE(MESSAGE_DETAILS:process_information:creator_process_name,
       RAW:ParentProcessName::VARCHAR))::VARCHAR
     process.parent_process.uid: (COALESCE(MESSAGE_DETAILS:process_information:creator_process_id,
