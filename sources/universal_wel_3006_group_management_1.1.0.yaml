@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_3006_group_management_1.1.0
-version: '1'
+version: '2'
 name: Universal Wel to OCSF class Group Management
 data-types:
 - universal-wel
@@ -13,7 +13,8 @@ mapping:
       THEN 'Unknown' WHEN 1 THEN 'Assign Privileges' WHEN 2 THEN 'Revoke Privileges'
       WHEN 3 THEN 'Add User' WHEN 4 THEN 'Remove User' WHEN 5 THEN 'Delete' WHEN 6
       THEN 'Create' WHEN 99 THEN 'Other' END)::VARCHAR
-    actor.process.file.path: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.file.name: (SPLIT_PART(RAW:CallerProcessName, '\\', -1))::VARCHAR
+    actor.process.file.path: (RAW:CallerProcessName)::VARCHAR
     actor.process.pid: (RAW:ExecutionProcessID)::NUMBER
     actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
     actor.process.uid: (MESSAGE_DETAILS:process_information:process_id)::VARCHAR
@@ -62,6 +63,11 @@ mapping:
       type_id: 24
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(RAW:CallerProcessName, '\\', -1))::VARCHAR
     - name: '''actor.user'''
       type: '''User'''
       type_id: 21
