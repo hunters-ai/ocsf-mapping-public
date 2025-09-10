@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_1004_memory_activity_1.1.0
-version: '2'
+version: '3'
 name: Universal Wel to OCSF class Memory Activity
 data-types:
 - universal-wel
@@ -21,7 +21,13 @@ mapping:
       WHEN 3 THEN 'Delete Page' WHEN 4 THEN 'Buffer Overflow' WHEN 5 THEN 'Disable
       DEP' WHEN 6 THEN 'Enable DEP' WHEN 7 THEN 'Read' WHEN 8 THEN 'Write' WHEN 99
       THEN 'Other' END)::VARCHAR
-    actor.process.file.path: (MESSAGE_DETAILS:path)::VARCHAR
+    actor.process.cmd_line: (RAW:CommandLine)::VARCHAR
+    actor.process.file.name: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:NewProcessName,RAW:Path,RAW:ObjectName),
+      '\\', -1))::VARCHAR
+    actor.process.file.path: (COALESCE(RAW:ProcessName,RAW:NewProcessName,RAW:Path,RAW:ObjectName))::VARCHAR
+    actor.process.parent_process.file.name: (SPLIT_PART(RAW:ParentProcessName, '\\',
+      -1))::VARCHAR
+    actor.process.parent_process.file.path: (RAW:ParentProcessName)::VARCHAR
     actor.process.pid: (RAW:ExecutionProcessID)::NUMBER
     actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
     actor.user.account.name: (MESSAGE_DETAILS:subject:account_name)::VARCHAR
@@ -78,6 +84,27 @@ mapping:
       type_id: 24
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:NewProcessName,RAW:Path,RAW:ObjectName),
+        '\\', -1))::VARCHAR
+    - name: '''actor.process.parent_process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.parent_process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(RAW:ParentProcessName, '\\', -1))::VARCHAR
     - name: '''actor.user'''
       type: '''User'''
       type_id: 21
