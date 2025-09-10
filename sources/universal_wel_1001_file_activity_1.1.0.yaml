@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_1001_file_activity_1.1.0
-version: '10'
+version: '11'
 name: Universal Wel to OCSF class File Activity
 data-types:
 - universal-wel
@@ -37,7 +37,8 @@ mapping:
     end_time: NULL::NUMBER
     end_time_dt: NULL::TIMESTAMP_LTZ
     enrichments: NULL::ARRAY
-    file.path: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    file.name: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:ObjectName), '\\', -1))::VARCHAR
+    file.path: (COALESCE(RAW:ProcessName,RAW:ObjectName))::VARCHAR
     file_diff: NULL::VARCHAR
     file_result: NULL::VARIANT
     firewall_rule: NULL::VARIANT
@@ -75,6 +76,11 @@ mapping:
       type_id: 24
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (SPLIT_PART(COALESCE(RAW:ProcessName,RAW:ObjectName), '\\', -1))::VARCHAR
     raw_data: NULL::VARCHAR
     severity: (CASE ((CASE WHEN RAW:Severity = 'INFO' THEN 1 WHEN RAW:Severity IS
       NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
