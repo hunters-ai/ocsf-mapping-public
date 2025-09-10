@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_201001_win_registry_key_activity_1.1.0
-version: '15'
+version: '16'
 name: Universal Wel to OCSF class Win/registry Key Activity
 data-types:
 - universal-wel
@@ -17,7 +17,8 @@ mapping:
       WHEN 2 THEN 'Read' WHEN 3 THEN 'Modify' WHEN 4 THEN 'Delete' WHEN 5 THEN 'Rename'
       WHEN 6 THEN 'Set Security' WHEN 7 THEN 'Restore' WHEN 8 THEN 'Import' WHEN 9
       THEN 'Export' WHEN 99 THEN 'Other' END)::VARCHAR
-    actor.process.file.name: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+    actor.process.file.name: (SPLIT_PART(RAW:ProcessName, '\\', -1))::VARCHAR
+    actor.process.file.path: (RAW:ProcessName)::VARCHAR
     actor.process.name: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
     actor.process.pid: (RAW:ExecutionProcessID)::NUMBER
     actor.process.tid: (RAW:ExecutionThreadID)::NUMBER
@@ -80,7 +81,7 @@ mapping:
       type: '''File Name'''
       type_id: 7
       reputation: null::VARIANT
-      value: (MESSAGE_DETAILS:process_information:process_name)::VARCHAR
+      value: (SPLIT_PART(RAW:ProcessName, '\\', -1))::VARCHAR
     - name: '''actor.process.name'''
       type: '''Process Name'''
       type_id: 9
