@@ -1,5 +1,5 @@
 id: 4009_email_activity_1.1.0
-version: '7'
+version: '8'
 description: OCSF View For Class - 4009 Email Activity
 source-table-ids:
 - cofense_reports_4009_email_activity_1.1.0
@@ -12,3 +12,4 @@ source-table-ids:
 - microsoft_message_trace_report_4009_email_activity_1.1.0
 - zeek_logs_4009_email_activity_1.1.0
 - abnormal_threats_4009_email_activity_1.1.0
+- mimecast_journal_logs_v2_4009_email_activity_1.1.0
