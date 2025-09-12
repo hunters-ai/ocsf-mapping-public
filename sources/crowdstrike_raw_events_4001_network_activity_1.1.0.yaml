@@ -1,6 +1,6 @@
 type: mapping
 id: crowdstrike_raw_events_4001_network_activity_1.1.0
-version: '26'
+version: '27'
 name: Crowdstrike Raw Events to OCSF class Network Activity
 data-types:
 - crowdstrike-raw-events
@@ -37,6 +37,7 @@ mapping:
     connection_info.tcp_flags: (RAW:ConnectionFlags)::NUMBER
     count: NULL::NUMBER
     device.domain: (DOMAIN_NAME)::VARCHAR
+    device.hostname: (RAW:ComputerName)::VARCHAR
     device.os.name: (EVENT_PLATFORM)::VARCHAR
     device.uid: (aid)::VARCHAR
     disposition: NULL::VARCHAR
@@ -89,6 +90,11 @@ mapping:
       type_id: 20
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (RAW:ComputerName)::VARCHAR
     - name: '''dst_endpoint.ip'''
       type: '''IP Address'''
       type_id: 2
@@ -107,7 +113,7 @@ mapping:
     proxy_tls: NULL::VARIANT
     proxy_traffic: NULL::VARIANT
     raw_data: NULL::VARCHAR
-    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
       WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
       WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
     severity_id: (0)::NUMBER
