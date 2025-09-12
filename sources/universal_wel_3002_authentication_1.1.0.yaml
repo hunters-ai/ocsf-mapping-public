@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_3002_authentication_1.1.0
-version: '15'
+version: '16'
 name: Universal Wel to OCSF class Authentication
 data-types:
 - universal-wel
@@ -54,15 +54,14 @@ mapping:
     logon_process.user.account.name: (MESSAGE_DETAILS:new_logon:account_name)::VARCHAR
     logon_process.user.domain: (EVENT_DETAILS:target_domain_name)::VARCHAR
     logon_process.user.name: (EVENT_DETAILS:target_user_name)::VARCHAR
-    logon_type: (CASE ((CASE WHEN MESSAGE_DETAILS:logon_type = '3' THEN 4 WHEN MESSAGE_DETAILS:logon_type
-      = '5' THEN 7 WHEN MESSAGE_DETAILS:logon_type = '8' THEN 10 ELSE 99 END)::NUMBER)
-      WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive' WHEN 11 THEN 'Cached
-      Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN 13 THEN 'Cached Unlock'
-      WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN 4 THEN 'Batch' WHEN 5 THEN
-      'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network Cleartext' WHEN 9 THEN
-      'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
-    logon_type_id: (CASE WHEN MESSAGE_DETAILS:logon_type = '3' THEN 4 WHEN MESSAGE_DETAILS:logon_type
-      = '5' THEN 7 WHEN MESSAGE_DETAILS:logon_type = '8' THEN 10 ELSE 99 END)::NUMBER
+    logon_type: (CASE (IFF(MESSAGE_DETAILS:logon_type IS NOT NULL, MESSAGE_DETAILS:logon_type,
+      99)::NUMBER) WHEN 0 THEN 'System' WHEN 10 THEN 'Remote Interactive' WHEN 11
+      THEN 'Cached Interactive' WHEN 12 THEN 'Cached Remote Interactive' WHEN 13 THEN
+      'Cached Unlock' WHEN 2 THEN 'Interactive' WHEN 3 THEN 'Network' WHEN 4 THEN
+      'Batch' WHEN 5 THEN 'OS Service' WHEN 7 THEN 'Unlock' WHEN 8 THEN 'Network Cleartext'
+      WHEN 9 THEN 'New Credentials' WHEN 99 THEN 'Other' END)::VARCHAR
+    logon_type_id: (IFF(MESSAGE_DETAILS:logon_type IS NOT NULL, MESSAGE_DETAILS:logon_type,
+      99))::NUMBER
     message: (RAW:Message)::VARCHAR
     metadata.event_code: (event_id)::VARCHAR
     metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
