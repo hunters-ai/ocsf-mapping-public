@@ -1,6 +1,6 @@
 type: mapping
 id: universal_wel_3006_group_management_1.1.0
-version: '2'
+version: '3'
 name: Universal Wel to OCSF class Group Management
 data-types:
 - universal-wel
