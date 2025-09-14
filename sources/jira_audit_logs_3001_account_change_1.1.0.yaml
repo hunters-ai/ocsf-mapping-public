@@ -107,4 +107,4 @@ mapping:
     user.uid: (COALESCE(IFF(OBJECT_ITEM_NAME NOT RLIKE '[a-zA-Z.]+' AND OBJECT_ITEM_NAME
       NOT ILIKE '%@%', OBJECT_ITEM_NAME, NULL), AUTHOR_KEY))::VARCHAR
     user_result: NULL::VARIANT
-  predicate: CATEGORY = 'user management'
+  predicate: CATEGORY IN ('user management', 'Benutzerverwaltung')

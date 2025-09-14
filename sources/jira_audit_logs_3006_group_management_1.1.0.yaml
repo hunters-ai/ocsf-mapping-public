@@ -114,4 +114,4 @@ mapping:
       2 ELSE 99 END)::NUMBER
     user.uid: (COALESCE(IFF(ASSOCIATED_ITEMS[0]:id NOT RLIKE '[a-zA-Z.]+' AND ASSOCIATED_ITEMS[0]:id
       NOT ILIKE '%@%', ASSOCIATED_ITEMS[0]:id, NULL), AUTHOR_KEY))::VARCHAR
-  predicate: CATEGORY = 'group management'
+  predicate: CATEGORY IN ('group management','Gruppenverwaltung')
