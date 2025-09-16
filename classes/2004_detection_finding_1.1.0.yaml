@@ -1,5 +1,5 @@
 id: 2004_detection_finding_1.1.0
-version: '18'
+version: '19'
 description: OCSF View For Class - 2004 Detection Finding
 source-table-ids:
 - microsoft_365_defender_alert_info_2004_detection_finding_1.1.0
@@ -24,3 +24,4 @@ source-table-ids:
 - rhisac_threat_indicators_2004_detection_finding_1.1.0
 - astrix_security_logs_2004_detection_finding_1.1.0
 - darktrace_model_breaches_v2_2004_detection_finding_1.1.0
+- mimecast_av_logs_v2_2004_detection_finding_1.1.0
