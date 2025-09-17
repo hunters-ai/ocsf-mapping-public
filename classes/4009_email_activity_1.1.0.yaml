@@ -15,3 +15,4 @@ source-table-ids:
 - mimecast_journal_logs_v2_4009_email_activity_1.1.0
 - mimecast_process_logs_v2_4009_email_activity_1.1.0
 - mimecast_delivery_logs_v2_4009_email_activity_1.1.0
+- mimecast_spam_logs_v2_4009_email_activity_1.1.0
