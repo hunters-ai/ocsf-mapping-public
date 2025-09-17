@@ -1,0 +1,115 @@
+type: mapping
+id: mimecast_internal_email_protect_logs_v2_2004_detection_finding_1.1.0
+version: '1'
+name: Mimecast Internal Email Protect Logs V2 to OCSF class Detection Finding
+data-types:
+- mimecast-internal-email-protect-logs-v2
+mapping:
+  fields:
+    action: (CASE ((CASE LOWER(URL_CATEGORY) WHEN 'blocked' THEN 2 WHEN NULL THEN
+      0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE LOWER(URL_CATEGORY) WHEN 'blocked' THEN 2 WHEN NULL THEN 0 ELSE
+      99 END)::NUMBER
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create'
+      WHEN 2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.uid: (PROCESSING_ID)::VARCHAR
+    actor.process.user.email_addr: (SENDER_ENVELOPE)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((2)::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud.account.uid: (ACCOUNT_ID)::VARCHAR
+    cloud.provider: ('Mimecast')::VARCHAR
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    disposition: (CASE ((CASE LOWER(URL_CATEGORY) WHEN 'blocked' THEN 2 WHEN NULL
+      THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN
+      10 THEN 'Exonerated' WHEN 11 THEN 'Corrected' WHEN 12 THEN 'Partially Corrected'
+      WHEN 13 THEN 'Uncorrected' WHEN 14 THEN 'Delayed' WHEN 15 THEN 'Detected' WHEN
+      16 THEN 'No Action' WHEN 17 THEN 'Logged' WHEN 18 THEN 'Tagged' WHEN 19 THEN
+      'Alert' WHEN 2 THEN 'Blocked' WHEN 20 THEN 'Count' WHEN 21 THEN 'Reset' WHEN
+      22 THEN 'Captcha' WHEN 23 THEN 'Challenge' WHEN 24 THEN 'Access Revoked' WHEN
+      25 THEN 'Rejected' WHEN 26 THEN 'Unauthorized' WHEN 27 THEN 'Error' WHEN 3 THEN
+      'Quarantined' WHEN 4 THEN 'Isolated' WHEN 5 THEN 'Deleted' WHEN 6 THEN 'Dropped'
+      WHEN 7 THEN 'Custom Action' WHEN 8 THEN 'Approved' WHEN 9 THEN 'Restored' WHEN
+      99 THEN 'Other' END)::VARCHAR
+    disposition_id: (CASE LOWER(URL_CATEGORY) WHEN 'blocked' THEN 2 WHEN NULL THEN
+      0 ELSE 99 END)::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('connection_info', OBJECT_CONSTRUCT_KEEP_NULL('direction',
+      ROUTE, 'direction_id', CASE LOWER(ROUTE) WHEN 'inbound' THEN 1 WHEN 'outbound'
+      THEN 2 WHEN NULL THEN 0 ELSE 99 END))))::ARRAY
+    finding_info.title: (SCAN_RESULTS)::VARCHAR
+    finding_info.types: (ARRAY_CONSTRUCT_COMPACT(EVENT_TYPE))::ARRAY
+    finding_info.uid: (AGGREGATE_ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: (SUBJECT)::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('mimecast-internal-email-protect-logs-v2')::VARCHAR
+    metadata.product.vendor_name: ('mimecast_v2')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SENDER_ENVELOPE)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('owner', OBJECT_CONSTRUCT_KEEP_NULL('email_addr',
+      RECIPIENTS, 'name', SPLIT_PART(RECIPIENTS, '@', 1), 'domain', MONITORED_DOMAIN_SOURCE))))::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((200401)::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200401)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY

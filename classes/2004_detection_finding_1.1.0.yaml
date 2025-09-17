@@ -25,3 +25,4 @@ source-table-ids:
 - astrix_security_logs_2004_detection_finding_1.1.0
 - darktrace_model_breaches_v2_2004_detection_finding_1.1.0
 - mimecast_av_logs_v2_2004_detection_finding_1.1.0
+- mimecast_internal_email_protect_logs_v2_2004_detection_finding_1.1.0
