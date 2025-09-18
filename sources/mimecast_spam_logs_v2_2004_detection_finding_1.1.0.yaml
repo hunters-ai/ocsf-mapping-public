@@ -1,0 +1,104 @@
+type: mapping
+id: mimecast_spam_logs_v2_2004_detection_finding_1.1.0
+version: '1'
+name: Mimecast Spam Logs V2 to OCSF class Detection Finding
+data-types:
+- mimecast-spam-logs-v2
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (0)::NUMBER
+    activity_name: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN
+      2 THEN 'Update' WHEN 3 THEN 'Close' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.account.uid: (ACCOUNT_ID)::VARCHAR
+    actor.user.email_addr: (COALESCE(SENDER_HEADER, SENDER_ENVELOPE))::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (2::NUMBER) WHEN 2 THEN 'Findings' END)::VARCHAR
+    category_uid: (2)::NUMBER
+    class_name: ('detection_finding')::VARCHAR
+    class_uid: ('2004')::NUMBER
+    cloud: NULL::VARIANT
+    comment: NULL::VARCHAR
+    confidence: NULL::VARCHAR
+    confidence_id: NULL::NUMBER
+    confidence_score: NULL::NUMBER
+    count: NULL::NUMBER
+    device.domain: (SENDER_DOMAIN)::VARCHAR
+    device.ip: (SENDER_IP)::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    evidences: NULL::ARRAY
+    finding_info.desc: (SUBJECT)::VARCHAR
+    finding_info.title: (EVENT_TYPE)::VARCHAR
+    finding_info.uid: (PROCESSING_ID)::VARCHAR
+    firewall_rule: NULL::VARIANT
+    impact: NULL::VARCHAR
+    impact_id: NULL::NUMBER
+    impact_score: NULL::NUMBER
+    malware: NULL::ARRAY
+    message: (SUBJECT)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('mimecast-spam-logs-v2')::VARCHAR
+    metadata.product.vendor_name: ('mimecast_v2')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(SENDER_HEADER, SENDER_ENVELOPE))::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SENDER_IP)::VARCHAR
+    raw_data: NULL::VARCHAR
+    remediation: NULL::VARIANT
+    resources: NULL::ARRAY
+    risk_level: NULL::VARCHAR
+    risk_level_id: NULL::NUMBER
+    risk_score: NULL::NUMBER
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (200400::NUMBER) WHEN 200400 THEN ''Detection Finding: Unknown''
+      WHEN 200401 THEN ''Detection Finding: Create'' WHEN 200402 THEN ''Detection
+      Finding: Update'' WHEN 200403 THEN ''Detection Finding: Close'' WHEN 200499
+      THEN ''Detection Finding: Other'' END)::VARCHAR'
+    type_uid: (200400)::NUMBER
+    unmapped: NULL::VARIANT
+    vulnerabilities: NULL::ARRAY
