@@ -1,0 +1,108 @@
+type: mapping
+id: mimecast_receipt_logs_v2_4009_email_activity_1.1.0
+version: '1'
+name: Mimecast Receipt Logs V2 to OCSF class Email Activity
+data-types:
+- mimecast-receipt-logs-v2
+mapping:
+  fields:
+    action: (CASE (CASE WHEN ACTION='Acc' THEN 1 WHEN ACTION='Rej' THEN 2 WHEN ACTION
+      IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed'
+      WHEN 2 THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (CASE WHEN ACTION='Acc' THEN 1 WHEN ACTION='Rej' THEN 2 WHEN ACTION
+      IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_id: (3)::NUMBER
+    activity_name: (CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud.account.uid: (ACCOUNT_ID)::VARCHAR
+    cloud.provider: ('Mimecast')::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE (CASE WHEN DIRECTION='inbound' THEN 1 WHEN DIRECTION='outbound'
+      THEN 2 WHEN DIRECTION='internal' THEN 3 WHEN DIRECTION IS NULL THEN 0 ELSE 99
+      END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN 2 THEN 'Outbound'
+      WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (CASE WHEN DIRECTION='inbound' THEN 1 WHEN DIRECTION='outbound'
+      THEN 2 WHEN DIRECTION='internal' THEN 3 WHEN DIRECTION IS NULL THEN 0 ELSE 99
+      END)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    email.from: (COALESCE(SENDER_HEADER, SENDER_HEADER))::VARCHAR
+    email.subject: (SUBJECT)::VARCHAR
+    email.to: (ARRAY_CONSTRUCT(RECIPIENTS))::ARRAY
+    email.uid: (MESSAGE_ID)::VARCHAR
+    email.x_originating_ip: (ARRAY_CONSTRUCT(SENDER_IP))::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (REJECTION_INFO)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('mimecast-receipt-logs-v2')::VARCHAR
+    metadata.product.vendor_name: ('mimecast_v2')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (COALESCE(SENDER_HEADER, SENDER_HEADER))::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (ARRAY_CONSTRUCT(RECIPIENTS))::ARRAY
+    - name: '''email.x_originating_ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (ARRAY_CONSTRUCT(SENDER_IP))::ARRAY
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: NULL::VARCHAR
+    src_endpoint: NULL::VARIANT
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN ACTION='Acc' THEN 1 WHEN ACTION='Rej' THEN 2 ELSE 99
+      END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: (REJECTION_CODE)::VARCHAR
+    status_detail: (REJECTION_TYPE)::VARCHAR
+    status_id: (CASE WHEN ACTION='Acc' THEN 1 WHEN ACTION='Rej' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (400903::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400903)::NUMBER
+    unmapped: NULL::VARIANT
