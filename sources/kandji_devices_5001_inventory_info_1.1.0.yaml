@@ -1,0 +1,94 @@
+type: mapping
+id: kandji_devices_5001_inventory_info_1.1.0
+version: '1'
+name: Kandji Devices to OCSF class Inventory Info
+data-types:
+- kandji-devices
+mapping:
+  fields:
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Log' WHEN
+      2 THEN 'Collect' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.user.email_addr: (USER_EMAIL)::VARCHAR
+    actor.user.name: (USER_NAME)::VARCHAR
+    actor.user.uid: (USER_ID)::VARCHAR
+    api: NULL::VARIANT
+    category_name: (CASE ((5)::NUMBER) WHEN 5 THEN 'Discovery' END)::VARCHAR
+    category_uid: (5)::NUMBER
+    class_name: ('inventory_info')::VARCHAR
+    class_uid: ('5001')::NUMBER
+    cloud.provider: ('Kandji Decices')::VARCHAR
+    count: NULL::NUMBER
+    device.desc: (MODEL)::VARCHAR
+    device.first_seen_time: (date_part('epoch_milliseconds', (FIRST_ENROLLMENT)::TIMESTAMP_LTZ))::NUMBER
+    device.first_seen_time_dt: (FIRST_ENROLLMENT)::TIMESTAMP_LTZ
+    device.hw_info.serial_number: (SERIAL_NUMBER)::VARCHAR
+    device.is_managed: (MDM_ENABLED)::BOOLEAN
+    device.last_seen_time: (date_part('epoch_milliseconds', (LAST_ENROLLMENT)::TIMESTAMP_LTZ))::NUMBER
+    device.last_seen_time_dt: (LAST_ENROLLMENT)::TIMESTAMP_LTZ
+    device.name: (DEVICE_NAME)::VARCHAR
+    device.os.build: (SUPPLEMENTAL_BUILD_VERSION)::VARCHAR
+    device.os.type: (CASE ((CASE WHEN PLATFORM = 'Mac' THEN 300 ELSE 99 END)::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 100 THEN 'Windows' WHEN 101 THEN 'Windows Mobile'
+      WHEN 200 THEN 'Linux' WHEN 201 THEN 'Android' WHEN 300 THEN 'macOS' WHEN 301
+      THEN 'iOS' WHEN 302 THEN 'iPadOS' WHEN 400 THEN 'Solaris' WHEN 401 THEN 'AIX'
+      WHEN 402 THEN 'HP-UX' WHEN 99 THEN 'Other' END)::VARCHAR
+    device.os.type_id: (CASE WHEN PLATFORM = 'Mac' THEN 300 ELSE 99 END)::NUMBER
+    device.os.version: (OS_VERSION)::VARCHAR
+    device.uid: (DEVICE_ID)::VARCHAR
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('kandji-devices')::VARCHAR
+    metadata.product.vendor_name: ('kandji')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (USER_EMAIL)::VARCHAR
+    - name: '''actor.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (USER_NAME)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', first_enrollment::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (first_enrollment)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((500101)::NUMBER) WHEN 500100 THEN ''Device Inventory Info:
+      Unknown'' WHEN 500101 THEN ''Device Inventory Info: Log'' WHEN 500102 THEN ''Device
+      Inventory Info: Collect'' WHEN 500199 THEN ''Device Inventory Info: Other''
+      END)::VARCHAR'
+    type_uid: (500101)::NUMBER
+    unmapped: NULL::VARIANT
