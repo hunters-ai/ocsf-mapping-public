@@ -1,0 +1,158 @@
+type: mapping
+id: mimecast_attachment_protect_logs_v2_4009_email_activity_1.1.0
+version: '1'
+name: Mimecast Attachment Protect Logs V2 to OCSF class Email Activity
+data-types:
+- mimecast-attachment-protect-logs-v2
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (3)::NUMBER
+    activity_name: (CASE (3::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.file.hashes: (ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'MD5', 'algorithm_id', '1', 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-1', 'algorithm_id', '2', 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+      'SHA-256', 'algorithm_id', '3', 'value', SHA256)))::ARRAY
+    actor.process.file.mime_type: (FILE_MIME)::VARCHAR
+    actor.process.file.name: (FILE_NAME)::VARCHAR
+    actor.process.file.size: (SIZE_ATTACHMENT)::NUMBER
+    actor.process.uid: (PROCESSING_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud.account.uid: (ACCOUNT_ID)::VARCHAR
+    cloud.provider: ('Mimecast')::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE (CASE WHEN ROUTE='inbound' THEN 1 WHEN ROUTE='outbound' THEN
+      2 WHEN ROUTE='internal' THEN 3 WHEN ROUTE IS NULL THEN 0 ELSE 99 END::NUMBER)
+      WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN 2 THEN 'Outbound' WHEN 3 THEN
+      'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (CASE WHEN ROUTE='inbound' THEN 1 WHEN ROUTE='outbound' THEN 2 WHEN
+      ROUTE='internal' THEN 3 WHEN ROUTE IS NULL THEN 0 ELSE 99 END)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint: NULL::VARIANT
+    duration: NULL::NUMBER
+    email.from: (SENDER_ENVELOPE)::VARCHAR
+    email.message_uid: (MESSAGE_ID)::VARCHAR
+    email.subject: (SUBJECT)::VARCHAR
+    email.to: (RECIPIENT)::ARRAY
+    email.x_originating_ip: (SENDER_IP)::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('mimecast-attachment-protect-logs-v2')::VARCHAR
+    metadata.product.vendor_name: ('mimecast_v2')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'MD5', 'algorithm_id', '1', 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-1', 'algorithm_id', '2', 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-256', 'algorithm_id', '3', 'value', SHA256)))::ARRAY) > 0, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'MD5', 'algorithm_id', '1', 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-1', 'algorithm_id', '2', 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-256', 'algorithm_id', '3', 'value', SHA256)))::ARRAY)[0]:"value", NULL::ARRAY)
+    - name: '''actor.process.file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'MD5', 'algorithm_id', '1', 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-1', 'algorithm_id', '2', 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-256', 'algorithm_id', '3', 'value', SHA256)))::ARRAY) > 1, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'MD5', 'algorithm_id', '1', 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-1', 'algorithm_id', '2', 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-256', 'algorithm_id', '3', 'value', SHA256)))::ARRAY)[1]:"value", NULL::ARRAY)
+    - name: '''actor.process.file.hashes'''
+      type: '''Hash'''
+      type_id: 8
+      reputation: null::VARIANT
+      value: IFF(ARRAY_SIZE((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'MD5', 'algorithm_id', '1', 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-1', 'algorithm_id', '2', 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-256', 'algorithm_id', '3', 'value', SHA256)))::ARRAY) > 2, ((ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'MD5', 'algorithm_id', '1', 'value', MD5), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-1', 'algorithm_id', '2', 'value', SHA1), OBJECT_CONSTRUCT_KEEP_NULL('algorithm',
+        'SHA-256', 'algorithm_id', '3', 'value', SHA256)))::ARRAY)[2]:"value", NULL::ARRAY)
+    - name: '''actor.process.file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (FILE_NAME)::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (SENDER_ENVELOPE)::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (RECIPIENT)::ARRAY
+    - name: '''email.x_originating_ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SENDER_IP)::ARRAY
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: NULL::VARCHAR
+    src_endpoint.domain: (SENDER_DOMAIN)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (400903::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400903)::NUMBER
+    unmapped: NULL::VARIANT
