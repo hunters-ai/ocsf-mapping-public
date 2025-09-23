@@ -1,5 +1,5 @@
 id: 1001_file_activity_1.1.0
-version: '6'
+version: '7'
 description: OCSF View For Class - 1001 File Activity
 source-table-ids:
 - mdatp_device_file_events_1001_file_activity_1.1.0
@@ -13,3 +13,4 @@ source-table-ids:
 - microsoft_365_defender_advanced_hunting_1001_file_activity_1.1.0
 - zeek_logs_1001_file_activity_1.1.0
 - sysdig_next_gen_activity_file_accesses_1001_file_activity_1.1.0
+- gitlab_audit_logs_1001_file_activity_1.1.0
