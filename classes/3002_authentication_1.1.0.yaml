@@ -64,6 +64,7 @@ source-table-ids:
 - silverfort_audit_messages_3002_authentication_1.1.0
 - thycotic_secret_server_3002_authentication_1.1.0
 - cisco_ise_logs_3002_authentication_1.1.0
+- gitlab_audit_logs_3002_authentication_1.1.0
 - cylance_raw_events_3002_authentication_1.1.0
 - sap_security_audit_logs_3002_authentication_1.1.0
 - sap_4hana_audit_logs_3002_authentication_1.1.0
