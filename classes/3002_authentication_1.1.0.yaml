@@ -90,3 +90,4 @@ source-table-ids:
 - lumos_activity_logs_3002_authentication_1.1.0
 - kaspersky_security_cloud_logs_3002_authentication_1.1.0
 - jamf_protect_users_3002_authentication_1.1.0
+- vectra_audit_logs_3002_authentication_1.1.0
