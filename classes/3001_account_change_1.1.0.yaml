@@ -1,5 +1,5 @@
 id: 3001_account_change_1.1.0
-version: '16'
+version: '17'
 description: OCSF View For Class - 3001 Account Change
 source-table-ids:
 - jumpcloud_directory_insights_3001_account_change_1.1.0
@@ -18,3 +18,4 @@ source-table-ids:
 - azure_audit_3001_account_change_1.1.0
 - universal_wel_3001_account_change_1.1.0
 - surf_audit_logs_3001_account_change_1.1.0
+- vectra_audit_logs_3001_account_change_1.1.0

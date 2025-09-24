@@ -1,0 +1,100 @@
+type: mapping
+id: vectra_audit_logs_3001_account_change_1.1.0
+version: '1'
+name: Vectra Audit Logs to OCSF class Account Change
+data-types:
+- vectra-audit-logs
+mapping:
+  fields:
+    activity_id: (CASE WHEN EVENT_ACTION = 'created' THEN 1 WHEN EVENT_ACTION = 'deleted'
+      THEN 6 WHEN EVENT_ACTION IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE (CASE WHEN EVENT_ACTION = 'created' THEN 1 WHEN EVENT_ACTION
+      = 'deleted' THEN 6 WHEN EVENT_ACTION IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Create' WHEN 10 THEN 'MFA Factor Enable' WHEN
+      11 THEN 'MFA Factor Disable' WHEN 2 THEN 'Enable' WHEN 3 THEN 'Password Change'
+      WHEN 4 THEN 'Password Reset' WHEN 5 THEN 'Disable' WHEN 6 THEN 'Delete' WHEN
+      7 THEN 'Attach Policy' WHEN 8 THEN 'Detach Policy' WHEN 9 THEN 'Lock' WHEN 99
+      THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api.service.uid: (API_CLIENT_ID)::VARCHAR
+    category_name: (CASE (3::NUMBER) WHEN 3 THEN 'Identity & Access Management' END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('account_change')::VARCHAR
+    class_uid: ('3001')::NUMBER
+    cloud.provider: ('Vectra')::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    http_request: NULL::VARIANT
+    message: (MESSAGE)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('vectra-audit-logs')::VARCHAR
+    metadata.product.vendor_name: ('vectra')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''src_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (SOURCE_IP)::VARCHAR
+    - name: '''user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (COALESCE(USERNAME, EVENT_DATA:user:username))::VARCHAR
+    policy: NULL::VARIANT
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    src_endpoint.ip: (SOURCE_IP)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN RESULT_STATUS = 'success' THEN 1 WHEN RESULT_STATUS =
+      'failure' THEN 2 WHEN RESULT_STATUS IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN
+      0 THEN 'Unknown' WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (RESULT_STATUS)::VARCHAR
+    status_id: (CASE WHEN RESULT_STATUS = 'success' THEN 1 WHEN RESULT_STATUS = 'failure'
+      THEN 2 WHEN RESULT_STATUS IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (CASE WHEN EVENT_ACTION = ''created'' THEN 300101 WHEN EVENT_ACTION
+      = ''deleted'' THEN 300106 WHEN EVENT_ACTION IS NULL THEN 300100 ELSE 300199
+      END::NUMBER) WHEN 300100 THEN ''Account Change: Unknown'' WHEN 300101 THEN ''Account
+      Change: Create'' WHEN 300102 THEN ''Account Change: Enable'' WHEN 300103 THEN
+      ''Account Change: Password Change'' WHEN 300104 THEN ''Account Change: Password
+      Reset'' WHEN 300105 THEN ''Account Change: Disable'' WHEN 300106 THEN ''Account
+      Change: Delete'' WHEN 300107 THEN ''Account Change: Attach Policy'' WHEN 300108
+      THEN ''Account Change: Detach Policy'' WHEN 300109 THEN ''Account Change: Lock''
+      WHEN 300110 THEN ''Account Change: MFA Factor Enable'' WHEN 300111 THEN ''Account
+      Change: MFA Factor Disable'' WHEN 300199 THEN ''Account Change: Other'' END)::VARCHAR'
+    type_uid: (CASE WHEN EVENT_ACTION = 'created' THEN 300101 WHEN EVENT_ACTION =
+      'deleted' THEN 300106 WHEN EVENT_ACTION IS NULL THEN 300100 ELSE 300199 END)::NUMBER
+    unmapped: NULL::VARIANT
+    user.name: (COALESCE(USERNAME, EVENT_DATA:user:username))::VARCHAR
+    user.type: (CASE (CASE WHEN USER_ROLE IS NULL THEN 0 WHEN USER_ROLE ILIKE '%Admin'
+      THEN 2 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'User' WHEN 2
+      THEN 'Admin' WHEN 3 THEN 'System' WHEN 99 THEN 'Other' END)::VARCHAR
+    user.type_id: (CASE WHEN USER_ROLE IS NULL THEN 0 WHEN USER_ROLE ILIKE '%Admin'
+      THEN 2 ELSE 99 END)::NUMBER
+    user.uid: (USER_ID)::VARCHAR
+    user_result: NULL::VARIANT
+  predicate: EVENT_ACTION IN ('created', 'deleted')
