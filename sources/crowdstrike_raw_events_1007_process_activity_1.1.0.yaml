@@ -1,6 +1,6 @@
 type: mapping
 id: crowdstrike_raw_events_1007_process_activity_1.1.0
-version: '20'
+version: '21'
 name: Crowdstrike Raw Events to OCSF class Process Activity
 data-types:
 - crowdstrike-raw-events
@@ -158,6 +158,11 @@ mapping:
       type_id: 21
       reputation: null::VARIANT
       value: null::VARCHAR
+    - name: '''process.user.name'''
+      type: '''User Name'''
+      type_id: 4
+      reputation: null::VARIANT
+      value: (RAW:UserName)::VARCHAR
     process.cmd_line: (COMMAND_LINE)::VARCHAR
     process.created_time: (date_part('epoch_milliseconds', (TO_TIMESTAMP_LTZ((try_to_double(RAW:ProcessStartTime::VARCHAR)
       * 1000)::BIGINT, 3))::TIMESTAMP_LTZ))::NUMBER
@@ -183,6 +188,7 @@ mapping:
     process.parent_process.uid: (RAW:ParentProcessId)::VARCHAR
     process.pid: (RAW:RawProcessId)::NUMBER
     process.uid: (RAW:TargetProcessId)::VARCHAR
+    process.user.name: (RAW:UserName)::VARCHAR
     process.user.uid: (CASE event_platform WHEN 'Win' THEN raw:UserSid::VARCHAR WHEN
       'Mac' THEN CONCAT(AID, ':', raw:UID::VARCHAR) WHEN 'Lin' THEN CONCAT(aid, ':',
       raw:UID::VARCHAR) ELSE NULL::VARCHAR END)::VARCHAR
