@@ -1,5 +1,5 @@
 id: 4009_email_activity_1.1.0
-version: '10'
+version: '11'
 description: OCSF View For Class - 4009 Email Activity
 source-table-ids:
 - cofense_reports_4009_email_activity_1.1.0
@@ -18,3 +18,4 @@ source-table-ids:
 - mimecast_delivery_logs_v2_4009_email_activity_1.1.0
 - mimecast_spam_logs_v2_4009_email_activity_1.1.0
 - mimecast_attachment_protect_logs_v2_4009_email_activity_1.1.0
+- proofpoint_gateway_sendmail_logs_4009_email_activity_1.1.0

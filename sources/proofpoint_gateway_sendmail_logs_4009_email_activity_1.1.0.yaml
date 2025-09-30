@@ -1,0 +1,119 @@
+type: mapping
+id: proofpoint_gateway_sendmail_logs_4009_email_activity_1.1.0
+version: '1'
+name: Proofpoint Gateway Sendmail Logs to OCSF class Email Activity
+data-types:
+- proofpoint-gateway-sendmail-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (1)::NUMBER
+    activity_name: (CASE ((1)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Send' WHEN
+      2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor.process.pid: (PID)::NUMBER
+    actor.session.uid: (SESSION_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    attempt: NULL::NUMBER
+    authorizations: NULL::ARRAY
+    banner: NULL::VARCHAR
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_activity')::VARCHAR
+    class_uid: ('4009')::NUMBER
+    cloud.provider: ('Proofpoint')::VARCHAR
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    direction: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Inbound' WHEN
+      2 THEN 'Outbound' WHEN 3 THEN 'Internal' WHEN 99 THEN 'Other' END)::VARCHAR
+    direction_id: (0)::NUMBER
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    dst_endpoint.domain: (REGEXP_SUBSTR(RELAY, '[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+){1,}'))::VARCHAR
+    dst_endpoint.ip: (COALESCE(LISTENER_IP, REGEXP_SUBSTR(RELAY, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}')))::VARCHAR
+    duration: NULL::NUMBER
+    email.from: (EMAIL_FROM)::VARCHAR
+    email.to: (EMAIL_TO)::ARRAY
+    email.uid: (COALESCE(ID, MESSAGE_ID))::VARCHAR
+    email.x_originating_ip: (CLIENT_IP)::ARRAY
+    email_auth: NULL::VARIANT
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('proofpoint-gateway-sendmail-logs')::VARCHAR
+    metadata.product.vendor_name: ('proofpoint')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''dst_endpoint.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(LISTENER_IP, REGEXP_SUBSTR(RELAY, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}')))::VARCHAR
+    - name: '''email'''
+      type: '''Email'''
+      type_id: 22
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''email.from'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (EMAIL_FROM)::VARCHAR
+    - name: '''email.to'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (EMAIL_TO)::ARRAY
+    - name: '''email.x_originating_ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (CLIENT_IP)::ARRAY
+    - name: '''src_endpoint.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (HOST)::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    smtp_hello: (MAILER)::VARCHAR
+    src_endpoint.hostname: (HOST)::VARCHAR
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN VERIFY IN ('OK','CLEAR') THEN 1 WHEN VERIFY = 'FAIL'
+      THEN 2 WHEN VERIFY IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN VERIFY IN ('OK','CLEAR') THEN 1 WHEN VERIFY = 'FAIL' THEN
+      2 WHEN VERIFY IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((400901)::NUMBER) WHEN 400900 THEN ''Email Activity: Unknown''
+      WHEN 400901 THEN ''Email Activity: Send'' WHEN 400902 THEN ''Email Activity:
+      Receive'' WHEN 400903 THEN ''Email Activity: Scan'' WHEN 400999 THEN ''Email
+      Activity: Other'' END)::VARCHAR'
+    type_uid: (400901)::NUMBER
+    unmapped: NULL::VARIANT
+  predicate: PROC = 'sendmail'
