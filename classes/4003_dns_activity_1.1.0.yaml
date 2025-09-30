@@ -1,5 +1,5 @@
 id: 4003_dns_activity_1.1.0
-version: '11'
+version: '12'
 description: OCSF View For Class - 4003 Dns Activity
 source-table-ids:
 - vectra_metadata_logs_4003_dns_activity_1.1.0
@@ -22,3 +22,4 @@ source-table-ids:
 - zeek_logs_4003_dns_activity_1.1.0
 - cato_networks_security_events_4003_dns_activity_1.1.0
 - twingate_dns_logs_4003_dns_activity_1.1.0
+- proofpoint_gateway_sendmail_logs_4003_dns_activity_1.1.0
