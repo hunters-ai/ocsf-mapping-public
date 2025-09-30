@@ -1,0 +1,131 @@
+type: mapping
+id: proofpoint_gateway_sendmail_logs_4011_email_file_activity_1.1.0
+version: '1'
+name: Proofpoint Gateway Sendmail Logs to OCSF class Email File Activity
+data-types:
+- proofpoint-gateway-sendmail-logs
+mapping:
+  fields:
+    action: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2
+      THEN 'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN PROC IS NULL THEN 0 WHEN PROC = 'sendmail' THEN 1 WHEN
+      PROC = 'filter_instance1' THEN 3  ELSE 99 END)::NUMBER
+    activity_name: (CASE ((CASE WHEN PROC IS NULL THEN 0 WHEN PROC = 'sendmail' THEN
+      1 WHEN PROC = 'filter_instance1' THEN 3  ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Send' WHEN 2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.cmd_line: (CMD)::VARCHAR
+    actor.process.name: (PROC)::VARCHAR
+    actor.process.pid: (PID)::NUMBER
+    actor.session.uid: (SESSION_ID)::VARCHAR
+    actor.user.email_addr: (EMAIL_FROM)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE ((4)::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_file_activity')::VARCHAR
+    class_uid: ('4011')::NUMBER
+    cloud.provider: ('Proofpoint')::VARCHAR
+    count: NULL::NUMBER
+    device.domain: (REGEXP_SUBSTR(RELAY, '[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+){1,}'))::VARCHAR
+    device.ip: (COALESCE(LISTENER_IP, REGEXP_SUBSTR(RELAY, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}')))::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: (REGEXP_SUBSTR(raw, 'duration=(\\S+)', 1, 1, 'e', 1))::NUMBER
+    email_uid: (COALESCE(ID, MESSAGE_ID))::VARCHAR
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    file.hashes: (ARRAY_CONSTRUCT( OBJECT_CONSTRUCT_KEEP_NULL( 'algorithm', IFF(REGEXP_SUBSTR(raw,
+      'sha256=(\\S+)', 1, 1, 'e', 1) IS NULL, NULL, 'SHA-256'), 'algorithm_id', IFF(REGEXP_SUBSTR(raw,
+      'sha256=(\\S+)', 1, 1, 'e', 1) IS NULL, 0, 3), 'value', REGEXP_SUBSTR(raw, 'sha256=(\\S+)',
+      1, 1, 'e', 1) ) ))::ARRAY
+    file.mime_type: (REGEXP_SUBSTR(raw, 'mime=(\\S+)', 1, 1, 'e', 1))::VARCHAR
+    file.name: (REGEXP_SUBSTR(raw, 'file=(\\S+)', 1, 1, 'e', 1))::VARCHAR
+    file.size: (TRY_TO_NUMBER(REGEXP_SUBSTR(raw, 'size=(\\d+)', 1, 1, 'e', 1)))::NUMBER
+    file.type: (CASE ((99)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Regular File'
+      WHEN 2 THEN 'Folder' WHEN 3 THEN 'Character Device' WHEN 4 THEN 'Block Device'
+      WHEN 5 THEN 'Local Socket' WHEN 6 THEN 'Named Pipe' WHEN 7 THEN 'Symbolic Link'
+      WHEN 99 THEN 'Other' END)::VARCHAR
+    file.type_id: (99)::NUMBER
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('proofpoint-gateway-sendmail-logs')::VARCHAR
+    metadata.product.vendor_name: ('proofpoint')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (PROC)::VARCHAR
+    - name: '''actor.user'''
+      type: '''User'''
+      type_id: 21
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.user.email_addr'''
+      type: '''Email Address'''
+      type_id: 5
+      reputation: null::VARIANT
+      value: (EMAIL_FROM)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (COALESCE(LISTENER_IP, REGEXP_SUBSTR(RELAY, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}')))::VARCHAR
+    - name: '''file'''
+      type: '''File'''
+      type_id: 24
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''file.name'''
+      type: '''File Name'''
+      type_id: 7
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(raw, 'file=(\\S+)', 1, 1, 'e', 1))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE ((CASE WHEN VERIFY IS NULL THEN 0 WHEN VERIFY = 'OK' THEN 1 WHEN
+      VERIFY = 'FAIL' THEN 2 ELSE 99 END)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN
+      'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: (STATUS)::VARCHAR
+    status_id: (CASE WHEN VERIFY IS NULL THEN 0 WHEN VERIFY = 'OK' THEN 1 WHEN VERIFY
+      = 'FAIL' THEN 2 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((401100 + (CASE WHEN PROC IS NULL THEN 0 WHEN PROC = ''sendmail''
+      THEN 1 WHEN PROC = ''filter_instance1'' THEN 3  ELSE 99 END))::NUMBER) WHEN
+      401100 THEN ''Email File Activity: Unknown'' WHEN 401101 THEN ''Email File Activity:
+      Send'' WHEN 401102 THEN ''Email File Activity: Receive'' WHEN 401103 THEN ''Email
+      File Activity: Scan'' WHEN 401199 THEN ''Email File Activity: Other'' END)::VARCHAR'
+    type_uid: (401100 + (CASE WHEN PROC IS NULL THEN 0 WHEN PROC = 'sendmail' THEN
+      1 WHEN PROC = 'filter_instance1' THEN 3  ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT

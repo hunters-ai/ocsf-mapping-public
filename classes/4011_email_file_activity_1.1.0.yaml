@@ -1,8 +1,9 @@
 id: 4011_email_file_activity_1.1.0
-version: '4'
+version: '5'
 description: OCSF View For Class - 4011 Email File Activity
 source-table-ids:
 - cofense_reports_4011_email_file_activity_1.1.0
 - mimecast_ttp_attachment_4011_email_file_activity_1.1.0
 - microsoft_365_defender_advanced_hunting_4011_email_file_activity_1.1.0
 - mimecast_attachment_protect_logs_v2_4011_email_file_activity_1.1.0
+- proofpoint_gateway_sendmail_logs_4011_email_file_activity_1.1.0
