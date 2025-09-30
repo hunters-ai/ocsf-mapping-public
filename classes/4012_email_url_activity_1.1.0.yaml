@@ -1,7 +1,8 @@
 id: 4012_email_url_activity_1.1.0
-version: '3'
+version: '4'
 description: OCSF View For Class - 4012 Email Url Activity
 source-table-ids:
 - mimecast_ttp_url_4012_email_url_activity_1.1.0
 - cofense_reports_4012_email_url_activity_1.1.0
 - mimecast_url_protect_logs_v2_4012_email_url_activity_1.1.0
+- proofpoint_gateway_sendmail_logs_4012_email_url_activity_1.1.0

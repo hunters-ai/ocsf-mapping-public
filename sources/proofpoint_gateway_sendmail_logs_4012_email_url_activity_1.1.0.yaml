@@ -1,0 +1,113 @@
+type: mapping
+id: proofpoint_gateway_sendmail_logs_4012_email_url_activity_1.1.0
+version: '1'
+name: Proofpoint Gateway Sendmail Logs to OCSF class Email Url Activity
+data-types:
+- proofpoint-gateway-sendmail-logs
+mapping:
+  fields:
+    action: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Allowed' WHEN 2 THEN
+      'Denied' WHEN 99 THEN 'Other' END)::VARCHAR
+    action_id: (0)::NUMBER
+    activity_id: (CASE WHEN PROC = 'sendmail' THEN 1 WHEN PROC = 'filter_instance1'
+      THEN 3 WHEN PROC IS NULL THEN 0 ELSE 99 END)::NUMBER
+    activity_name: (CASE (CASE WHEN PROC = 'sendmail' THEN 1 WHEN PROC = 'filter_instance1'
+      THEN 3 WHEN PROC IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown' WHEN
+      1 THEN 'Send' WHEN 2 THEN 'Receive' WHEN 3 THEN 'Scan' WHEN 99 THEN 'Other'
+      END)::VARCHAR
+    actor.process.name: (PROC)::VARCHAR
+    actor.process.pid: (PID)::NUMBER
+    actor.session.uid: (SESSION_ID)::VARCHAR
+    api: NULL::VARIANT
+    attacks: NULL::ARRAY
+    authorizations: NULL::ARRAY
+    category_name: (CASE (4::NUMBER) WHEN 4 THEN 'Network Activity' END)::VARCHAR
+    category_uid: (4)::NUMBER
+    class_name: ('email_url_activity')::VARCHAR
+    class_uid: ('4012')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device.hostname: (REGEXP_SUBSTR(RELAY, '[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+){1,}'))::VARCHAR
+    device.ip: (REGEXP_SUBSTR(RELAY, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'))::VARCHAR
+    disposition: NULL::VARCHAR
+    disposition_id: NULL::NUMBER
+    duration: NULL::NUMBER
+    email_uid: (ID)::VARCHAR
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    firewall_rule: NULL::VARIANT
+    malware: NULL::ARRAY
+    message: (STATUS)::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('proofpoint-gateway-sendmail-logs')::VARCHAR
+    metadata.product.vendor_name: ('proofpoint')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','security_control','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables:
+    - name: '''actor.process'''
+      type: '''Process'''
+      type_id: 25
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''actor.process.name'''
+      type: '''Process Name'''
+      type_id: 9
+      reputation: null::VARIANT
+      value: (PROC)::VARCHAR
+    - name: '''device'''
+      type: '''Endpoint'''
+      type_id: 20
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''device.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(RELAY, '[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+){1,}'))::VARCHAR
+    - name: '''device.ip'''
+      type: '''IP Address'''
+      type_id: 2
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(RELAY, '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'))::VARCHAR
+    - name: '''url'''
+      type: '''Uniform Resource Locator'''
+      type_id: 23
+      reputation: null::VARIANT
+      value: null::VARCHAR
+    - name: '''url.hostname'''
+      type: '''Hostname'''
+      type_id: 1
+      reputation: null::VARIANT
+      value: (REGEXP_SUBSTR(RELAY, '[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+){1,}'))::VARCHAR
+    raw_data: NULL::VARCHAR
+    severity: (CASE (0::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: (CASE (CASE WHEN LOWER(VERIFY) = 'ok' THEN 1 WHEN LOWER(VERIFY) = 'fail'
+      THEN 2 WHEN VERIFY IS NULL THEN 0 ELSE 99 END::NUMBER) WHEN 0 THEN 'Unknown'
+      WHEN 1 THEN 'Success' WHEN 2 THEN 'Failure' WHEN 99 THEN 'Other' END)::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: (CASE WHEN LOWER(VERIFY) = 'ok' THEN 1 WHEN LOWER(VERIFY) = 'fail'
+      THEN 2 WHEN VERIFY IS NULL THEN 0 ELSE 99 END)::NUMBER
+    time: (date_part('epoch_milliseconds', event_time::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (event_time)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE (401200 + (CASE WHEN PROC = ''sendmail'' THEN 1 WHEN PROC =
+      ''filter_instance1'' THEN 3 WHEN PROC IS NULL THEN 0 ELSE 99 END)::NUMBER) WHEN
+      401200 THEN ''Email URL Activity: Unknown'' WHEN 401201 THEN ''Email URL Activity:
+      Send'' WHEN 401202 THEN ''Email URL Activity: Receive'' WHEN 401203 THEN ''Email
+      URL Activity: Scan'' WHEN 401299 THEN ''Email URL Activity: Other'' END)::VARCHAR'
+    type_uid: (401200 + (CASE WHEN PROC = 'sendmail' THEN 1 WHEN PROC = 'filter_instance1'
+      THEN 3 WHEN PROC IS NULL THEN 0 ELSE 99 END))::NUMBER
+    unmapped: NULL::VARIANT
+    url.hostname: (REGEXP_SUBSTR(RELAY, '[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+){1,}'))::VARCHAR
