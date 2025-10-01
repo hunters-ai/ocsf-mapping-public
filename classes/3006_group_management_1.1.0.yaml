@@ -1,5 +1,5 @@
 id: 3006_group_management_1.1.0
-version: '13'
+version: '14'
 description: OCSF View For Class - 3006 Group Management
 source-table-ids:
 - onelogin_events_3006_group_management_1.1.0
@@ -15,3 +15,4 @@ source-table-ids:
 - cyberark_privileged_access_security_3006_group_management_1.1.0
 - sailpoint_identitynow_audit_reports_events_3006_group_management_1.1.0
 - universal_wel_3006_group_management_1.1.0
+- bitwarden_groups_3006_group_management_1.1.0

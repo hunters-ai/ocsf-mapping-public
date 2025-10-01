@@ -1,0 +1,66 @@
+type: mapping
+id: bitwarden_groups_3006_group_management_1.1.0
+version: '1'
+name: Bitwarden Groups to OCSF class Group Management
+data-types:
+- bitwarden-groups
+mapping:
+  fields:
+    activity_id: (0)::NUMBER
+    activity_name: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Assign Privileges'
+      WHEN 2 THEN 'Revoke Privileges' WHEN 3 THEN 'Add User' WHEN 4 THEN 'Remove User'
+      WHEN 5 THEN 'Delete' WHEN 6 THEN 'Create' WHEN 99 THEN 'Other' END)::VARCHAR
+    actor: NULL::VARIANT
+    api: NULL::VARIANT
+    category_name: (CASE ((3)::NUMBER) WHEN 3 THEN 'Identity & Access Management'
+      END)::VARCHAR
+    category_uid: (3)::NUMBER
+    class_name: ('group_management')::VARCHAR
+    class_uid: ('3006')::NUMBER
+    cloud: NULL::VARIANT
+    count: NULL::NUMBER
+    device: NULL::VARIANT
+    duration: NULL::NUMBER
+    end_time: NULL::NUMBER
+    end_time_dt: NULL::TIMESTAMP_LTZ
+    enrichments: NULL::ARRAY
+    group.desc: (OBJECT)::VARCHAR
+    group.name: (NAME)::VARCHAR
+    group.uid: (ID)::VARCHAR
+    message: NULL::VARCHAR
+    metadata.processed_time: (date_part('epoch_milliseconds', metadata$insertion_time::TIMESTAMP_LTZ))::NUMBER
+    metadata.processed_time_dt: (metadata$insertion_time)::TIMESTAMP_LTZ
+    metadata.product.name: ('bitwarden-groups')::VARCHAR
+    metadata.product.vendor_name: ('bitwarden')::VARCHAR
+    metadata.profiles: (ARRAY_CONSTRUCT('cloud','datetime','host','container','linux/linux_users'))::ARRAY
+    metadata.uid: (metadata$uuid)::VARCHAR
+    metadata.version: ('1.1.0')::VARCHAR
+    metadata.loggers: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('version', metadata$dataflow_id))
+    metadata.extensions: ARRAY_CONSTRUCT(OBJECT_CONSTRUCT_KEEP_NULL('name', 'windows',
+      'version', '2', 'uid', '1.1.0'))
+    observables: NULL::ARRAY
+    privileges: NULL::ARRAY
+    raw_data: NULL::VARCHAR
+    resource: NULL::VARIANT
+    severity: (CASE ((0)::NUMBER) WHEN 0 THEN 'Unknown' WHEN 1 THEN 'Informational'
+      WHEN 2 THEN 'Low' WHEN 3 THEN 'Medium' WHEN 4 THEN 'High' WHEN 5 THEN 'Critical'
+      WHEN 6 THEN 'Fatal' WHEN 99 THEN 'Other' END)::VARCHAR
+    severity_id: (0)::NUMBER
+    start_time: NULL::NUMBER
+    start_time_dt: NULL::TIMESTAMP_LTZ
+    status: NULL::VARCHAR
+    status_code: NULL::VARCHAR
+    status_detail: NULL::VARCHAR
+    status_id: NULL::NUMBER
+    time: (date_part('epoch_milliseconds', METADATA$INSERTION_TIME::TIMESTAMP_LTZ))::NUMBER
+    time_dt: (METADATA$INSERTION_TIME)::TIMESTAMP_LTZ
+    timezone_offset: NULL::NUMBER
+    type_name: '(CASE ((300600)::NUMBER) WHEN 300600 THEN ''Group Management: Unknown''
+      WHEN 300601 THEN ''Group Management: Assign Privileges'' WHEN 300602 THEN ''Group
+      Management: Revoke Privileges'' WHEN 300603 THEN ''Group Management: Add User''
+      WHEN 300604 THEN ''Group Management: Remove User'' WHEN 300605 THEN ''Group
+      Management: Delete'' WHEN 300606 THEN ''Group Management: Create'' WHEN 300699
+      THEN ''Group Management: Other'' END)::VARCHAR'
+    type_uid: (300600)::NUMBER
+    unmapped: NULL::VARIANT
+    user: NULL::VARIANT
