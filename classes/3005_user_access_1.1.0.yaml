@@ -1,5 +1,5 @@
 id: 3005_user_access_1.1.0
-version: '9'
+version: '10'
 description: OCSF View For Class - 3005 User Access
 source-table-ids:
 - lastpass_user_activity_reports_3005_user_access_1.1.0
@@ -11,3 +11,4 @@ source-table-ids:
 - o365_audit_logs_3005_user_access_1.1.0
 - okta_logs_3005_user_access_1.1.0
 - teleport_audit_events_3005_user_access_1.1.0
+- bitwarden_members_3005_user_access_1.1.0
