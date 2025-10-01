@@ -1,5 +1,5 @@
 id: 6003_api_activity_1.1.0
-version: '27'
+version: '28'
 description: OCSF View For Class - 6003 Api Activity
 source-table-ids:
 - aws_cloudtrail_6003_api_activity_1.1.0
@@ -30,3 +30,4 @@ source-table-ids:
 - breez_security_alerts_6003_api_activity_1.1.0
 - twingate_audit_logs_6003_api_activity_1.1.0
 - vectra_audit_logs_6003_api_activity_1.1.0
+- jamf_protect_audit_6003_api_activity_1.1.0
