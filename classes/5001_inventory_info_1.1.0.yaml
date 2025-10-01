@@ -1,5 +1,5 @@
 id: 5001_inventory_info_1.1.0
-version: '11'
+version: '12'
 description: OCSF View For Class - 5001 Inventory Info
 source-table-ids:
 - mdatp_device_info_5001_inventory_info_1.1.0
@@ -19,3 +19,4 @@ source-table-ids:
 - kaspersky_security_on_prem_logs_5001_inventory_info_1.1.0
 - kandji_users_5001_inventory_info_1.1.0
 - kandji_devices_5001_inventory_info_1.1.0
+- jamf_protect_computers_5001_inventory_info_1.1.0
